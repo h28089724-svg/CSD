@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>체인 검색</title>
+    
+    <!-- [기존 유지] 루트 기준 파일 배치를 맞추기 위해 manifest 경로를 ./ 로 유지 -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#f5f7fa">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <script>
+        var allSprocketData = [];
+
+        if ('serviceWorker' in navigator) {
+            /* [기존 유지] 루트 기준 파일 배치를 맞추기 위해 sw.js 경로를 ./ 로 유지 */
+            navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log('오프라인 모드 준비 완료'))
+            .catch(err => console.log('오프라인 모드 오류:', err));
+        }
+    </script>
+
+    <!-- [기존 유지] 루트 기준에서 data_chain 폴더를 직접 읽도록 경로 유지 -->
+    <script src="./data_chain/data_rs25.js"></script>
+    <script src="./data_chain/data_rs35.js"></script>
+    <script src="./data_chain/data_rs40.js"></script>
+    <script src="./data_chain/data_rs50.js"></script>
+    <script src="./data_chain/data_rs60.js"></script>
+    <script src="./data_chain/data_rs80.js"></script>
+    <script src="./data_chain/data_rs100.js"></script>
+    <script src="./data_chain/data_rs120.js"></script>
+    <script src="./data_chain/data_rs140.js"></script>
+    <script src="./data_chain/data_rs160.js"></script>
+    <script src="./data_chain/data_rs180.js"></script>
+    <script src="./data_chain/data_rs200.js"></script>
+    <script src="./data_chain/data_rs240.js"></script>
+
+    <style>
+        :root {
+            /* [기존 유지] 체인 모드는 파란색 컨셉 유지 */
+            --primary-bg: #f5f7fa;
+            --card-bg: #f5f7fa;
+            --header-bg: #f5f7fa;
+            --accent-color: #2196f3;
+            --input-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-dim: #7f8c8d;
+            --border-color: #dcdfe6;
+            --btn-text: #ffffff;
+        }
+
+        body { 
+            margin: 0;
+            padding: 0;
+            background-color: var(--primary-bg); 
+            color: var(--text-main); 
+            font-family: 'Pretendard', sans-serif; 
+            overflow-x: hidden;
+            transition: all 0.4s ease; 
+            min-height: 100vh;
+        }
+
+        .header {
+            display: grid;
+            grid-template-columns: 50px 1fr 68px;
+            align-items: center;
+            padding: 10px 18px 22px; 
+            background: var(--header-bg); 
+            border-bottom: 2px solid var(--accent-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            min-height: 92px;
+            box-sizing: border-box;
+        }
+
+        .logo {
+            justify-self: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 22px 10px 22px;
+            border-radius: 18px;
+            font-weight: 800;
+            font-size: 1.89rem;
+            line-height: 1.1;
+            color: #0d6fd1;
+            text-align: center;
+            letter-spacing: -0.02em;
+            background: linear-gradient(180deg, #d9ecff 0%, #c6e0fb 100%);
+            border: 1px solid #8cbbe8;
+            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.55), 0 3px 10px rgba(33, 150, 243, 0.12);
+        }
+
+        .logo-text {
+            display: inline-block;
+        }
+
+        .menu-btn {
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 44px;
+        }
+
+        .header-right {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .header-mode-link {
+            width: 56px;
+            height: 56px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            text-decoration: none;
+            background: linear-gradient(180deg, #e8f3ff 0%, #d9ebff 100%);
+            border: 1px solid #9fc4ec;
+            box-shadow: 0 6px 14px rgba(33, 111, 209, 0.12);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+        }
+
+        .header-mode-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 18px rgba(33, 111, 209, 0.18);
+            background: linear-gradient(180deg, #eef6ff 0%, #deeeff 100%);
+        }
+
+        .header-mode-link img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: #ffffff;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+            transition: 0.3s ease;
+            z-index: 200;
+            padding-top: 50px;
+        }
+
+        .side-menu.active { left: 0; }
+
+        .side-menu .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+
+        .side-menu ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .side-menu ul li {
+            padding: 12px 25px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 150;
+        }
+
+        .overlay.active { display: block; }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px 15px 170px;
+            min-height: calc(100vh - 92px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-card { 
+            background: var(--card-bg); 
+            padding: 15px 20px;
+            border-radius: 12px; 
+            margin-bottom: 15px; 
+            border: 1px solid var(--border-color);
+        }
+
+        .input-group { margin-bottom: 10px; }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--accent-color);
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        select, input { 
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px; 
+            border: 1px solid var(--border-color); 
+            background: var(--input-bg); 
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            outline: none; 
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        button { 
+            flex: 1; 
+            padding: 10px;
+            border-radius: 8px; 
+            font-size: 0.9rem;
+            cursor: pointer; 
+            border: 1px solid var(--accent-color); 
+            background: #fff;
+        }
+
+        .search-btn {
+            background: transparent;
+            color: var(--accent-color);
+            font-weight: bold;
+            flex: 2;
+        }
+
+        .reset-btn {
+            border-color: #95a5a6;
+            color: #95a5a6;
+        }
+
+        .result-area {
+            margin-top: 10px;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            table-layout: fixed;
+        }
+        
+        th:nth-child(1), td:nth-child(1) { width: 22%; }
+        th:nth-child(2), td:nth-child(2) { width: 14%; }
+        th:nth-child(3), td:nth-child(3) { width: 14%; }
+        th:nth-child(4), td:nth-child(4) { width: 20%; }
+        th:nth-child(5), td:nth-child(5) { width: 30%; }
+
+        th {
+            background: rgba(0,0,0,0.03);
+            padding: 8px 2px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 10px 2px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .file-group {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .file-link {
+            padding: 5px 0;
+            width: 40px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .pdf-btn { background: #3498db; }
+        .dwg-btn { background: #e74c3c; }
+
+        .placeholder-text {
+            display: none;
+        }
+
+        .usage-info {
+            text-align: right;
+            margin-top: 8px;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+
+        .middle-visual-zone {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 8px 0 24px;
+            min-height: 180px;
+        }
+
+        .middle-chain-image {
+            display: block;
+            width: 252px;
+            max-width: 46%;
+            height: auto;
+            opacity: 0.15;
+            pointer-events: none;
+            user-select: none;
+            transform: translateY(-14px);
+        }
+
+        .bottom-brand-banner {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            z-index: 140;
+            width: calc(100% - 24px);
+            max-width: 600px;
+            margin: 0;
+            background: var(--primary-bg);
+            border: 1px solid #dce7ee;
+            border-radius: 20px 20px 0 0;
+            padding: 14px 14px 12px;
+            box-shadow: 0 -8px 24px rgba(28, 44, 64, 0.08);
+        }
+
+        .bottom-brand-badge {
+            width: 100%;
+            max-width: 330px;
+            margin: 0 auto;
+            min-height: 54px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f29a00 0%, #ffbe3d 100%);
+            color: #ffffff;
+            font-size: 1.7rem;
+            font-weight: 800;
+            font-style: italic;
+            letter-spacing: -0.03em;
+            box-shadow: 0 10px 22px rgba(242, 154, 0, 0.22);
+            text-decoration: none;
+        }
+
+        .bottom-brand-title {
+            margin: 0 0 12px;
+            text-align: center;
+            font-size: 0.98rem;
+            font-weight: 800;
+            color: #22313f;
+            letter-spacing: -0.03em;
+        }
+
+        .bottom-nav {
+            display: none !important;
+        }
+
+        @media (max-width: 560px) {
+            .header {
+                grid-template-columns: 44px 1fr 58px;
+                padding: 8px 14px 18px;
+                min-height: 82px;
+            }
+
+            .logo {
+                font-size: 1.55rem;
+                padding: 8px 16px;
+                border-radius: 15px;
+            }
+
+            .header-mode-link {
+                width: 46px;
+                height: 46px;
+                border-radius: 14px;
+            }
+
+            .header-mode-link img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .container {
+                padding: 24px 12px 156px;
+                min-height: calc(100vh - 82px);
+            }
+
+            .middle-visual-zone {
+                padding: 4px 0 18px;
+                min-height: 140px;
+            }
+
+            .middle-chain-image {
+                width: 180px;
+                max-width: 56%;
+                transform: translateY(-10px);
+            }
+
+            .bottom-brand-banner {
+                width: calc(100% - 20px);
+                padding: 12px 12px 10px;
+                border-radius: 18px 18px 0 0;
+            }
+
+            .bottom-brand-badge {
+                max-width: 280px;
+                min-height: 46px;
+                border-radius: 14px;
+                font-size: 1.38rem;
+            }
+
+            .bottom-brand-title {
+                font-size: 0.9rem;
+                margin: 0 0 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+
+        <div id="mainLogo" class="logo">
+            <span class="logo-text">체인 검색</span>
+        </div>
+
+        <div class="header-right">
+            <a href="./sprocket.html" class="header-mode-link" aria-label="스프라켓 검색 모드로 이동">
+                <img src="./images/sprocket.png" alt="스프라켓 검색 이동">
+            </a>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="side-menu" id="sideMenu">
+        <div class="close-btn" onclick="toggleMenu()"><i class="fas fa-times"></i></div>
+        <ul>
+            <li onclick="goToSprocketMode()">스프라켓 검색 모드로 이동</li>
+            <li onclick="resetSearchLimit()">체인 검색 횟수 제한 해제</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div id="searchSection" class="search-card">
+            <div class="input-group">
+                <label>형번 선택 (MODEL)</label>
+                <select id="searchModel"><option value="">형번을 선택하세요</option></select>
+            </div>
+            <div class="input-group">
+                <label>잇수 입력 (NT)</label>
+                <input type="number" id="searchNt" placeholder="잇수">
+            </div>
+            <div class="input-group">
+                <label>외경 입력 (OD)</label>
+                <input type="number" id="searchOd" placeholder="외경">
+            </div>
+            <div class="input-group">
+                <label>피치원 지름 (PCD)</label>
+                <input type="text" id="searchPcd" placeholder="PCD">
+            </div>
+            <div class="btn-row">
+                <button class="reset-btn" onclick="clearFields()">초기화</button>
+                <button class="search-btn" onclick="performSearch()">검색하기</button>
+            </div>
+            <div id="usageCounter" class="usage-info">남은 횟수: 확인 중...</div>
+        </div>
+
+        <div id="resultArea" class="result-area">
+            <div class="placeholder-text"></div>
+        </div>
+
+        <div class="middle-visual-zone" aria-hidden="true">
+            <img src="./images/chain.png" alt="" class="middle-chain-image">
+        </div>
+    </div>
+
+    <section class="bottom-brand-banner" aria-label="CBN 안내 배너">
+        <div class="bottom-brand-title">Speed &amp; Simple Data Search</div>
+        <a href="./cs_search.html" class="bottom-brand-badge" aria-label="CS HOME으로 이동">
+            CBN / CS HOME
+        </a>
+    </section>
+
+    <nav class="bottom-nav" aria-label="하단 메뉴"></nav>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function goToSprocketMode() {
+            window.location.href = './sprocket.html';
+        }
+
+        const MAX_DAILY_SEARCH = 10;
+        const SEARCH_COUNT_KEY = 'chain_search_count';
+        const SEARCH_DATE_KEY = 'chain_search_date';
+
+        function getTodayString() {
+            return new Date().toLocaleDateString('ko-KR');
+        }
+
+        function getSearchCount() {
+            const today = getTodayString();
+            const savedDate = localStorage.getItem(SEARCH_DATE_KEY);
+
+            if (savedDate !== today) {
+                localStorage.setItem(SEARCH_DATE_KEY, today);
+                localStorage.setItem(SEARCH_COUNT_KEY, '0');
+                return 0;
+            }
+
+            return parseInt(localStorage.getItem(SEARCH_COUNT_KEY) || '0', 10);
+        }
+
+        function setSearchCount(count) {
+            localStorage.setItem(SEARCH_DATE_KEY, getTodayString());
+            localStorage.setItem(SEARCH_COUNT_KEY, String(count));
+        }
+
+        function checkSearchLimit() {
+            const count = getSearchCount();
+            const remaining = Math.max(0, MAX_DAILY_SEARCH - count);
+            document.getElementById('usageCounter').textContent = `남은 횟수: ${remaining} / ${MAX_DAILY_SEARCH}`;
+            return count < MAX_DAILY_SEARCH;
+        }
+
+        window.onload = function() {
+            populateModelSelect();
+            checkSearchLimit();
+        };
+
+        function populateModelSelect() {
+            const select = document.getElementById('searchModel');
+            if (!allSprocketData || !Array.isArray(allSprocketData)) return;
+
+            const models = [...new Set(allSprocketData.map(item => item.model))]
+                .sort((a, b) => {
+                    const numA = parseInt(String(a).replace(/\D/g, ''), 10);
+                    const numB = parseInt(String(b).replace(/\D/g, ''), 10);
+                    return numA - numB;
+                });
+
+            models.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.textContent = m;
+                select.appendChild(opt);
+            });
+        }
+
+        function performSearch() {
+            if (!checkSearchLimit()) {
+                alert("체인 검색의 일일 횟수를 초과했습니다.");
+                return;
+            }
+
+            const model = document.getElementById('searchModel').value;
+            const nt = document.getElementById('searchNt').value;
+            const od = document.getElementById('searchOd').value;
+            const pcd = document.getElementById('searchPcd').value;
+
+            let results = allSprocketData;
+            if (model) results = results.filter(d => d.model === model);
+            if (nt) results = results.filter(d => d.nt == nt);
+            if (od) results = results.filter(d => d.od == od);
+            if (pcd) results = results.filter(d => String(d.pitchCircle || d.pcd).includes(pcd));
+
+            displayResults(results);
+
+            const currentCount = getSearchCount();
+            setSearchCount(currentCount + 1);
+            checkSearchLimit();
+        }
+
+        function displayResults(results) {
+            const area = document.getElementById("resultArea");
+
+            if (!results || results.length === 0) {
+                area.innerHTML = "<p style='text-align:center; padding:20px;'>결과 없음</p>";
+                return;
+            }
+
+            let html = `<table><thead><tr><th>형번</th><th>잇수</th><th>외경</th><th>PCD</th><th>도면</th></tr></thead><tbody>`;
+            results.forEach(item => {
+                const fileBase = `${item.model}_${item.nt}NT`;
+
+                /* [이번 수정] PDF/DWG 다운로드 경로에 형번 폴더(item.model)를 반영 */
+                /* [이번 수정] 사용자 구조에 맞게 download > chain > pdf > 형번폴더 > 파일명 */
+                const pdfPath = `./download/chain/pdf/${item.model}/${fileBase}.pdf`;
+
+                /* [이번 수정] 사용자 구조에 맞게 download > chain > dwg > 형번폴더 > 파일명 */
+                const dwgPath = `./download/chain/dwg/${item.model}/${fileBase}.dwg`;
+
+                html += `<tr>
+                    <td>${item.model}</td>
+                    <td>${item.nt}T</td>
+                    <td>${item.od}</td>
+                    <td>${item.pitchCircle || item.pcd}</td>
+                    <td>
+                        <div class="file-group">
+                            <a href="${pdfPath}" class="file-link pdf-btn" target="_blank">PDF</a>
+                            <a href="${dwgPath}" class="file-link dwg-btn" download>DWG</a>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+            area.innerHTML = html;
+        }
+
+        function clearFields() {
+            document.getElementById('searchModel').selectedIndex = 0;
+            document.querySelectorAll('input').forEach(i => i.value = '');
+            document.getElementById('resultArea').innerHTML = '<div class="placeholder-text"></div>';
+        }
+
+        function resetSearchLimit() {
+            setSearchCount(0);
+            checkSearchLimit();
+            toggleMenu();
+        }
+    </script>
+</body>
+</html>

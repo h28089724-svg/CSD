@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스프라켓 검색</title>
+
+<style>
+:root {
+    --accent-main: #3f3f8f;
+    --accent-soft: rgba(63,63,143,0.15);
+    --accent-border: rgba(63,63,143,0.35);
+
+    --bg-top: #e6e8ff;
+    --bg-bottom: #d4d8f5;
+
+    --text-main: #141733;
+    --text-sub: rgba(20,23,51,0.7);
+
+    --panel-bg: rgba(63,63,143,0.08);
+    --panel-border: rgba(63,63,143,0.22);
+
+    --btn-bg: rgba(63,63,143,0.16);
+    --btn-border: rgba(63,63,143,0.28);
+
+    --btn-hover-bg: var(--accent-main);
+    --btn-hover-text: #ffffff;
+
+    --home-btn-bg: rgba(63,63,143,0.12);
+    --home-btn-border: rgba(63,63,143,0.35);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background:
+        radial-gradient(circle at top, rgba(63,63,143,0.25), transparent 55%),
+        linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+    display: flex;
+    justify-content: center;
+}
+
+.page {
+    max-width: 800px;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 18px;
+}
+
+.hero-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.brand-tag {
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    color: var(--accent-main);
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.main-title {
+    margin: 10px 0 6px;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.main-sub {
+    color: var(--text-sub);
+    font-size: 0.9rem;
+}
+
+.menu-panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 10px 30px rgba(63,63,143,0.10);
+}
+
+.mode-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid var(--btn-border);
+    background: var(--btn-bg);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    color: var(--text-main);
+}
+
+.mode-btn:hover {
+    background: var(--btn-hover-bg);
+    color: var(--btn-hover-text);
+    transform: translateY(-4px);
+    box-shadow: 0 18px 36px rgba(63,63,143,0.3);
+}
+
+.mode-btn.active {
+    background: rgba(63,63,143,0.24);
+    border-color: rgba(63,63,143,0.42);
+}
+
+.mode-btn:hover .mode-desc {
+    color: rgba(255,255,255,0.88);
+}
+
+.image-wrap {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.45);
+    flex-shrink: 0;
+}
+
+.mode-image {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    transition: all 0.25s ease;
+    filter: brightness(0.92) contrast(1.08) saturate(0.9);
+}
+
+.mode-btn:hover .mode-image {
+    filter: brightness(1.22) contrast(1.15) saturate(1.08);
+    transform: scale(1.04);
+}
+
+.cv-image {
+    filter: brightness(0.88) contrast(1.12) saturate(0.82);
+}
+
+.mode-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1.25;
+}
+
+.mode-desc {
+    font-size: 0.85rem;
+    color: var(--text-sub);
+    margin-top: 4px;
+    transition: color 0.25s ease;
+}
+
+.middle-image-zone {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.page-bg-image {
+    width: 260px;
+    opacity: 0.1;
+}
+
+.bottom-area {
+    margin-top: auto;
+    text-align: center;
+}
+
+.home-btn {
+    margin-top: 10px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--home-btn-border);
+    background: var(--home-btn-bg);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    color: var(--accent-main);
+}
+
+.home-btn:hover {
+    background: var(--accent-main);
+    color: #fff;
+}
+
+.bottom-brand {
+    margin-top: 14px;
+}
+
+.bottom-brand-name {
+    font-weight: 800;
+    color: var(--accent-main);
+}
+
+.bottom-sub {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+    <div class="hero-header">
+        <div class="brand-tag">SPROCKET MENU</div>
+        <div class="main-title">스프라켓 선택</div>
+        <div class="main-sub">용도에 맞는 항목을 선택하세요</div>
+    </div>
+
+    <div class="menu-panel">
+        <div class="mode-list">
+
+            <!-- 동력전달용: 업로드한 sprocket.html로 이동 -->
+            <div class="mode-btn" onclick="selectAndGo(this, './sprocket.html')">
+                <div class="image-wrap">
+                    <img src="./images/sprocket.png" class="mode-image" alt="동력전달용 스프라켓">
+                </div>
+                <div>
+                    <div class="mode-title">동력전달용</div>
+                    <div class="mode-desc">일반 구동용 스프라켓 검색 페이지로 이동</div>
+                </div>
+            </div>
+
+            <!-- 컨베이어용 -->
+            <div class="mode-btn" onclick="selectAndGo(this, './CV_sprocket.html')">
+                <div class="image-wrap">
+                    <img src="./images/cv_sprocket.png" class="mode-image cv-image" alt="컨베이어용 스프라켓">
+                </div>
+                <div>
+                    <div class="mode-title">컨베이어용</div>
+                    <div class="mode-desc">컨베이어 체인용 스프라켓 페이지로 이동</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="middle-image-zone">
+        <img src="./images/sprocket.png" class="page-bg-image" alt="스프라켓 배경 이미지">
+    </div>
+
+    <div class="bottom-area">
+        <div class="home-btn" onclick="goHome()">🏠 홈으로</div>
+
+        <div class="bottom-brand">
+            <div class="bottom-brand-name">MYCAD</div>
+            <div class="bottom-sub">Speed &amp; Simple Data Search</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function selectAndGo(el, url) {
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    el.classList.add('active');
+
+    setTimeout(() => {
+        window.location.href = url;
+    }, 150);
+}
+
+function goHome() {
+    window.location.href = './index.html';
+}
+</script>
+
+</body>
+</html>
