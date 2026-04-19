@@ -1,0 +1,1684 @@
+\<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- [유지] 모바일 반응형 기본 설정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>스프라켓 검색</title>
+
+    <!-- [유지] PWA 관련 설정 -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#171b3a">
+
+    <!-- [유지] 아이콘용 폰트 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+    <div class="code-modal" id="dwgCodeModal" aria-hidden="true">
+        <div class="code-modal-card">
+            <div class="code-modal-title">DWG 다운로드 인증</div>
+            <div class="code-modal-desc">인증코드를 입력하면 DWG 파일 다운로드를 요청합니다.</div>
+            <input type="password" id="dwgCodeInput" class="code-modal-input" placeholder="인증코드 입력">
+            <div id="dwgCodeError" class="code-modal-error"></div>
+            <div class="code-modal-actions">
+                <button type="button" class="reset-btn" onclick="closeDwgCodeModal()">취소</button>
+                <button type="button" class="search-btn" onclick="submitDwgCode()">다운로드</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // [유지] 전체 스프라켓 데이터를 담는 전역 배열
+        var allSprocketData = [];
+
+        // [유지] 서비스워커 등록
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log('오프라인 모드 준비 완료'))
+            .catch(err => console.log('오프라인 모드 오류:', err));
+        }
+    </script>
+
+    <style>
+        :root {
+            --accent-main: #676cf0;
+            --accent-strong: #7d81ff;
+            --accent-glow: rgba(103, 108, 240, 0.30);
+            --accent-soft: rgba(103, 108, 240, 0.16);
+            --accent-border: rgba(125, 129, 255, 0.26);
+
+            --bg-top: #0f1330;
+            --bg-bottom: #181d3d;
+            --bg-grid: rgba(97, 110, 205, 0.08);
+
+            --panel-bg: rgba(14, 18, 42, 0.88);
+            --panel-border: rgba(116, 131, 255, 0.20);
+
+            --input-bg: rgba(6, 10, 29, 0.88);
+            --input-border: rgba(115, 130, 255, 0.20);
+            --input-focus: rgba(115, 130, 255, 0.42);
+
+            --text-main: #f4f6ff;
+            --text-sub: rgba(220, 227, 255, 0.70);
+            --text-dim: rgba(194, 203, 243, 0.52);
+            --placeholder: rgba(176, 187, 231, 0.58);
+
+            --btn-main-bg: linear-gradient(135deg, #5f63d8 0%, #7479ff 100%);
+            --btn-main-shadow: 0 10px 26px rgba(103, 108, 240, 0.34);
+            --btn-sub-bg: rgba(255, 255, 255, 0.04);
+
+            --card-bg: rgba(12, 17, 40, 0.88);
+            --card-border: rgba(113, 125, 245, 0.16);
+            --card-inner-border: rgba(255,255,255,0.06);
+
+            --pdf-btn: #1e6fbf;
+            --dwg-btn: #b22424;
+            --dxf-btn: #1c9f95;
+
+            --home-orange: linear-gradient(135deg, #f09a00 0%, #ff8a00 100%);
+            --home-orange-shadow: 0 8px 20px rgba(255, 138, 0, 0.28);
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            color: var(--text-main);
+            background:
+                linear-gradient(to right, transparent 0, transparent 23px, var(--bg-grid) 24px, transparent 25px),
+                linear-gradient(to bottom, transparent 0, transparent 23px, var(--bg-grid) 24px, transparent 25px),
+                radial-gradient(circle at top, rgba(84, 92, 205, 0.18), transparent 36%),
+                linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+            background-size: 25px 25px, 25px 25px, auto, auto;
+            overflow-x: hidden;
+        }
+
+        body { min-height: 100vh; }
+
+        .app-shell {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 112px;
+        }
+
+        .header {
+            height: 68px;
+            display: grid;
+            grid-template-columns: 52px 1fr auto;
+            align-items: center;
+            gap: 10px;
+            padding: 0 18px;
+            border-bottom: 1px solid rgba(115, 130, 255, 0.16);
+            background: rgba(10, 14, 33, 0.78);
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .menu-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-sub);
+            cursor: pointer;
+            font-size: 1.15rem;
+            transition: all 0.2s ease;
+        }
+
+        .menu-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-main);
+        }
+
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .brand-icon {
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ea4ff;
+            text-shadow: 0 0 16px rgba(111, 124, 255, 0.46);
+            font-size: 1.15rem;
+            flex-shrink: 0;
+        }
+
+        .brand-text { min-width: 0; }
+
+        .brand-title {
+            font-size: 1.28rem;
+            line-height: 1.05;
+            font-weight: 800;
+            color: #eef0ff;
+            letter-spacing: -0.03em;
+        }
+
+        .brand-sub {
+            margin-top: 3px;
+            font-size: 0.74rem;
+            letter-spacing: 0.12em;
+            color: var(--text-dim);
+        }
+
+        .usage-badge {
+            min-width: 74px;
+            height: 36px;
+            padding: 0 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(112, 126, 255, 0.32);
+            background: rgba(40, 47, 102, 0.52);
+            color: #eaf0ff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.96rem;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: none;
+            z-index: 180;
+        }
+
+        .overlay.active { display: block; }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -290px;
+            width: 280px;
+            height: 100%;
+            background: rgba(11, 15, 34, 0.98);
+            border-right: 1px solid rgba(116, 131, 255, 0.16);
+            box-shadow: 18px 0 36px rgba(0, 0, 0, 0.38);
+            transition: left 0.28s ease;
+            z-index: 200;
+            padding-top: 56px;
+            backdrop-filter: blur(10px);
+        }
+
+        .side-menu.active { left: 0; }
+
+        .side-menu .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-sub);
+            cursor: pointer;
+        }
+
+        .side-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .side-menu ul li {
+            padding: 16px 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: background 0.18s ease;
+        }
+
+        .side-menu ul li:hover { background: rgba(255,255,255,0.04); }
+
+        .content { padding: 22px 16px 24px; }
+
+        .search-panel {
+            position: relative;
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(14,18,42,0.92), rgba(12,16,37,0.88));
+            border: 1px solid var(--panel-border);
+            box-shadow:
+                0 18px 44px rgba(0,0,0,0.24),
+                inset 0 1px 0 rgba(255,255,255,0.04);
+            padding: 18px 16px 18px;
+            overflow: hidden;
+        }
+
+        .search-panel::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(116,131,255,0.05), transparent 38%);
+            pointer-events: none;
+        }
+
+        .panel-title {
+            text-align: center;
+            font-weight: 800;
+            color: #dbe1ff;
+            font-size: 0.98rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 18px;
+            position: relative;
+            padding-top: 4px;
+        }
+
+        .panel-title::before {
+            content: "";
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            top: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(113,125,245,0.46) 12%, rgba(113,125,245,0.46) 88%, transparent 100%);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        .dual-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #c7ceff;
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.01em;
+        }
+
+        .field-wrap { position: relative; }
+
+        select, input {
+            width: 100%;
+            height: 48px;
+            border-radius: 15px;
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 1rem;
+            padding: 0 16px;
+            outline: none;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.01);
+            transition: all 0.2s ease;
+        }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding-right: 42px;
+            cursor: pointer;
+        }
+
+        .select-arrow {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-sub);
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+
+        input::placeholder { color: var(--placeholder); }
+
+        select:focus,
+        input:focus {
+            border-color: var(--input-focus);
+            box-shadow:
+                0 0 0 3px rgba(92, 103, 220, 0.14),
+                0 10px 26px rgba(33, 38, 87, 0.22);
+        }
+
+        .btn-row {
+            display: grid;
+            grid-template-columns: 102px 1fr;
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        button {
+            height: 50px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.22s ease;
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        .reset-btn {
+            background: var(--btn-sub-bg);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: var(--text-sub);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-1px);
+            background: rgba(255,255,255,0.07);
+            color: var(--text-main);
+        }
+
+        .search-btn {
+            background: var(--btn-main-bg);
+            color: #ffffff;
+            box-shadow: var(--btn-main-shadow);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 30px rgba(86, 86, 201, 0.42);
+        }
+
+        .hero-empty {
+            text-align: center;
+            padding: 82px 0 34px;
+        }
+
+        .hero-empty-icon {
+            width: 74px;
+            height: 74px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(178, 189, 240, 0.42);
+            font-size: 2.7rem;
+        }
+
+        .hero-empty-text {
+            font-size: 1.08rem;
+            color: #cfd7ff;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .hero-empty-sub {
+            font-size: 0.95rem;
+            color: var(--text-sub);
+        }
+
+        .hero-empty-sub strong {
+            color: #a3a8ff;
+            font-weight: 800;
+        }
+
+        .model-chip-list {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .model-chip {
+            height: 28px;
+            padding: 0 10px;
+            border-radius: 9px;
+            border: 1px solid rgba(111, 126, 255, 0.18);
+            background: rgba(255,255,255,0.03);
+            color: var(--text-sub);
+            font-size: 0.84rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+
+        .model-chip:hover {
+            background: rgba(111, 126, 255, 0.12);
+            color: var(--text-main);
+            border-color: rgba(111, 126, 255, 0.32);
+        }
+
+        .result-area { margin-top: 18px; }
+
+        .result-list-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .result-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 2px;
+        }
+
+        .result-title-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.02rem;
+            font-weight: 900;
+            color: #edf0ff;
+        }
+
+        .result-title-left::before {
+            content: "";
+            width: 4px;
+            height: 22px;
+            border-radius: 999px;
+            background: var(--accent-main);
+            box-shadow: 0 0 14px rgba(103,108,240,0.34);
+        }
+
+        .result-count-badge {
+            min-width: 54px;
+            height: 28px;
+            padding: 0 10px;
+            border-radius: 999px;
+            background: rgba(103,108,240,0.14);
+            border: 1px solid rgba(103,108,240,0.24);
+            color: #dfe3ff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.88rem;
+            font-weight: 800;
+        }
+
+        .result-guide {
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            color: var(--text-dim);
+            font-size: 0.78rem;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .result-progress {
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: rgba(103,108,240,0.08);
+            border: 1px solid rgba(103,108,240,0.16);
+            color: #dfe3ff;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .result-scroll-box {
+            height: 560px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-snap-type: y mandatory;
+            border-radius: 14px;
+            padding-right: 4px;
+        }
+
+        .result-scroll-box::-webkit-scrollbar { width: 8px; }
+        .result-scroll-box::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.03);
+            border-radius: 999px;
+        }
+        .result-scroll-box::-webkit-scrollbar-thumb {
+            background: rgba(125, 129, 255, 0.28);
+            border-radius: 999px;
+        }
+
+        .result-pages-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .result-page {
+            min-height: 100%;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .result-card-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 10px 26px rgba(0,0,0,0.18);
+            flex: 0 0 auto;
+        }
+
+        .result-summary {
+            display: grid;
+            grid-template-columns: 74px 1fr 34px;
+            gap: 14px;
+            align-items: center;
+            padding: 16px 16px;
+            cursor: pointer;
+        }
+
+        .model-pill {
+            min-width: 60px;
+            height: 32px;
+            padding: 0 12px;
+            border-radius: 10px;
+            background: rgba(103,108,240,0.10);
+            border: 1px solid rgba(103,108,240,0.24);
+            color: #eef1ff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.96rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .summary-col { min-width: 0; }
+
+        .summary-label {
+            color: var(--text-dim);
+            font-size: 0.76rem;
+            margin-bottom: 5px;
+            letter-spacing: 0.01em;
+        }
+
+        .summary-value {
+            color: #ffffff;
+            font-size: 1.02rem;
+            font-weight: 800;
+            line-height: 1.15;
+            word-break: break-word;
+        }
+
+        .summary-unit {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            margin-left: 2px;
+        }
+
+        .toggle-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.03);
+            color: var(--text-sub);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .result-card-item.open .toggle-btn {
+            transform: rotate(180deg);
+            color: #ffffff;
+        }
+
+        .result-detail {
+            display: none;
+            border-top: 1px solid var(--card-inner-border);
+            padding: 14px 16px 16px;
+            background: rgba(6, 10, 24, 0.36);
+        }
+
+        .result-card-item.open .result-detail { display: block; }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            border-top: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 12px 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .detail-item:nth-child(odd) { padding-right: 12px; }
+        .detail-item:nth-child(even) { padding-left: 12px; }
+
+        .detail-label {
+            color: #aeb8ff;
+            font-size: 0.92rem;
+            font-weight: 700;
+        }
+
+        .detail-value {
+            color: #ffffff;
+            font-size: 0.98rem;
+            font-weight: 800;
+            text-align: right;
+        }
+
+        .detail-actions {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .detail-file-btn {
+            height: 36px;
+            padding: 0 6px;
+            border-radius: 10px;
+            color: #fff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-size: 0.80rem;
+            font-weight: 800;
+            line-height: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: transform 0.18s ease, opacity 0.18s ease;
+        }
+
+        .detail-file-btn i {
+            font-size: 0.82rem;
+            flex-shrink: 0;
+        }
+
+        .detail-file-btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.94;
+        }
+
+        .detail-file-btn.pdf { background: var(--pdf-btn); }
+        .detail-file-btn.dwg { background: var(--dwg-btn); }
+        .detail-file-btn.dxf { background: var(--dxf-btn); }
+
+        .empty-result,
+        .limit-message,
+        .loading-message {
+            text-align: center;
+            padding: 28px 16px;
+            color: var(--text-sub);
+            font-weight: 700;
+            background: rgba(11, 15, 35, 0.72);
+            border: 1px solid rgba(115, 130, 255, 0.16);
+            border-radius: 18px;
+        }
+
+        .page-status {
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.82rem;
+            padding: 10px 0 2px;
+        }
+
+        .bottom-bar {
+            position: fixed;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 600px;
+            padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+            background: rgba(9, 12, 28, 0.90);
+            border-top: 1px solid rgba(115, 130, 255, 0.12);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            z-index: 120;
+        }
+
+        .bottom-caption {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+        }
+
+        .bottom-home {
+            height: 42px;
+            padding: 0 16px;
+            border-radius: 13px;
+            background: var(--home-orange);
+            color: #111;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -0.02em;
+            box-shadow: var(--home-orange-shadow);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 520px) {
+            .header {
+                grid-template-columns: 44px 1fr auto;
+                padding: 0 14px;
+            }
+
+            .brand-title { font-size: 1.12rem; }
+            .brand-sub { font-size: 0.68rem; }
+
+            .usage-badge {
+                min-width: 68px;
+                padding: 0 12px;
+                font-size: 0.9rem;
+            }
+
+            .content { padding: 18px 14px 20px; }
+
+            .search-panel {
+                border-radius: 20px;
+                padding: 16px 14px;
+            }
+
+            .dual-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .btn-row { grid-template-columns: 96px 1fr; }
+
+            .hero-empty { padding-top: 68px; }
+
+            .result-scroll-box { height: 62vh; }
+
+            .result-summary {
+                grid-template-columns: 62px 1fr 30px;
+                gap: 10px;
+                padding: 14px 12px;
+            }
+
+            .model-pill {
+                min-width: 54px;
+                height: 30px;
+                padding: 0 10px;
+                font-size: 0.9rem;
+            }
+
+            .summary-grid { gap: 8px; }
+            .summary-label { font-size: 0.72rem; }
+            .summary-value { font-size: 0.98rem; }
+
+            .detail-grid { grid-template-columns: 1fr 1fr; }
+
+            .detail-item {
+                padding-top: 11px;
+                padding-bottom: 11px;
+            }
+
+            .detail-label { font-size: 0.86rem; }
+            .detail-value { font-size: 0.92rem; }
+
+            .detail-actions {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 6px;
+            }
+
+            .detail-file-btn {
+                height: 34px;
+                padding: 0 4px;
+                font-size: 0.74rem;
+                gap: 4px;
+            }
+
+            .detail-file-btn i { font-size: 0.74rem; }
+
+            .bottom-caption { font-size: 0.72rem; }
+
+            .bottom-home {
+                height: 40px;
+                padding: 0 14px;
+                font-size: 0.96rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .dual-row { grid-template-columns: 1fr; }
+            .btn-row { grid-template-columns: 1fr; }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .result-summary {
+                grid-template-columns: 1fr auto;
+                grid-template-areas:
+                    "pill toggle"
+                    "info info";
+                align-items: start;
+            }
+
+            .model-pill {
+                grid-area: pill;
+                width: fit-content;
+            }
+
+            .summary-grid { grid-area: info; }
+            .toggle-btn { grid-area: toggle; }
+
+            .detail-grid { grid-template-columns: 1fr; }
+
+            .detail-item:nth-child(odd),
+            .detail-item:nth-child(even) {
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .detail-actions {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 5px;
+            }
+
+            .detail-file-btn {
+                height: 32px;
+                padding: 0 2px;
+                font-size: 0.68rem;
+                gap: 3px;
+                letter-spacing: -0.02em;
+            }
+
+            .detail-file-btn i { font-size: 0.68rem; }
+        }
+
+
+        .code-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.62);
+            z-index: 300;
+        }
+
+        .code-modal.active { display: flex; }
+
+        .code-modal-card {
+            width: 100%;
+            max-width: 380px;
+            border-radius: 20px;
+            background: linear-gradient(180deg, rgba(14,18,42,0.98), rgba(12,16,37,0.96));
+            border: 1px solid rgba(116, 131, 255, 0.22);
+            box-shadow: 0 20px 48px rgba(0,0,0,0.34);
+            padding: 18px;
+        }
+
+        .code-modal-title {
+            font-size: 1.02rem;
+            font-weight: 900;
+            margin-bottom: 8px;
+            color: #eef1ff;
+        }
+
+        .code-modal-desc {
+            font-size: 0.88rem;
+            color: var(--text-sub);
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+
+        .code-modal-input {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .code-modal-error {
+            min-height: 20px;
+            font-size: 0.82rem;
+            color: #ff9b9b;
+            margin-bottom: 10px;
+        }
+
+        .code-modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="header">
+            <div class="menu-btn" onclick="toggleMenu()" aria-label="메뉴 열기">
+                <i class="fas fa-bars"></i>
+            </div>
+
+            <div class="brand-wrap">
+                <div class="brand-icon">
+                    <i class="fas fa-gear"></i>
+                </div>
+                <div class="brand-text">
+                    <div class="brand-title">스프라켓 검색</div>
+                    <div class="brand-sub">SPROCKET DATABASE</div>
+                </div>
+            </div>
+
+            <div id="usageBadge" class="usage-badge">--/--</div>
+        </header>
+
+        <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+        <aside class="side-menu" id="sideMenu">
+            <div class="close-btn" onclick="toggleMenu()">
+                <i class="fas fa-times"></i>
+            </div>
+            <ul>
+                <li onclick="goToChainMode()">체인 검색 모드로 이동</li>
+                <li onclick="resetSearchLimit()">스프라켓 검색 횟수 제한 해제</li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <section class="search-panel">
+                <div class="panel-title">검색 조건</div>
+
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="searchModel">형번 (MODEL)</label>
+                        <div class="field-wrap">
+                            <select id="searchModel">
+                                <option value="">전체 형번</option>
+                            </select>
+                            <span class="select-arrow">
+                                <i class="fas fa-chevron-down"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="dual-row">
+                        <div class="input-group">
+                            <label for="searchNt">잇수 (NT)</label>
+                            <input type="number" id="searchNt" placeholder="예 : 10">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="searchOd">외경 (OD)</label>
+                            <input type="number" id="searchOd" placeholder="예 : 24">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="searchPcd">피치원 지름 (PCD)</label>
+                        <input type="text" id="searchPcd" placeholder="예 : 20.55">
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="reset-btn" onclick="clearFields()">
+                            <i class="fas fa-rotate-left"></i>
+                            초기화
+                        </button>
+                        <button class="search-btn" onclick="performSearch()">
+                            <i class="fas fa-magnifying-glass"></i>
+                            검색하기
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="resultArea" class="result-area"></section>
+
+            <section id="defaultState" class="hero-empty" aria-hidden="false">
+                <div class="hero-empty-icon">
+                    <i class="fas fa-gear"></i>
+                </div>
+                <div class="hero-empty-text">조건을 입력하고 검색하세요</div>
+                <div class="hero-empty-sub">총 <strong id="totalDataCount">0</strong>개의 스프라켓 데이터</div>
+                <div id="modelChipList" class="model-chip-list"></div>
+            </section>
+        </main>
+
+        <div class="bottom-bar">
+            <div class="bottom-left">
+                <div class="bottom-caption">SPEED &amp; SIMPLE DATA SEARCH</div>
+            </div>
+            <a href="./index.html" class="bottom-home">CBN / CS HOME</a>
+        </div>
+    </div>
+
+    <script>
+        const MAX_DAILY_SEARCH = 10;
+        const SEARCH_COUNT_KEY = 'sprocket_search_count';
+        const SEARCH_DATE_KEY = 'sprocket_search_date';
+
+        /* [복구] 형번 선택 목록용 데이터 */
+        const MODEL_OPTIONS = [
+            { value: '#25',  label: '#25',  pathKey: '25'  },
+            { value: '#35',  label: '#35',  pathKey: '35'  },
+            { value: '#40',  label: '#40',  pathKey: '40'  },
+            { value: '#50',  label: '#50',  pathKey: '50'  },
+            { value: '#60',  label: '#60',  pathKey: '60'  },
+            { value: '#80',  label: '#80',  pathKey: '80'  },
+            { value: '#100', label: '#100', pathKey: '100' },
+            { value: '#120', label: '#120', pathKey: '120' },
+            { value: '#140', label: '#140', pathKey: '140' },
+            { value: '#160', label: '#160', pathKey: '160' },
+            { value: '#180', label: '#180', pathKey: '180' },
+            { value: '#200', label: '#200', pathKey: '200' },
+            { value: '#240', label: '#240', pathKey: '240' }
+        ];
+
+        const MODEL_PATH_KEY_MAP = MODEL_OPTIONS.reduce((acc, item) => {
+            acc[item.value] = item.pathKey;
+            return acc;
+        }, {});
+
+        const MODEL_DATA_PATHS = {
+            '#25':  './data/sprocket/25/data_25.js',
+            '#35':  './data/sprocket/35/data_35.js',
+            '#40':  './data/sprocket/40/data_40.js',
+            '#50':  './data/sprocket/50/data_50.js',
+            '#60':  './data/sprocket/60/data_60.js',
+            '#80':  './data/sprocket/80/data_80.js',
+            '#100': './data/sprocket/100/data_100.js',
+            '#120': './data/sprocket/120/data_120.js',
+            '#140': './data/sprocket/140/data_140.js',
+            '#160': './data/sprocket/160/data_160.js',
+            '#180': './data/sprocket/180/data_180.js',
+            '#200': './data/sprocket/200/data_200.js',
+            '#240': './data/sprocket/240/data_240.js'
+        };
+
+        const loadedModels = new Set();
+        const RESULT_PAGE_SIZE = 5;
+        let currentSearchResults = [];
+
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function goToChainMode() {
+            window.location.href = './chain.html';
+        }
+
+        function getTodayString() {
+            return new Date().toLocaleDateString('ko-KR');
+        }
+
+        function getSearchCount() {
+            const today = getTodayString();
+            const savedDate = localStorage.getItem(SEARCH_DATE_KEY);
+
+            if (savedDate !== today) {
+                localStorage.setItem(SEARCH_DATE_KEY, today);
+                localStorage.setItem(SEARCH_COUNT_KEY, '0');
+                return 0;
+            }
+
+            return parseInt(localStorage.getItem(SEARCH_COUNT_KEY) || '0', 10);
+        }
+
+        function setSearchCount(count) {
+            localStorage.setItem(SEARCH_DATE_KEY, getTodayString());
+            localStorage.setItem(SEARCH_COUNT_KEY, String(count));
+        }
+
+        function updateUsageUI() {
+            const count = getSearchCount();
+            const remaining = Math.max(0, MAX_DAILY_SEARCH - count);
+            const badge = document.getElementById('usageBadge');
+            if (badge) badge.textContent = `${remaining}/${MAX_DAILY_SEARCH}`;
+            return remaining;
+        }
+
+        function checkSearchLimit() {
+            const count = getSearchCount();
+            updateUsageUI();
+            return count < MAX_DAILY_SEARCH;
+        }
+
+        /* [핵심] 형번 select 목록 생성 */
+        function populateModelSelect() {
+            const select = document.getElementById('searchModel');
+            if (!select) return;
+
+            select.innerHTML = '<option value="">전체 형번</option>';
+
+            MODEL_OPTIONS.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.value;
+                opt.textContent = item.label;
+                select.appendChild(opt);
+            });
+
+            renderModelChips(MODEL_OPTIONS);
+        }
+
+        function renderModelChips(modelOptions) {
+            const chipList = document.getElementById('modelChipList');
+            if (!chipList) return;
+
+            chipList.innerHTML = '';
+
+            modelOptions.forEach(item => {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'model-chip';
+                chip.textContent = item.label;
+                chip.onclick = async function () {
+                    document.getElementById('searchModel').value = item.value;
+                    await performSearch();
+                };
+                chipList.appendChild(chip);
+            });
+        }
+
+        function updateTotalCount() {
+            const totalCountEl = document.getElementById('totalDataCount');
+            if (totalCountEl) {
+                totalCountEl.textContent = Array.isArray(allSprocketData) ? allSprocketData.length : 0;
+            }
+        }
+
+        function showDefaultState(show) {
+            const defaultState = document.getElementById('defaultState');
+            if (!defaultState) return;
+            defaultState.style.display = show ? 'block' : 'none';
+            defaultState.setAttribute('aria-hidden', show ? 'false' : 'true');
+        }
+
+        function loadModelScript(modelValue) {
+            return new Promise((resolve, reject) => {
+                if (!modelValue) {
+                    resolve();
+                    return;
+                }
+
+                if (loadedModels.has(modelValue)) {
+                    resolve();
+                    return;
+                }
+
+                const scriptPath = MODEL_DATA_PATHS[modelValue];
+
+                if (!scriptPath) {
+                    reject(new Error(`데이터 경로가 정의되지 않았습니다: ${modelValue}`));
+                    return;
+                }
+
+                const script = document.createElement('script');
+                script.src = scriptPath;
+                script.async = true;
+
+                script.onload = function () {
+                    loadedModels.add(modelValue);
+                    updateTotalCount();
+                    resolve();
+                };
+
+                script.onerror = function () {
+                    reject(new Error(`데이터 파일을 불러올 수 없습니다: ${scriptPath}`));
+                };
+
+                document.head.appendChild(script);
+            });
+        }
+
+        async function loadAllModelScripts() {
+            const modelValues = MODEL_OPTIONS.map(item => item.value);
+            for (const modelValue of modelValues) {
+                if (!loadedModels.has(modelValue)) {
+                    await loadModelScript(modelValue);
+                }
+            }
+        }
+
+        function showLoadingMessage(message) {
+            const area = document.getElementById('resultArea');
+            area.innerHTML = `<div class="loading-message">${message}</div>`;
+        }
+
+        async function performSearch() {
+            if (!checkSearchLimit()) {
+                const area = document.getElementById('resultArea');
+                area.innerHTML = `<div class="limit-message">스프라켓 검색의 일일 횟수를 초과했습니다.</div>`;
+                showDefaultState(false);
+                return;
+            }
+
+            const model = document.getElementById('searchModel').value.trim();
+            const nt = document.getElementById('searchNt').value.trim();
+            const od = document.getElementById('searchOd').value.trim();
+            const pcd = document.getElementById('searchPcd').value.trim();
+
+            try {
+                if (model) {
+                    showLoadingMessage(`${model} 데이터 불러오는 중...`);
+                    await loadModelScript(model);
+                } else {
+                    showLoadingMessage('전체 형번 데이터 불러오는 중...');
+                    await loadAllModelScripts();
+                }
+            } catch (error) {
+                const area = document.getElementById('resultArea');
+                area.innerHTML = `<div class="empty-result">데이터 로드 실패: ${error.message}</div>`;
+                showDefaultState(false);
+                return;
+            }
+
+            let results = allSprocketData;
+
+            if (model) {
+                results = results.filter(d => d.model === model);
+            }
+            if (nt) {
+                results = results.filter(d => String(d.nt) == nt);
+            }
+            if (od) {
+                results = results.filter(d => String(d.od) == od);
+            }
+            if (pcd) {
+                results = results.filter(d => String(d.pitchCircle || d.pcd || '').includes(pcd));
+            }
+
+            currentSearchResults = results;
+            renderSearchResults();
+
+            const currentCount = getSearchCount();
+            setSearchCount(currentCount + 1);
+            updateUsageUI();
+            showDefaultState(false);
+        }
+
+        function getPathKeyFromModel(modelValue) {
+            return MODEL_PATH_KEY_MAP[modelValue] || String(modelValue).replace('#', '');
+        }
+
+        /* [핵심 수정]
+           실제 파일명 규칙 반영
+           PDF: 25-10nt.pdf
+           DWG: 25-10nt.dwg
+           미리보기: 25-10nt.jpg / 25-10nt.png
+        */
+        function getFilePaths(item) {
+            const pathKey = getPathKeyFromModel(item.model);   // "#25" -> "25"
+            const ntValue = `${item.nt}nt`;                    // "10nt"
+            const baseName = `${pathKey}-${ntValue}`;          // "25-10nt"
+
+            return {
+                pdf: `./download/pdf/${pathKey}/${baseName}.pdf`,
+                dwg: `./download/dwg/${pathKey}/${baseName}.dwg`,
+                previewJpg: `./download/img/${pathKey}/${baseName}.jpg`,
+                previewPng: `./download/img/${pathKey}/${baseName}.png`
+            };
+        }
+
+        function toggleResultCard(buttonEl) {
+            const card = buttonEl.closest('.result-card-item');
+            if (!card) return;
+            card.classList.toggle('open');
+        }
+
+        function openPreview(jpgPath, pngPath) {
+            const testImg = new Image();
+
+            testImg.onload = function () {
+                window.open(jpgPath, '_blank');
+            };
+
+            testImg.onerror = function () {
+                const fallbackImg = new Image();
+
+                fallbackImg.onload = function () {
+                    window.open(pngPath, '_blank');
+                };
+
+                fallbackImg.onerror = function () {
+                    alert('미리보기 파일(jpg/png)을 찾을 수 없습니다.');
+                };
+
+                fallbackImg.src = pngPath;
+            };
+
+            testImg.src = jpgPath;
+        }
+
+        function createResultCardHtml(item) {
+            const filePaths = getFilePaths(item);
+
+            return `
+                <div class="result-card-item">
+                    <div class="result-summary">
+                        <div class="model-pill">${item.model || ''}</div>
+
+                        <div class="summary-grid">
+                            <div class="summary-col">
+                                <div class="summary-label">잇수</div>
+                                <div class="summary-value">${item.nt != null ? item.nt + 'T' : ''}</div>
+                            </div>
+                            <div class="summary-col">
+                                <div class="summary-label">외경</div>
+                                <div class="summary-value">${item.od != null ? item.od : ''}<span class="summary-unit">mm</span></div>
+                            </div>
+                            <div class="summary-col">
+                                <div class="summary-label">PCD</div>
+                                <div class="summary-value">${item.pitchCircle ?? item.pcd ?? ''}</div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="toggle-btn" onclick="toggleResultCard(this)" aria-label="상세 열기/닫기">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+
+                    <div class="result-detail">
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">PCD (피치원)</div>
+                                <div class="detail-value">${item.pitchCircle ?? item.pcd ?? ''}<span class="summary-unit">mm</span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">보스 길이</div>
+                                <div class="detail-value">${item.bossLength ?? ''}<span class="summary-unit">mm</span></div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">루트원 지름</div>
+                                <div class="detail-value">${item.rootCircle ?? ''}<span class="summary-unit">mm</span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">드릴 구멍</div>
+                                <div class="detail-value">${item.drill ?? ''}<span class="summary-unit">mm</span></div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">보스 지름</div>
+                                <div class="detail-value">${item.bossDiameter ?? ''}<span class="summary-unit">mm</span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">외경 (OD)</div>
+                                <div class="detail-value">${item.od ?? ''}<span class="summary-unit">mm</span></div>
+                            </div>
+                        </div>
+
+                        <div class="detail-actions">
+                            <a href="${filePaths.pdf}" class="detail-file-btn pdf" target="_blank">
+                                <i class="far fa-file-alt"></i> PDF 도면
+                            </a>
+
+                            <button type="button"
+                                    class="detail-file-btn dwg"
+                                    onclick="openDwgCodeModal('${filePaths.dwg}')">
+                                <i class="fas fa-wrench"></i> DWG 파일
+                            </button>
+
+                            <a href="javascript:void(0)"
+                               class="detail-file-btn dxf"
+                               onclick="openPreview('${filePaths.previewJpg}', '${filePaths.previewPng}')">
+                                <i class="fas fa-eye"></i> 미리보기
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function chunkResults(results, size) {
+            const pages = [];
+            for (let i = 0; i < results.length; i += size) {
+                pages.push(results.slice(i, i + size));
+            }
+            return pages;
+        }
+
+        function createResultWrapperHtml(totalCount, totalPages) {
+            return `
+                <div class="result-list-wrap">
+                    <div class="result-title-row">
+                        <div class="result-title-left">검색 결과</div>
+                        <div class="result-count-badge">${totalCount}건</div>
+                    </div>
+
+                    <div class="result-guide">
+                        아래 결과 영역만 스크롤됩니다. 한 화면에 5개씩 표시되며, 아래로 넘기면 다음 5개가 보입니다.
+                    </div>
+
+                    <div class="result-progress" id="resultProgress">
+                        1 / ${totalPages} 페이지
+                    </div>
+
+                    <div class="result-scroll-box" id="resultScrollBox">
+                        <div class="result-pages-container" id="resultPagesContainer"></div>
+                    </div>
+
+                    <div class="page-status" id="pageStatus">
+                        총 ${totalPages}페이지
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSearchResults() {
+            const area = document.getElementById('resultArea');
+
+            if (!currentSearchResults || currentSearchResults.length === 0) {
+                area.innerHTML = `<div class="empty-result">검색 결과가 없습니다.</div>`;
+                return;
+            }
+
+            const pages = chunkResults(currentSearchResults, RESULT_PAGE_SIZE);
+            area.innerHTML = createResultWrapperHtml(currentSearchResults.length, pages.length);
+
+            const pagesContainer = document.getElementById('resultPagesContainer');
+            pagesContainer.innerHTML = pages.map(pageItems => {
+                return `
+                    <div class="result-page">
+                        ${pageItems.map(item => createResultCardHtml(item)).join('')}
+                    </div>
+                `;
+            }).join('');
+
+            const resultScrollBox = document.getElementById('resultScrollBox');
+            resultScrollBox.scrollTop = 0;
+
+            resultScrollBox.removeEventListener('scroll', updatePageIndicatorFromScroll);
+            resultScrollBox.addEventListener('scroll', updatePageIndicatorFromScroll);
+
+            updatePageIndicator(1, pages.length);
+        }
+
+        function updatePageIndicatorFromScroll() {
+            const resultScrollBox = document.getElementById('resultScrollBox');
+            if (!resultScrollBox) return;
+
+            const pageHeight = resultScrollBox.clientHeight;
+            const currentPage = Math.round(resultScrollBox.scrollTop / pageHeight) + 1;
+            const totalPages = Math.max(1, Math.ceil(currentSearchResults.length / RESULT_PAGE_SIZE));
+            updatePageIndicator(currentPage, totalPages);
+        }
+
+        function updatePageIndicator(currentPage, totalPages) {
+            const progressEl = document.getElementById('resultProgress');
+            const statusEl = document.getElementById('pageStatus');
+
+            if (progressEl) {
+                progressEl.textContent = `${currentPage} / ${totalPages} 페이지`;
+            }
+
+            if (statusEl) {
+                statusEl.textContent = `현재 ${currentPage}페이지 · 총 ${totalPages}페이지`;
+            }
+        }
+
+        function clearFields() {
+            document.getElementById('searchModel').value = '';
+            document.getElementById('searchNt').value = '';
+            document.getElementById('searchOd').value = '';
+            document.getElementById('searchPcd').value = '';
+            document.getElementById('resultArea').innerHTML = '';
+            currentSearchResults = [];
+            showDefaultState(true);
+        }
+
+        function resetSearchLimit() {
+            setSearchCount(0);
+            updateUsageUI();
+            toggleMenu();
+        }
+
+        let pendingDwgFilePath = '';
+
+        function openDwgCodeModal(filePath) {
+            pendingDwgFilePath = filePath || '';
+            const modal = document.getElementById('dwgCodeModal');
+            const input = document.getElementById('dwgCodeInput');
+            const error = document.getElementById('dwgCodeError');
+
+            if (error) error.textContent = '';
+            if (input) input.value = '';
+            if (modal) {
+                modal.classList.add('active');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+
+            setTimeout(() => {
+                if (input) input.focus();
+            }, 30);
+        }
+
+        function closeDwgCodeModal() {
+            pendingDwgFilePath = '';
+            const modal = document.getElementById('dwgCodeModal');
+            const error = document.getElementById('dwgCodeError');
+            const input = document.getElementById('dwgCodeInput');
+
+            if (modal) {
+                modal.classList.remove('active');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+            if (error) error.textContent = '';
+            if (input) input.value = '';
+        }
+
+        async function submitDwgCode() {
+            const input = document.getElementById('dwgCodeInput');
+            const error = document.getElementById('dwgCodeError');
+            const code = input ? input.value.trim() : '';
+
+            if (!pendingDwgFilePath) {
+                if (error) error.textContent = '다운로드 대상 파일 경로가 없습니다.';
+                return;
+            }
+
+            if (!code) {
+                if (error) error.textContent = '인증코드를 입력해주세요.';
+                if (input) input.focus();
+                return;
+            }
+
+            try {
+                if (error) error.textContent = '인증 중입니다...';
+                                                                         
+                const response = await fetch('/api/dwg-download', {  /* 이 주소는 서버 쪽 다운로드 검사 창구입니다.*/
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        code,
+                        filePath: pendingDwgFilePath
+                    })
+                });
+
+                if (!response.ok) {
+                    let message = '인증에 실패했습니다.';
+
+                    try {
+                        const data = await response.json();
+                        if (data && data.message) message = data.message;
+                    } catch (_) {}
+
+                    throw new Error(message);
+                }
+
+                const blob = await response.blob();
+                const fileName = pendingDwgFilePath.split('/').pop() || 'download.dwg';
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+                closeDwgCodeModal();
+            } catch (err) {
+                if (error) error.textContent = err.message || '다운로드 처리 중 오류가 발생했습니다.';
+            }
+        }
+
+        document.addEventListener('keydown', function (event) {
+            const modal = document.getElementById('dwgCodeModal');
+            if (!modal || !modal.classList.contains('active')) return;
+
+            if (event.key === 'Escape') {
+                closeDwgCodeModal();
+            }
+
+            if (event.key === 'Enter') {
+                submitDwgCode();
+            }
+        });
+
+        /* [핵심] 페이지 로드시 형번 목록 채움 */
+        window.onload = function() {
+            populateModelSelect();
+            updateTotalCount();
+            updateUsageUI();
+            showDefaultState(true);
+        };
+    </script>
+</body>
+</html>
