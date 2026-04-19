@@ -1731,10 +1731,6 @@
             }
         }
 
-        // 팝업 바깥 클릭 시 닫기
-        document.getElementById('authModalBackdrop').addEventListener('click', function(e) {
-            if (e.target === this) closeAuthModal();
-        });
         /* ===== /DWG 인증 로직 ===== */
 
         /* [핵심] 페이지 로드시 형번 목록 채움 */
@@ -1743,6 +1739,11 @@
             updateTotalCount();
             updateUsageUI();
             showDefaultState(true);
+
+            // 팝업 바깥 클릭 시 닫기 (DOM 로드 완료 후 등록)
+            document.getElementById('authModalBackdrop').addEventListener('click', function(e) {
+                if (e.target === this) closeAuthModal();
+            });
         };
     </script>
 </body>
