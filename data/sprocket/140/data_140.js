@@ -77,17 +77,8 @@ const RS140_DATA = [
     { model: "#140", nt: 77, od: 1115, pitchCircle: 1089.82, rootCircle: 1063.89, bossDiameter: 180, bossLength: 90 },
     { model: "#140", nt: 78, od: 1129, pitchCircle: 1103.98, rootCircle: 1078.05, bossDiameter: 180, bossLength: 90 },
     { model: "#140", nt: 79, od: 1143, pitchCircle: 1118.15, rootCircle: 1092.22, bossDiameter: 180, bossLength: 90 },
-    { model: "#140", nt: 80, od: 1157, pitchCircle: 1132.32, rootCircle: 1106.39, bossDiameter: 180, bossLength: 90 },
-    { model: "#140", nt: 81, od: 1171, pitchCircle: 1146.48, rootCircle: 1120.55, bossDiameter: 180, bossLength: 90 },
-    { model: "#140", nt: 82, od: 1185, pitchCircle: 1160.65, rootCircle: 1134.72, bossDiameter: 180, bossLength: 90 },
-    { model: "#140", nt: 83, od: 1199, pitchCircle: 1174.82, rootCircle: 1148.89, bossDiameter: 180, bossLength: 90 },
-    { model: "#140", nt: 84, od: 1214, pitchCircle: 1188.98, rootCircle: 1163.05, bossDiameter: 180, bossLength: 90 },
-    { model: "#140", nt: 85, od: 1228, pitchCircle: 1203.15, rootCircle: 1177.22, bossDiameter: 180, bossLength: 90 },
-    { model: "#140", nt: 86, od: 1242, pitchCircle: 1217.32, rootCircle: 1191.39, bossDiameter: 180, bossLength: 90 },
-    { model: "#140", nt: 87, od: 1256, pitchCircle: 1231.48, rootCircle: 1205.55, bossDiameter: 180, bossLength: 90 },
-    { model: "#140", nt: 88, od: 1270, pitchCircle: 1245.65, rootCircle: 1219.72, bossDiameter: 180, bossLength: 90 },
-    { model: "#140", nt: 89, od: 1284, pitchCircle: 1259.82, rootCircle: 1233.89, bossDiameter: 180, bossLength: 90 },
-    { model: "#140", nt: 90, od: 1298, pitchCircle: 1273.99, rootCircle: 1248.06, bossDiameter: 180, bossLength: 90 }
+    { model: "#140", nt: 80, od: 1157, pitchCircle: 1132.32, rootCircle: 1106.39, bossDiameter: 180, bossLength: 90 }
+
 ];
 
 // 변환된 데이터를 전체 배열에 추가

@@ -81,16 +81,8 @@ const RS35_DATA = [
     { model: "#35", nt: 78, od: 242, pitchCircle: 236.55, rootCircle: 231.47, bossDiameter: 110, bossLength: 40, drill: 9.5 },
     { model: "#35", nt: 79, od: 245, pitchCircle: 239.58, rootCircle: 234.5, bossDiameter: 110, bossLength: 40, drill: 9.5 },
     { model: "#35", nt: 80, od: 248, pitchCircle: 242.61, rootCircle: 237.53, bossDiameter: 110, bossLength: 40, drill: 9.5 },
-    { model: "#35", nt: 81, od: 251, pitchCircle: 245.65, rootCircle: 240.57, bossDiameter: 110, bossLength: 40, drill: 9.5 },
-    { model: "#35", nt: 82, od: 254, pitchCircle: 248.68, rootCircle: 243.6, bossDiameter: 110, bossLength: 40, drill: 9.5 },
-    { model: "#35", nt: 83, od: 257, pitchCircle: 251.71, rootCircle: 246.63, bossDiameter: 110, bossLength: 40, drill: 9.5 },
-    { model: "#35", nt: 84, od: 260, pitchCircle: 254.74, rootCircle: 249.66, bossDiameter: 110, bossLength: 40, drill: 9.5 },
-    { model: "#35", nt: 85, od: 263, pitchCircle: 257.77, rootCircle: 252.69, bossDiameter: 110, bossLength: 40, drill: 9.5 },
-    { model: "#35", nt: 86, od: 266, pitchCircle: 260.8, rootCircle: 255.72, bossDiameter: 110, bossLength: 40, drill: 9.5 },
-    { model: "#35", nt: 87, od: 269, pitchCircle: 263.83, rootCircle: 258.75, bossDiameter: 110, bossLength: 40, drill: 9.5 },
-    { model: "#35", nt: 88, od: 272, pitchCircle: 266.86, rootCircle: 261.78, bossDiameter: 110, bossLength: 40, drill: 9.5 },
-    { model: "#35", nt: 89, od: 275, pitchCircle: 269.9, rootCircle: 264.82, bossDiameter: 110, bossLength: 40, drill: 9.5 },
-    { model: "#35", nt: 90, od: 278, pitchCircle: 272.93, rootCircle: 267.85, bossDiameter: 110, bossLength: 40, drill: 9.5 }
+    { model: "#35", nt: 81, od: 251, pitchCircle: 245.65, rootCircle: 240.57, bossDiameter: 110, bossLength: 40, drill: 9.5 }
+
 ];
 
 // [유지] 변환된 데이터를 전체 배열에 추가

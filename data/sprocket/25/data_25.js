@@ -75,16 +75,8 @@ const rawSprocketData = [
     { model: "#25", nt: 77, od: 159, pitchCircle: 155.68, rootCircle: 152.38, bossDiameter: 50, bossLength: 30, drill: 9.5 },
     { model: "#25", nt: 78, od: 161, pitchCircle: 157.7, rootCircle: 154.4, bossDiameter: 50, bossLength: 90, drill: 9.5 },
     { model: "#25", nt: 79, od: 163, pitchCircle: 159.72, rootCircle: 156.42, bossDiameter: 50, bossLength: 30, drill: 9.5 },
-    { model: "#25", nt: 80, od: 165, pitchCircle: 161.74, rootCircle: 158.44, bossDiameter: 50, bossLength: 30, drill: 9.5 },
-    { model: "#25", nt: 81, od: 167, pitchCircle: 165.78, rootCircle: 160.46, bossDiameter: 50, bossLength: 30, drill: 9.5 },
-    { model: "#25", nt: 82, od: 169, pitchCircle: 163.76, rootCircle: 162.48, bossDiameter: 50, bossLength: 30, drill: 9.5 },
-    { model: "#25", nt: 83, od: 171, pitchCircle: 167.81, rootCircle: 164.51, bossDiameter: 50, bossLength: 30, drill: 9.5 },
-    { model: "#25", nt: 84, od: 174, pitchCircle: 169.83, rootCircle: 166.53, bossDiameter: 50, bossLength: 30, drill: 9.5 },
-    { model: "#25", nt: 85, od: 176, pitchCircle: 171.85, rootCircle: 168.55, bossDiameter: 50, bossLength: 30, drill: 9.5 },
-    { model: "#25", nt: 86, od: 178, pitchCircle: 173.87, rootCircle: 170.57, bossDiameter: 50, bossLength: 30, drill: 9.5 },
-    { model: "#25", nt: 87, od: 180, pitchCircle: 175.89, rootCircle: 172.59, bossDiameter: 50, bossLength: 30, drill: 9.5 },
-    { model: "#25", nt: 88, od: 182, pitchCircle: 177.91, rootCircle: 174.61, bossDiameter: 50, bossLength: 30, drill: 9.5 },
-    { model: "#25", nt: 90, od: 186, pitchCircle: 181.95, rootCircle: 178.65, bossDiameter: 50, bossLength: 30, drill: 9.5 }
+    { model: "#25", nt: 80, od: 165, pitchCircle: 161.74, rootCircle: 158.44, bossDiameter: 50, bossLength: 30, drill: 9.5 }
+
 ];
 
 /**

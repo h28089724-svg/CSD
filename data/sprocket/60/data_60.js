@@ -83,16 +83,8 @@ const RS60_DATA = [
     { model: "#60", nt: 78, od: 484, pitchCircle: 473.1, rootCircle: 461.19, bossDiameter: 137, bossLength: 55, drill: 18.0 },
     { model: "#60", nt: 79, od: 490, pitchCircle: 479.17, rootCircle: 467.26, bossDiameter: 137, bossLength: 55, drill: 18.0 },
     { model: "#60", nt: 80, od: 496, pitchCircle: 485.23, rootCircle: 473.32, bossDiameter: 137, bossLength: 55, drill: 18.0 },
-    { model: "#60", nt: 81, od: 502, pitchCircle: 491.29, rootCircle: 479.38, bossDiameter: 137, bossLength: 55, drill: 18.0 },
-    { model: "#60", nt: 82, od: 508, pitchCircle: 497.35, rootCircle: 485.44, bossDiameter: 137, bossLength: 55, drill: 18.0 },
-    { model: "#60", nt: 83, od: 514, pitchCircle: 503.42, rootCircle: 491.51, bossDiameter: 137, bossLength: 55, drill: 18.0 },
-    { model: "#60", nt: 84, od: 521, pitchCircle: 509.48, rootCircle: 497.57, bossDiameter: 137, bossLength: 55, drill: 18.0 },
-    { model: "#60", nt: 85, od: 527, pitchCircle: 515.54, rootCircle: 503.63, bossDiameter: 137, bossLength: 55, drill: 18.0 },
-    { model: "#60", nt: 86, od: 533, pitchCircle: 521.6, rootCircle: 509.69, bossDiameter: 137, bossLength: 55, drill: 18.0 },
-    { model: "#60", nt: 87, od: 539, pitchCircle: 527.67, rootCircle: 515.76, bossDiameter: 137, bossLength: 55, drill: 18.0 },
-    { model: "#60", nt: 88, od: 545, pitchCircle: 533.73, rootCircle: 521.82, bossDiameter: 137, bossLength: 55, drill: 18.0 },
-    { model: "#60", nt: 89, od: 551, pitchCircle: 539.79, rootCircle: 527.88, bossDiameter: 137, bossLength: 55, drill: 18.0 },
-    { model: "#60", nt: 90, od: 557, pitchCircle: 545.85, rootCircle: 533.94, bossDiameter: 137, bossLength: 55, drill: 18.0 }
+    { model: "#60", nt: 81, od: 502, pitchCircle: 491.29, rootCircle: 479.38, bossDiameter: 137, bossLength: 55, drill: 18.0 }
+
 ];
 
 // [유지] 변환된 데이터를 전체 배열에 추가

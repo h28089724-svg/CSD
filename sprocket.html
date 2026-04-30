@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+    
 <head>
     <meta charset="UTF-8">
 
@@ -10,7 +11,7 @@
 
     <!-- [유지] PWA 관련 설정 -->
     <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#171b3a">
+    <meta name="theme-color" content="#b596d3">
 
     <!-- [유지] 아이콘용 폰트 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -29,39 +30,50 @@
 
     <style>
         :root {
-            --accent-main: #676cf0;
-            --accent-strong: #7d81ff;
-            --accent-glow: rgba(103, 108, 240, 0.30);
-            --accent-soft: rgba(103, 108, 240, 0.16);
-            --accent-border: rgba(125, 129, 255, 0.26);
+            /* [디자인 가이드] 메인 강조 색상 (버튼, 아이콘 등) */
+            --accent-main: #b596d3; /* 메인 연보라 */
+            --accent-strong: #c8b1e1; /* 호버 시 더 밝은 연보라 */
+            --accent-glow: rgba(181, 150, 211, 0.30); /* 강조 요소의 은은한 빛 효과 */
+            --accent-soft: rgba(181, 150, 211, 0.16); /* 아주 연한 강조 배경 */
+            --accent-border: rgba(181, 150, 211, 0.26); /* 강조 요소의 테두리 */
 
-            --bg-top: #0f1330;
-            --bg-bottom: #181d3d;
-            --bg-grid: rgba(97, 110, 205, 0.08);
+            /* [디자인 가이드] 전체 배경색 (상단에서 하단으로 흐르는 그라데이션) */
+            --bg-top: #f8f6fb; /* 최상단 배경 (가장 밝음) */
+            --bg-bottom: #ece6f4; /* 최하단 배경 (약간 톤다운) */
+            --bg-grid: rgba(181, 150, 211, 0.12); /* 배경에 깔린 격자 무늬 색상 */
 
-            --panel-bg: rgba(14, 18, 42, 0.88);
-            --panel-border: rgba(116, 131, 255, 0.20);
+            /* [디자인 가이드] 검색 패널(중앙 박스) 스타일 */
+            --panel-bg: rgba(237, 231, 244, 0.92); /* 패널 배경 (배경색과 미세한 차이) */
+            --panel-border: rgba(179, 152, 205, 0.40); /* 패널 테두리 선 색상 */
 
-            --input-bg: rgba(6, 10, 29, 0.88);
-            --input-border: rgba(115, 130, 255, 0.20);
-            --input-focus: rgba(115, 130, 255, 0.42);
+            /* [디자인 가이드] 입력창(Input/Select) 스타일 */
+            --input-bg: rgba(255, 255, 255, 0.98); /* 입력창 내부 배경 (가독성을 위해 밝게 유지) */
+            --input-border: rgba(181, 150, 211, 0.30); /* 입력창 테두리 선 색상 */
+            --input-focus: rgba(181, 150, 211, 0.50); /* 클릭 시 강조되는 테두리 색상 */
 
-            --text-main: #f4f6ff;
-            --text-sub: rgba(220, 227, 255, 0.70);
-            --text-dim: rgba(194, 203, 243, 0.52);
-            --placeholder: rgba(176, 187, 231, 0.58);
+            /* [디자인 가이드] 텍스트 색상 */
+            --text-main: #332d3a; /* 기본 글자색 (진한 회보라) */
+            --text-sub: rgba(51, 45, 58, 0.75); /* 보조 글자색 (약간 흐림) */
+            --text-dim: rgba(51, 45, 58, 0.55); /* 아주 흐린 글자색 */
+            --placeholder: rgba(181, 150, 211, 0.60); /* 입력창 안내 문구 색상 */
 
-            --btn-main-bg: linear-gradient(135deg, #5f63d8 0%, #7479ff 100%);
-            --btn-main-shadow: 0 10px 26px rgba(103, 108, 240, 0.34);
-            --btn-sub-bg: rgba(255, 255, 255, 0.04);
+            /* [디자인 가이드] 버튼 스타일 */
+            --btn-main-bg: linear-gradient(135deg, #b596d3 0%, #d1bce8 100%); /* 메인 버튼 그라데이션 */
+            --btn-main-shadow: 0 10px 26px rgba(181, 150, 211, 0.30); /* 버튼 하단 그림자 */
+            --btn-sub-bg: rgba(255, 255, 255, 0.04); /* 보조 버튼 배경 */
 
-            --card-bg: rgba(12, 17, 40, 0.88);
-            --card-border: rgba(113, 125, 245, 0.16);
-            --card-inner-border: rgba(255,255,255,0.06);
+            /* [디자인 가이드] 결과 카드 스타일 */
+            --card-bg: rgba(173, 162, 180, 0.95); /* 결과 카드 배경 */
+            --card-border: rgba(179, 152, 205, 0.30); /* 결과 카드 테두리 */
+            --card-inner-border: rgba(255,255,255,0.06); /* 카드 내부 구분선 */
 
             --pdf-btn: #1e6fbf;
             --dwg-btn: #b22424;
-            --dxf-btn: #1c9f95;
+
+            /* [수정] 3D 도면 버튼 전용 색상 변수 추가
+               요청사항: 배경색 rgb(191, 233, 65), 글자색은 검정 */
+            --btn-3d-bg: rgb(191, 233, 65);
+            --btn-3d-text: #000000;
 
             --home-orange: linear-gradient(135deg, #f09a00 0%, #ff8a00 100%);
             --home-orange-shadow: 0 8px 20px rgba(255, 138, 0, 0.28);
@@ -102,8 +114,10 @@
             align-items: center;
             gap: 10px;
             padding: 0 18px;
-            border-bottom: 1px solid rgba(115, 130, 255, 0.16);
-            background: rgba(10, 14, 33, 0.78);
+            /* [수정 포인트] 헤더 하단 경계선: 1px(두께) solid(직선) 색상(rgba) */
+            border-bottom: 1px solid rgba(179, 152, 205, 0.35);
+            /* [수정 포인트] 헤더 배경색: 톤다운된 연보라 (0.85는 투명도) */
+            background: rgba(237, 231, 244, 0.85);
             backdrop-filter: blur(8px);
             position: sticky;
             top: 0;
@@ -141,7 +155,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: #9ea4ff;
+            color: #b596d3;
             text-shadow: 0 0 16px rgba(111, 124, 255, 0.46);
             font-size: 1.15rem;
             flex-shrink: 0;
@@ -153,7 +167,7 @@
             font-size: 1.28rem;
             line-height: 1.05;
             font-weight: 800;
-            color: #eef0ff;
+            color: #332d3a;
             letter-spacing: -0.03em;
         }
 
@@ -170,8 +184,8 @@
             padding: 0 14px;
             border-radius: 12px;
             border: 1px solid rgba(112, 126, 255, 0.32);
-            background: rgba(40, 47, 102, 0.52);
-            color: #eaf0ff;
+            background: rgba(181, 150, 211, 0.20);
+            color: #332d3a;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -196,7 +210,7 @@
             left: -290px;
             width: 280px;
             height: 100%;
-            background: rgba(11, 15, 34, 0.98);
+            background: rgba(237, 231, 244, 0.98);
             border-right: 1px solid rgba(116, 131, 255, 0.16);
             box-shadow: 18px 0 36px rgba(0, 0, 0, 0.38);
             transition: left 0.28s ease;
@@ -242,10 +256,10 @@
         .search-panel {
             position: relative;
             border-radius: 22px;
-            background: linear-gradient(180deg, rgba(14,18,42,0.92), rgba(12,16,37,0.88));
+            background: linear-gradient(180deg, rgba(237, 231, 244, 0.95), rgba(227, 218, 238, 0.92));
             border: 1px solid var(--panel-border);
             box-shadow:
-                0 18px 44px rgba(0,0,0,0.24),
+                0 18px 44px rgba(181, 150, 211, 0.15),
                 inset 0 1px 0 rgba(255,255,255,0.04);
             padding: 18px 16px 18px;
             overflow: hidden;
@@ -255,14 +269,14 @@
             content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(116,131,255,0.05), transparent 38%);
+            background: linear-gradient(180deg, rgba(181, 150, 211, 0.10), transparent 38%);
             pointer-events: none;
         }
 
         .panel-title {
             text-align: center;
             font-weight: 800;
-            color: #dbe1ff;
+            color: #5a4e68;
             font-size: 0.98rem;
             letter-spacing: 0.1em;
             margin-bottom: 18px;
@@ -277,7 +291,7 @@
             right: 2px;
             top: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent 0%, rgba(113,125,245,0.46) 12%, rgba(113,125,245,0.46) 88%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, rgba(181, 150, 211, 0.46) 12%, rgba(181, 150, 211, 0.46) 88%, transparent 100%);
         }
 
         .form-grid {
@@ -295,7 +309,7 @@
         .input-group label {
             display: block;
             margin-bottom: 8px;
-            color: #c7ceff;
+            color: #5a4e68;
             font-size: 0.95rem;
             font-weight: 800;
             letter-spacing: 0.01em;
@@ -341,8 +355,8 @@
         input:focus {
             border-color: var(--input-focus);
             box-shadow:
-                0 0 0 3px rgba(92, 103, 220, 0.14),
-                0 10px 26px rgba(33, 38, 87, 0.22);
+                0 0 0 3px rgba(181, 150, 211, 0.14),
+                0 10px 26px rgba(181, 150, 211, 0.18);
         }
 
         .btn-row {
@@ -406,13 +420,13 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: rgba(178, 189, 240, 0.42);
+            color: rgba(181, 150, 211, 0.42);
             font-size: 2.7rem;
         }
 
         .hero-empty-text {
             font-size: 1.08rem;
-            color: #cfd7ff;
+            color: #5a4e68;
             font-weight: 700;
             margin-bottom: 8px;
         }
@@ -420,10 +434,11 @@
         .hero-empty-sub {
             font-size: 0.95rem;
             color: var(--text-sub);
+            margin-bottom: 8px;
         }
 
         .hero-empty-sub strong {
-            color: #a3a8ff;
+            color: #b596d3;
             font-weight: 800;
         }
 
@@ -478,7 +493,7 @@
             gap: 10px;
             font-size: 1.02rem;
             font-weight: 900;
-            color: #edf0ff;
+            color: #332d3a;
         }
 
         .result-title-left::before {
@@ -495,9 +510,9 @@
             height: 28px;
             padding: 0 10px;
             border-radius: 999px;
-            background: rgba(103,108,240,0.14);
-            border: 1px solid rgba(103,108,240,0.24);
-            color: #dfe3ff;
+            background: rgba(181, 150, 211, 0.14);
+            border: 1px solid rgba(181, 150, 211, 0.24);
+            color: #5a4e68;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -517,9 +532,9 @@
         .result-progress {
             padding: 10px 12px;
             border-radius: 12px;
-            background: rgba(103,108,240,0.08);
-            border: 1px solid rgba(103,108,240,0.16);
-            color: #dfe3ff;
+            background: rgba(181, 150, 211, 0.08);
+            border: 1px solid rgba(181, 150, 211, 0.16);
+            color: #5a4e68;
             font-size: 0.82rem;
             font-weight: 700;
             text-align: center;
@@ -563,7 +578,7 @@
             border: 1px solid var(--card-border);
             border-radius: 18px;
             overflow: hidden;
-            box-shadow: 0 10px 26px rgba(0,0,0,0.18);
+            box-shadow: 0 10px 26px rgba(181, 150, 211, 0.12);
             flex: 0 0 auto;
         }
 
@@ -581,9 +596,9 @@
             height: 32px;
             padding: 0 12px;
             border-radius: 10px;
-            background: rgba(103,108,240,0.10);
-            border: 1px solid rgba(103,108,240,0.24);
-            color: #eef1ff;
+            background: rgba(181, 150, 211, 0.10);
+            border: 1px solid rgba(181, 150, 211, 0.24);
+            color: #332d3a;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -689,6 +704,7 @@
             margin-top: 14px;
         }
 
+        /* 다운로드버튼관련 */
         .detail-file-btn {
             height: 36px;
             padding: 0 6px;
@@ -705,7 +721,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            transition: transform 0.18s ease, opacity 0.18s ease;
+            transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
         }
 
         .detail-file-btn i {
@@ -720,7 +736,29 @@
 
         .detail-file-btn.pdf { background: var(--pdf-btn); }
         .detail-file-btn.dwg { background: var(--dwg-btn); }
-        .detail-file-btn.dxf { background: var(--dxf-btn); }
+
+        /* [수정] 3D 도면 버튼 색상 문제 해결
+           기존에는 background: var(--3d) 처럼 정의되지 않은 변수를 참조하는 상태여서
+           버튼 배경이 정상적으로 보이지 않을 수 있었음.
+           요청사항에 맞춰 배경은 rgb(191, 233, 65), 글자색은 검정으로 변경 */
+        .detail-file-btn.dxf {
+            background: var(--btn-3d-bg);
+            color: var(--btn-3d-text);
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.10);
+        }
+
+        /* [추가 보정] 3D 도면 버튼 hover 시에도 글자색이 흐려지지 않도록 유지 */
+        .detail-file-btn.dxf:hover {
+            background: rgb(183, 225, 58);
+            color: #000000;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.14);
+        }
+
+        /* [추가 보정] 3D 도면 버튼 내부 아이콘도 검정으로 통일 */
+        .detail-file-btn.dxf i {
+            color: #000000;
+        }
 
         .empty-result,
         .limit-message,
@@ -749,8 +787,10 @@
             width: 100%;
             max-width: 600px;
             padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
-            background: rgba(9, 12, 28, 0.90);
-            border-top: 1px solid rgba(115, 130, 255, 0.12);
+            /* [수정 포인트] 하단 바 배경색: 배경과 조화로운 톤다운 연보라 */
+            background: rgba(227, 218, 238, 0.92);
+            /* [수정 포인트] 하단 바 상단 경계선: 1px(두께) solid(직선) 색상(rgba) */
+            border-top: 1px solid rgba(179, 152, 205, 0.35);
             backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
@@ -884,8 +924,8 @@
         .auth-modal {
             width: 320px;
             max-width: calc(100vw - 32px);
-            background: rgba(13, 17, 42, 0.98);
-            border: 1px solid rgba(116, 131, 255, 0.28);
+            background: rgba(237, 231, 244, 0.96);
+            border: 1px solid rgba(179, 152, 205, 0.40);
             border-radius: 22px;
             padding: 28px 24px 24px;
             box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
@@ -908,7 +948,7 @@
         .auth-modal-title {
             font-size: 1.1rem;
             font-weight: 800;
-            color: #eef1ff;
+            color: #332d3a;
             margin-bottom: 6px;
         }
 
@@ -924,9 +964,9 @@
             height: 48px;
             border-radius: 13px;
             border: 1px solid rgba(115, 130, 255, 0.28);
-            background: rgba(6, 10, 29, 0.9);
+            background: rgba(83, 83, 83, 0.9);
             color: #fff;
-            font-size: 1.15rem;
+            font-size: 1.15rem;  
             font-weight: 700;
             text-align: center;
             letter-spacing: 0.15em;
@@ -934,6 +974,12 @@
             margin-bottom: 8px;
             padding: 0 16px;
             transition: border-color 0.2s;
+        }
+
+        /* [추가] placeholder(안내문구)만 글자 크기 줄이기 */
+        .auth-input::placeholder {
+            font-size: 0.85rem;   /* ← 여기만 작아짐 */
+            color: rgba(150, 150, 150, 0.7);
         }
 
         .auth-input:focus {
@@ -1056,24 +1102,60 @@
     <!-- DWG 인증 팝업 -->
     <div class="auth-modal-backdrop" id="authModalBackdrop">
         <div class="auth-modal">
-            <div class="auth-modal-icon"><i class="fas fa-lock"></i></div>
-            <div class="auth-modal-title">DWG 파일 인증</div>
-            <div class="auth-modal-sub">DWG 파일을 다운로드하려면<br>인증코드를 입력하세요</div>
-            <input
-                type="password"
-                class="auth-input"
-                id="authCodeInput"
-                placeholder="인증코드 입력"
-                maxlength="20"
-                onkeydown="if(event.key==='Enter') confirmAuth()"
-            >
-            <div class="auth-error-msg" id="authErrorMsg"></div>
-            <div class="auth-btn-row">
-                <button class="auth-cancel-btn" onclick="closeAuthModal()">취소</button>
-                <button class="auth-confirm-btn" onclick="confirmAuth()">
-                    <i class="fas fa-download"></i> 다운로드
-                </button>
+
+            <!-- 1단계: 이름 + 이메일 입력 -->
+            <div id="authStep1">
+                <div class="auth-modal-icon"><i class="fas fa-user"></i></div>
+                <div class="auth-modal-title">정보 입력</div>
+                <div class="auth-modal-sub">DWG 파일 다운로드를 위해<br>아래 정보를 입력해 주세요</div>
+                <input
+                    type="text"
+                    class="auth-input"
+                    id="authNameInput"
+                    placeholder="이름을 입력하세요"
+                    maxlength="30"
+                    onkeydown="if(event.key==='Enter') document.getElementById('authEmailInput').focus()"
+                    style="margin-bottom: 10px;"
+                >
+                <input
+                    type="email"
+                    class="auth-input"
+                    id="authEmailInput"
+                    placeholder="이메일을 입력하세요"
+                    maxlength="60"
+                    onkeydown="if(event.key==='Enter') submitUserInfo()"
+                >
+                <div class="auth-error-msg" id="authStep1ErrorMsg"></div>
+                <div class="auth-btn-row">
+                    <button class="auth-cancel-btn" onclick="closeAuthModal()">취소</button>
+                    <button class="auth-confirm-btn" onclick="submitUserInfo()">
+                        <i class="fas fa-arrow-right"></i> 다음
+                    </button>
+                </div>
             </div>
+
+            <!-- 2단계: 인증코드 입력 -->
+            <div id="authStep2" style="display:none;">
+                <div class="auth-modal-icon"><i class="fas fa-lock"></i></div>
+                <div class="auth-modal-title">인증코드 입력</div>
+                <div class="auth-modal-sub">담당자에게 받은<br>인증코드를 입력하세요</div>
+                <input
+                    type="password"
+                    class="auth-input"
+                    id="authCodeInput"
+                    placeholder="인증코드 입력"
+                    maxlength="20"
+                    onkeydown="if(event.key==='Enter') confirmAuth()"
+                >
+                <div class="auth-error-msg" id="authErrorMsg"></div>
+                <div class="auth-btn-row">
+                    <button class="auth-cancel-btn" onclick="closeAuthModal()">취소</button>
+                    <button class="auth-confirm-btn" onclick="confirmAuth()">
+                        <i class="fas fa-download"></i> 다운로드
+                    </button>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -1104,7 +1186,7 @@
             </div>
             <ul>
                 <li onclick="goToChainMode()">체인 검색 모드로 이동</li>
-                <li onclick="resetSearchLimit()">스프라켓 검색 횟수 제한 해제</li>
+                <li onclick="resetSearchLimit()">검색가능 횟수 제한 해제</li>
             </ul>
         </aside>
 
@@ -1190,11 +1272,8 @@
             { value: '#80',  label: '#80',  pathKey: '80'  },
             { value: '#100', label: '#100', pathKey: '100' },
             { value: '#120', label: '#120', pathKey: '120' },
-            { value: '#140', label: '#140', pathKey: '140' },
-            { value: '#160', label: '#160', pathKey: '160' },
-            { value: '#180', label: '#180', pathKey: '180' },
-            { value: '#200', label: '#200', pathKey: '200' },
-            { value: '#240', label: '#240', pathKey: '240' }
+            { value: '#140', label: '#140', pathKey: '140' }
+
         ];
 
         const MODEL_PATH_KEY_MAP = MODEL_OPTIONS.reduce((acc, item) => {
@@ -1211,11 +1290,8 @@
             '#80':  './data/sprocket/80/data_80.js',
             '#100': './data/sprocket/100/data_100.js',
             '#120': './data/sprocket/120/data_120.js',
-            '#140': './data/sprocket/140/data_140.js',
-            '#160': './data/sprocket/160/data_160.js',
-            '#180': './data/sprocket/180/data_180.js',
-            '#200': './data/sprocket/200/data_200.js',
-            '#240': './data/sprocket/240/data_240.js'
+            '#140': './data/sprocket/140/data_140.js'
+
         };
 
         const loadedModels = new Set();
@@ -1272,7 +1348,7 @@
             const select = document.getElementById('searchModel');
             if (!select) return;
 
-            select.innerHTML = '<option value="">전체 형번</option>';
+            select.innerHTML = '<option value="">형번을 선택하시오</option>';
 
             MODEL_OPTIONS.forEach(item => {
                 const opt = document.createElement('option');
@@ -1371,7 +1447,7 @@
         async function performSearch() {
             if (!checkSearchLimit()) {
                 const area = document.getElementById('resultArea');
-                area.innerHTML = `<div class="limit-message">스프라켓 검색의 일일 횟수를 초과했습니다.</div>`;
+                area.innerHTML = `<div class="limit-message">검색가능 횟수를 초과했습니다.</div>`;
                 showDefaultState(false);
                 return;
             }
@@ -1464,7 +1540,7 @@
                 };
 
                 fallbackImg.onerror = function () {
-                    alert('미리보기 파일(jpg/png)을 찾을 수 없습니다.');
+                    alert('3D 파일(dwg/step)을 찾을 수 없습니다.');
                 };
 
                 fallbackImg.src = pngPath;
@@ -1504,7 +1580,7 @@
                     <div class="result-detail">
                         <div class="detail-grid">
                             <div class="detail-item">
-                                <div class="detail-label">PCD (피치원)</div>
+                                <div class="detail-label">피치원</div>
                                 <div class="detail-value">${item.pitchCircle ?? item.pcd ?? ''}<span class="summary-unit">mm</span></div>
                             </div>
                             <div class="detail-item">
@@ -1513,16 +1589,16 @@
                             </div>
 
                             <div class="detail-item">
-                                <div class="detail-label">루트원 지름</div>
+                                <div class="detail-label">이뿌리원</div>
                                 <div class="detail-value">${item.rootCircle ?? ''}<span class="summary-unit">mm</span></div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">드릴 구멍</div>
+                                <div class="detail-label">드릴</div>
                                 <div class="detail-value">${item.drill ?? ''}<span class="summary-unit">mm</span></div>
                             </div>
 
                             <div class="detail-item">
-                                <div class="detail-label">보스 지름</div>
+                                <div class="detail-label">보스경</div>
                                 <div class="detail-value">${item.bossDiameter ?? ''}<span class="summary-unit">mm</span></div>
                             </div>
                             <div class="detail-item">
@@ -1539,13 +1615,13 @@
                             <a href="javascript:void(0)"
                                class="detail-file-btn dwg"
                                onclick="requestDwgAuth('${filePaths.dwg}')">
-                                <i class="fas fa-wrench"></i> DWG 파일
+                                <i class="fas fa-wrench"></i> 2D 도면
                             </a>
 
                             <a href="javascript:void(0)"
                                class="detail-file-btn dxf"
                                onclick="openPreview('${filePaths.previewJpg}', '${filePaths.previewPng}')">
-                                <i class="fas fa-eye"></i> 미리보기
+                                <i class="fas fa-eye"></i> 3D 도면
                             </a>
                         </div>
                     </div>
@@ -1657,20 +1733,31 @@
         }
 
         /* ===== DWG 인증 로직 ===== */
-        // ⚠️ 인증코드 — 필요 시 변경하세요
-        const DWG_AUTH_CODE = 'MYCAD2024';
+        const DWG_AUTH_CODE = 'hkd8421';
+
+        const GOOGLE_FORM_URL  = 'https://docs.google.com/forms/d/e/1FAIpQLSeqElBNIHjkJhsIzNsH45j_cLnNm3lksRhlTtXKu_IfRLgFOg/formResponse';
+        const FORM_ENTRY_NAME  = 'entry.1293161912';
+        const FORM_ENTRY_EMAIL = 'entry.1030936526';
 
         let _pendingDwgUrl = null;
 
         function requestDwgAuth(dwgUrl) {
             _pendingDwgUrl = dwgUrl;
-            const input = document.getElementById('authCodeInput');
-            const errMsg = document.getElementById('authErrorMsg');
-            input.value = '';
-            input.classList.remove('error');
-            errMsg.textContent = '';
+
+            document.getElementById('authNameInput').value = '';
+            document.getElementById('authEmailInput').value = '';
+            document.getElementById('authCodeInput').value = '';
+            document.getElementById('authStep1ErrorMsg').textContent = '';
+            document.getElementById('authErrorMsg').textContent = '';
+            document.getElementById('authNameInput').classList.remove('error');
+            document.getElementById('authEmailInput').classList.remove('error');
+            document.getElementById('authCodeInput').classList.remove('error');
+
+            document.getElementById('authStep1').style.display = 'block';
+            document.getElementById('authStep2').style.display = 'none';
+
             document.getElementById('authModalBackdrop').classList.add('active');
-            setTimeout(() => input.focus(), 120);
+            setTimeout(() => document.getElementById('authNameInput').focus(), 120);
         }
 
         function closeAuthModal() {
@@ -1678,10 +1765,59 @@
             _pendingDwgUrl = null;
         }
 
+        async function submitUserInfo() {
+            const nameInput  = document.getElementById('authNameInput');
+            const emailInput = document.getElementById('authEmailInput');
+            const errMsg     = document.getElementById('authStep1ErrorMsg');
+            const nextBtn    = document.getElementById('authStep1').querySelector('.auth-confirm-btn');
+            const name  = nameInput.value.trim();
+            const email = emailInput.value.trim();
+
+            if (!name) {
+                nameInput.classList.remove('error');
+                void nameInput.offsetWidth;
+                nameInput.classList.add('error');
+                errMsg.textContent = '이름을 입력해 주세요.';
+                nameInput.focus();
+                return;
+            }
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                emailInput.classList.remove('error');
+                void emailInput.offsetWidth;
+                emailInput.classList.add('error');
+                errMsg.textContent = '올바른 이메일 주소를 입력해 주세요.';
+                emailInput.focus();
+                return;
+            }
+
+            nameInput.classList.remove('error');
+            emailInput.classList.remove('error');
+            errMsg.textContent = '';
+
+            nextBtn.disabled = true;
+            nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 처리 중...';
+
+            try {
+                const formData = new FormData();
+                formData.append(FORM_ENTRY_NAME,  name);
+                formData.append(FORM_ENTRY_EMAIL, email);
+                await fetch(GOOGLE_FORM_URL, { method: 'POST', mode: 'no-cors', body: formData });
+            } catch (e) {
+                // 네트워크 오류여도 다음 단계 진행
+            } finally {
+                nextBtn.disabled = false;
+                nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i> 다음';
+            }
+
+            document.getElementById('authStep1').style.display = 'none';
+            document.getElementById('authStep2').style.display = 'block';
+            setTimeout(() => document.getElementById('authCodeInput').focus(), 120);
+        }
+
         async function confirmAuth() {
             const input = document.getElementById('authCodeInput');
             const errMsg = document.getElementById('authErrorMsg');
-            const confirmBtn = document.querySelector('.auth-confirm-btn');
+            const confirmBtn = document.getElementById('authStep2').querySelector('.auth-confirm-btn');
             const entered = input.value.trim();
 
             if (entered !== DWG_AUTH_CODE) {
@@ -1694,17 +1830,13 @@
                 return;
             }
 
-            // 인증 성공 → fetch로 파일 존재 확인 후 다운로드
             confirmBtn.disabled = true;
             confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 다운로드 중...';
             errMsg.textContent = '';
 
             try {
                 const response = await fetch(_pendingDwgUrl);
-
-                if (!response.ok) {
-                    throw new Error(`파일을 찾을 수 없습니다. (${response.status})`);
-                }
+                if (!response.ok) throw new Error(`파일을 찾을 수 없습니다. (${response.status})`);
 
                 const blob = await response.blob();
                 const blobUrl = URL.createObjectURL(blob);
@@ -1730,7 +1862,6 @@
                 confirmBtn.innerHTML = '<i class="fas fa-download"></i> 다운로드';
             }
         }
-
         /* ===== /DWG 인증 로직 ===== */
 
         /* [핵심] 페이지 로드시 형번 목록 채움 */
@@ -1740,7 +1871,7 @@
             updateUsageUI();
             showDefaultState(true);
 
-            // 팝업 바깥 클릭 시 닫기 (DOM 로드 완료 후 등록)
+            // 팝업 바깥 클릭 시 닫기
             document.getElementById('authModalBackdrop').addEventListener('click', function(e) {
                 if (e.target === this) closeAuthModal();
             });
