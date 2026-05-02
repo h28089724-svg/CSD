@@ -1,0 +1,1881 @@
+<!DOCTYPE html>
+<html lang="ko">
+    
+<head>
+    <meta charset="UTF-8">
+
+    <!-- [유지] 모바일 반응형 기본 설정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>스프라켓 검색</title>
+
+    <!-- [유지] PWA 관련 설정 -->
+    <link rel="manifest" href="../../manifest.json">
+    <meta name="theme-color" content="#b596d3">
+
+    <!-- [유지] 아이콘용 폰트 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <script>
+        // [유지] 전체 스프라켓 데이터를 담는 전역 배열
+        var allSprocketData = [];
+
+        // [유지] 서비스워커 등록
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('../../sw.js')
+            .then(() => console.log('오프라인 모드 준비 완료'))
+            .catch(err => console.log('오프라인 모드 오류:', err));
+        }
+    </script>
+
+    <style>
+        :root {
+            /* [디자인 가이드] 메인 강조 색상 (버튼, 아이콘 등) */
+            --accent-main: #b596d3; /* 메인 연보라 */
+            --accent-strong: #c8b1e1; /* 호버 시 더 밝은 연보라 */
+            --accent-glow: rgba(181, 150, 211, 0.30); /* 강조 요소의 은은한 빛 효과 */
+            --accent-soft: rgba(181, 150, 211, 0.16); /* 아주 연한 강조 배경 */
+            --accent-border: rgba(181, 150, 211, 0.26); /* 강조 요소의 테두리 */
+
+            /* [디자인 가이드] 전체 배경색 (상단에서 하단으로 흐르는 그라데이션) */
+            --bg-top: #f8f6fb; /* 최상단 배경 (가장 밝음) */
+            --bg-bottom: #ece6f4; /* 최하단 배경 (약간 톤다운) */
+            --bg-grid: rgba(181, 150, 211, 0.12); /* 배경에 깔린 격자 무늬 색상 */
+
+            /* [디자인 가이드] 검색 패널(중앙 박스) 스타일 */
+            --panel-bg: rgba(237, 231, 244, 0.92); /* 패널 배경 (배경색과 미세한 차이) */
+            --panel-border: rgba(179, 152, 205, 0.40); /* 패널 테두리 선 색상 */
+
+            /* [디자인 가이드] 입력창(Input/Select) 스타일 */
+            --input-bg: rgba(255, 255, 255, 0.98); /* 입력창 내부 배경 (가독성을 위해 밝게 유지) */
+            --input-border: rgba(181, 150, 211, 0.30); /* 입력창 테두리 선 색상 */
+            --input-focus: rgba(181, 150, 211, 0.50); /* 클릭 시 강조되는 테두리 색상 */
+
+            /* [디자인 가이드] 텍스트 색상 */
+            --text-main: #332d3a; /* 기본 글자색 (진한 회보라) */
+            --text-sub: rgba(51, 45, 58, 0.75); /* 보조 글자색 (약간 흐림) */
+            --text-dim: rgba(51, 45, 58, 0.55); /* 아주 흐린 글자색 */
+            --placeholder: rgba(181, 150, 211, 0.60); /* 입력창 안내 문구 색상 */
+
+            /* [디자인 가이드] 버튼 스타일 */
+            --btn-main-bg: linear-gradient(135deg, #b596d3 0%, #d1bce8 100%); /* 메인 버튼 그라데이션 */
+            --btn-main-shadow: 0 10px 26px rgba(181, 150, 211, 0.30); /* 버튼 하단 그림자 */
+            --btn-sub-bg: rgba(255, 255, 255, 0.04); /* 보조 버튼 배경 */
+
+            /* [디자인 가이드] 결과 카드 스타일 */
+            --card-bg: rgba(173, 162, 180, 0.95); /* 결과 카드 배경 */
+            --card-border: rgba(179, 152, 205, 0.30); /* 결과 카드 테두리 */
+            --card-inner-border: rgba(255,255,255,0.06); /* 카드 내부 구분선 */
+
+            --pdf-btn: #1e6fbf;
+            --dwg-btn: #b22424;
+
+            /* [수정] 3D 도면 버튼 전용 색상 변수 추가
+               요청사항: 배경색 rgb(191, 233, 65), 글자색은 검정 */
+            --btn-3d-bg: rgb(191, 233, 65);
+            --btn-3d-text: #000000;
+
+            --home-orange: linear-gradient(135deg, #f09a00 0%, #ff8a00 100%);
+            --home-orange-shadow: 0 8px 20px rgba(255, 138, 0, 0.28);
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            color: var(--text-main);
+            background:
+                linear-gradient(to right, transparent 0, transparent 23px, var(--bg-grid) 24px, transparent 25px),
+                linear-gradient(to bottom, transparent 0, transparent 23px, var(--bg-grid) 24px, transparent 25px),
+                radial-gradient(circle at top, rgba(84, 92, 205, 0.18), transparent 36%),
+                linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+            background-size: 25px 25px, 25px 25px, auto, auto;
+            overflow-x: hidden;
+        }
+
+        body { min-height: 100vh; }
+
+        .app-shell {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 112px;
+        }
+
+        .header {
+            height: 68px;
+            display: grid;
+            grid-template-columns: 52px 1fr auto;
+            align-items: center;
+            gap: 10px;
+            padding: 0 18px;
+            /* [수정 포인트] 헤더 하단 경계선: 1px(두께) solid(직선) 색상(rgba) */
+            border-bottom: 1px solid rgba(179, 152, 205, 0.35);
+            /* [수정 포인트] 헤더 배경색: 톤다운된 연보라 (0.85는 투명도) */
+            background: rgba(237, 231, 244, 0.85);
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .menu-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-sub);
+            cursor: pointer;
+            font-size: 1.15rem;
+            transition: all 0.2s ease;
+        }
+
+        .menu-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-main);
+        }
+
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .brand-icon {
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #b596d3;
+            text-shadow: 0 0 16px rgba(111, 124, 255, 0.46);
+            font-size: 1.15rem;
+            flex-shrink: 0;
+        }
+
+        .brand-text { min-width: 0; }
+
+        .brand-title {
+            font-size: 1.28rem;
+            line-height: 1.05;
+            font-weight: 800;
+            color: #332d3a;
+            letter-spacing: -0.03em;
+        }
+
+        .brand-sub {
+            margin-top: 3px;
+            font-size: 0.74rem;
+            letter-spacing: 0.12em;
+            color: var(--text-dim);
+        }
+
+        .usage-badge {
+            min-width: 74px;
+            height: 36px;
+            padding: 0 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(112, 126, 255, 0.32);
+            background: rgba(181, 150, 211, 0.20);
+            color: #332d3a;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.96rem;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: none;
+            z-index: 180;
+        }
+
+        .overlay.active { display: block; }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -290px;
+            width: 280px;
+            height: 100%;
+            background: rgba(237, 231, 244, 0.98);
+            border-right: 1px solid rgba(116, 131, 255, 0.16);
+            box-shadow: 18px 0 36px rgba(0, 0, 0, 0.38);
+            transition: left 0.28s ease;
+            z-index: 200;
+            padding-top: 56px;
+            backdrop-filter: blur(10px);
+        }
+
+        .side-menu.active { left: 0; }
+
+        .side-menu .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-sub);
+            cursor: pointer;
+        }
+
+        .side-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .side-menu ul li {
+            padding: 16px 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: background 0.18s ease;
+        }
+
+        .side-menu ul li:hover { background: rgba(255,255,255,0.04); }
+
+        .content { padding: 22px 16px 24px; }
+
+        .search-panel {
+            position: relative;
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(237, 231, 244, 0.95), rgba(227, 218, 238, 0.92));
+            border: 1px solid var(--panel-border);
+            box-shadow:
+                0 18px 44px rgba(181, 150, 211, 0.15),
+                inset 0 1px 0 rgba(255,255,255,0.04);
+            padding: 18px 16px 18px;
+            overflow: hidden;
+        }
+
+        .search-panel::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(181, 150, 211, 0.10), transparent 38%);
+            pointer-events: none;
+        }
+
+        .panel-title {
+            text-align: center;
+            font-weight: 800;
+            color: #5a4e68;
+            font-size: 0.98rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 18px;
+            position: relative;
+            padding-top: 4px;
+        }
+
+        .panel-title::before {
+            content: "";
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            top: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(181, 150, 211, 0.46) 12%, rgba(181, 150, 211, 0.46) 88%, transparent 100%);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        .dual-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #5a4e68;
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.01em;
+        }
+
+        .field-wrap { position: relative; }
+
+        select, input {
+            width: 100%;
+            height: 48px;
+            border-radius: 15px;
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 1rem;
+            padding: 0 16px;
+            outline: none;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.01);
+            transition: all 0.2s ease;
+        }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding-right: 42px;
+            cursor: pointer;
+        }
+
+        .select-arrow {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-sub);
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+
+        input::placeholder { color: var(--placeholder); }
+
+        select:focus,
+        input:focus {
+            border-color: var(--input-focus);
+            box-shadow:
+                0 0 0 3px rgba(181, 150, 211, 0.14),
+                0 10px 26px rgba(181, 150, 211, 0.18);
+        }
+
+        .btn-row {
+            display: grid;
+            grid-template-columns: 102px 1fr;
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        button {
+            height: 50px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.22s ease;
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        .reset-btn {
+            background: var(--btn-sub-bg);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: var(--text-sub);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-1px);
+            background: rgba(255,255,255,0.07);
+            color: var(--text-main);
+        }
+
+        .search-btn {
+            background: var(--btn-main-bg);
+            color: #ffffff;
+            box-shadow: var(--btn-main-shadow);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 30px rgba(86, 86, 201, 0.42);
+        }
+
+        .hero-empty {
+            text-align: center;
+            padding: 82px 0 34px;
+        }
+
+        .hero-empty-icon {
+            width: 74px;
+            height: 74px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(181, 150, 211, 0.42);
+            font-size: 2.7rem;
+        }
+
+        .hero-empty-text {
+            font-size: 1.08rem;
+            color: #5a4e68;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .hero-empty-sub {
+            font-size: 0.95rem;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+        }
+
+        .hero-empty-sub strong {
+            color: #b596d3;
+            font-weight: 800;
+        }
+
+        .model-chip-list {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .model-chip {
+            height: 28px;
+            padding: 0 10px;
+            border-radius: 9px;
+            border: 1px solid rgba(111, 126, 255, 0.18);
+            background: rgba(255,255,255,0.03);
+            color: var(--text-sub);
+            font-size: 0.84rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+
+        .model-chip:hover {
+            background: rgba(111, 126, 255, 0.12);
+            color: var(--text-main);
+            border-color: rgba(111, 126, 255, 0.32);
+        }
+
+        .result-area { margin-top: 18px; }
+
+        .result-list-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .result-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 2px;
+        }
+
+        .result-title-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.02rem;
+            font-weight: 900;
+            color: #332d3a;
+        }
+
+        .result-title-left::before {
+            content: "";
+            width: 4px;
+            height: 22px;
+            border-radius: 999px;
+            background: var(--accent-main);
+            box-shadow: 0 0 14px rgba(103,108,240,0.34);
+        }
+
+        .result-count-badge {
+            min-width: 54px;
+            height: 28px;
+            padding: 0 10px;
+            border-radius: 999px;
+            background: rgba(181, 150, 211, 0.14);
+            border: 1px solid rgba(181, 150, 211, 0.24);
+            color: #5a4e68;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.88rem;
+            font-weight: 800;
+        }
+
+        .result-guide {
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            color: var(--text-dim);
+            font-size: 0.78rem;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .result-progress {
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: rgba(181, 150, 211, 0.08);
+            border: 1px solid rgba(181, 150, 211, 0.16);
+            color: #5a4e68;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .result-scroll-box {
+            height: 560px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-snap-type: y mandatory;
+            border-radius: 14px;
+            padding-right: 4px;
+        }
+
+        .result-scroll-box::-webkit-scrollbar { width: 8px; }
+        .result-scroll-box::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.03);
+            border-radius: 999px;
+        }
+        .result-scroll-box::-webkit-scrollbar-thumb {
+            background: rgba(125, 129, 255, 0.28);
+            border-radius: 999px;
+        }
+
+        .result-pages-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .result-page {
+            min-height: 100%;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .result-card-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 10px 26px rgba(181, 150, 211, 0.12);
+            flex: 0 0 auto;
+        }
+
+        .result-summary {
+            display: grid;
+            grid-template-columns: 74px 1fr 34px;
+            gap: 14px;
+            align-items: center;
+            padding: 16px 16px;
+            cursor: pointer;
+        }
+
+        .model-pill {
+            min-width: 60px;
+            height: 32px;
+            padding: 0 12px;
+            border-radius: 10px;
+            background: rgba(181, 150, 211, 0.10);
+            border: 1px solid rgba(181, 150, 211, 0.24);
+            color: #332d3a;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.96rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .summary-col { min-width: 0; }
+
+        .summary-label {
+            color: var(--text-dim);
+            font-size: 0.76rem;
+            margin-bottom: 5px;
+            letter-spacing: 0.01em;
+        }
+
+        .summary-value {
+            color: #ffffff;
+            font-size: 1.02rem;
+            font-weight: 800;
+            line-height: 1.15;
+            word-break: break-word;
+        }
+
+        .summary-unit {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            margin-left: 2px;
+        }
+
+        .toggle-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.03);
+            color: var(--text-sub);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .result-card-item.open .toggle-btn {
+            transform: rotate(180deg);
+            color: #ffffff;
+        }
+
+        .result-detail {
+            display: none;
+            border-top: 1px solid var(--card-inner-border);
+            padding: 14px 16px 16px;
+            background: rgba(6, 10, 24, 0.36);
+        }
+
+        .result-card-item.open .result-detail { display: block; }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            border-top: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 12px 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .detail-item:nth-child(odd) { padding-right: 12px; }
+        .detail-item:nth-child(even) { padding-left: 12px; }
+
+        .detail-label {
+            color: #aeb8ff;
+            font-size: 0.92rem;
+            font-weight: 700;
+        }
+
+        .detail-value {
+            color: #ffffff;
+            font-size: 0.98rem;
+            font-weight: 800;
+            text-align: right;
+        }
+
+        .detail-actions {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        /* 다운로드버튼관련 */
+        .detail-file-btn {
+            height: 36px;
+            padding: 0 6px;
+            border-radius: 10px;
+            color: #fff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-size: 0.80rem;
+            font-weight: 800;
+            line-height: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
+        }
+
+        .detail-file-btn i {
+            font-size: 0.82rem;
+            flex-shrink: 0;
+        }
+
+        .detail-file-btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.94;
+        }
+
+        .detail-file-btn.pdf { background: var(--pdf-btn); }
+        .detail-file-btn.dwg { background: var(--dwg-btn); }
+
+        /* [수정] 3D 도면 버튼 색상 문제 해결
+           기존에는 background: var(--3d) 처럼 정의되지 않은 변수를 참조하는 상태여서
+           버튼 배경이 정상적으로 보이지 않을 수 있었음.
+           요청사항에 맞춰 배경은 rgb(191, 233, 65), 글자색은 검정으로 변경 */
+        .detail-file-btn.dxf {
+            background: var(--btn-3d-bg);
+            color: var(--btn-3d-text);
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.10);
+        }
+
+        /* [추가 보정] 3D 도면 버튼 hover 시에도 글자색이 흐려지지 않도록 유지 */
+        .detail-file-btn.dxf:hover {
+            background: rgb(183, 225, 58);
+            color: #000000;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.14);
+        }
+
+        /* [추가 보정] 3D 도면 버튼 내부 아이콘도 검정으로 통일 */
+        .detail-file-btn.dxf i {
+            color: #000000;
+        }
+
+        .empty-result,
+        .limit-message,
+        .loading-message {
+            text-align: center;
+            padding: 28px 16px;
+            color: var(--text-sub);
+            font-weight: 700;
+            background: rgba(11, 15, 35, 0.72);
+            border: 1px solid rgba(115, 130, 255, 0.16);
+            border-radius: 18px;
+        }
+
+        .page-status {
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.82rem;
+            padding: 10px 0 2px;
+        }
+
+        .bottom-bar {
+            position: fixed;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 600px;
+            padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+            /* [수정 포인트] 하단 바 배경색: 배경과 조화로운 톤다운 연보라 */
+            background: rgba(227, 218, 238, 0.92);
+            /* [수정 포인트] 하단 바 상단 경계선: 1px(두께) solid(직선) 색상(rgba) */
+            border-top: 1px solid rgba(179, 152, 205, 0.35);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            z-index: 120;
+        }
+
+        .bottom-caption {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+        }
+
+        .bottom-home {
+            height: 42px;
+            padding: 0 16px;
+            border-radius: 13px;
+            background: var(--home-orange);
+            color: #111;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -0.02em;
+            box-shadow: var(--home-orange-shadow);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 520px) {
+            .header {
+                grid-template-columns: 44px 1fr auto;
+                padding: 0 14px;
+            }
+
+            .brand-title { font-size: 1.12rem; }
+            .brand-sub { font-size: 0.68rem; }
+
+            .usage-badge {
+                min-width: 68px;
+                padding: 0 12px;
+                font-size: 0.9rem;
+            }
+
+            .content { padding: 18px 14px 20px; }
+
+            .search-panel {
+                border-radius: 20px;
+                padding: 16px 14px;
+            }
+
+            .dual-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .btn-row { grid-template-columns: 96px 1fr; }
+
+            .hero-empty { padding-top: 68px; }
+
+            .result-scroll-box { height: 62vh; }
+
+            .result-summary {
+                grid-template-columns: 62px 1fr 30px;
+                gap: 10px;
+                padding: 14px 12px;
+            }
+
+            .model-pill {
+                min-width: 54px;
+                height: 30px;
+                padding: 0 10px;
+                font-size: 0.9rem;
+            }
+
+            .summary-grid { gap: 8px; }
+            .summary-label { font-size: 0.72rem; }
+            .summary-value { font-size: 0.98rem; }
+
+            .detail-grid { grid-template-columns: 1fr 1fr; }
+
+            .detail-item {
+                padding-top: 11px;
+                padding-bottom: 11px;
+            }
+
+            .detail-label { font-size: 0.86rem; }
+            .detail-value { font-size: 0.92rem; }
+
+            .detail-actions {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 6px;
+            }
+
+            .detail-file-btn {
+                height: 34px;
+                padding: 0 4px;
+                font-size: 0.74rem;
+                gap: 4px;
+            }
+
+            .detail-file-btn i { font-size: 0.74rem; }
+
+            .bottom-caption { font-size: 0.72rem; }
+
+            .bottom-home {
+                height: 40px;
+                padding: 0 14px;
+                font-size: 0.96rem;
+            }
+        }
+
+        /* ===== DWG 인증 팝업 ===== */
+        .auth-modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: 300;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-modal-backdrop.active {
+            display: flex;
+        }
+
+        .auth-modal {
+            width: 320px;
+            max-width: calc(100vw - 32px);
+            background: rgba(237, 231, 244, 0.96);
+            border: 1px solid rgba(179, 152, 205, 0.40);
+            border-radius: 22px;
+            padding: 28px 24px 24px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            text-align: center;
+            animation: modalPop 0.22s ease;
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.88); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+
+        .auth-modal-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #b22424;
+        }
+
+        .auth-modal-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #332d3a;
+            margin-bottom: 6px;
+        }
+
+        .auth-modal-sub {
+            font-size: 0.82rem;
+            color: var(--text-sub);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .auth-input {
+            width: 100%;
+            height: 48px;
+            border-radius: 13px;
+            border: 1px solid rgba(115, 130, 255, 0.28);
+            background: rgba(83, 83, 83, 0.9);
+            color: #fff;
+            font-size: 1.15rem;  
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.15em;
+            outline: none;
+            margin-bottom: 8px;
+            padding: 0 16px;
+            transition: border-color 0.2s;
+        }
+
+        /* [추가] placeholder(안내문구)만 글자 크기 줄이기 */
+        .auth-input::placeholder {
+            font-size: 0.85rem;   /* ← 여기만 작아짐 */
+            color: rgba(150, 150, 150, 0.7);
+        }
+
+        .auth-input:focus {
+            border-color: rgba(115, 130, 255, 0.6);
+            box-shadow: 0 0 0 3px rgba(92, 103, 220, 0.16);
+        }
+
+        .auth-input.error {
+            border-color: #e05555;
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25%       { transform: translateX(-6px); }
+            75%       { transform: translateX(6px); }
+        }
+
+        .auth-error-msg {
+            font-size: 0.8rem;
+            color: #ff7070;
+            min-height: 18px;
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+
+        .auth-btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .auth-cancel-btn {
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: var(--text-sub);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.18s;
+        }
+
+        .auth-cancel-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .auth-confirm-btn {
+            height: 44px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #b22424, #d94040);
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.18s;
+            box-shadow: 0 6px 18px rgba(178, 36, 36, 0.36);
+        }
+
+        .auth-confirm-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(178, 36, 36, 0.46);
+        }
+        /* ===== /DWG 인증 팝업 ===== */
+
+        @media (max-width: 380px) {
+            .dual-row { grid-template-columns: 1fr; }
+            .btn-row { grid-template-columns: 1fr; }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .result-summary {
+                grid-template-columns: 1fr auto;
+                grid-template-areas:
+                    "pill toggle"
+                    "info info";
+                align-items: start;
+            }
+
+            .model-pill {
+                grid-area: pill;
+                width: fit-content;
+            }
+
+            .summary-grid { grid-area: info; }
+            .toggle-btn { grid-area: toggle; }
+
+            .detail-grid { grid-template-columns: 1fr; }
+
+            .detail-item:nth-child(odd),
+            .detail-item:nth-child(even) {
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .detail-actions {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 5px;
+            }
+
+            .detail-file-btn {
+                height: 32px;
+                padding: 0 2px;
+                font-size: 0.68rem;
+                gap: 3px;
+                letter-spacing: -0.02em;
+            }
+
+            .detail-file-btn i { font-size: 0.68rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- DWG 인증 팝업 -->
+    <div class="auth-modal-backdrop" id="authModalBackdrop">
+        <div class="auth-modal">
+
+            <!-- 1단계: 이름 + 이메일 입력 -->
+            <div id="authStep1">
+                <div class="auth-modal-icon"><i class="fas fa-user"></i></div>
+                <div class="auth-modal-title">정보 입력</div>
+                <div class="auth-modal-sub">DWG 파일 다운로드를 위해<br>아래 정보를 입력해 주세요</div>
+                <input
+                    type="text"
+                    class="auth-input"
+                    id="authNameInput"
+                    placeholder="이름을 입력하세요"
+                    maxlength="30"
+                    onkeydown="if(event.key==='Enter') document.getElementById('authEmailInput').focus()"
+                    style="margin-bottom: 10px;"
+                >
+                <input
+                    type="email"
+                    class="auth-input"
+                    id="authEmailInput"
+                    placeholder="이메일을 입력하세요"
+                    maxlength="60"
+                    onkeydown="if(event.key==='Enter') submitUserInfo()"
+                >
+                <div class="auth-error-msg" id="authStep1ErrorMsg"></div>
+                <div class="auth-btn-row">
+                    <button class="auth-cancel-btn" onclick="closeAuthModal()">취소</button>
+                    <button class="auth-confirm-btn" onclick="submitUserInfo()">
+                        <i class="fas fa-arrow-right"></i> 다음
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2단계: 인증코드 입력 -->
+            <div id="authStep2" style="display:none;">
+                <div class="auth-modal-icon"><i class="fas fa-lock"></i></div>
+                <div class="auth-modal-title">인증코드 입력</div>
+                <div class="auth-modal-sub">담당자에게 받은<br>인증코드를 입력하세요</div>
+                <input
+                    type="password"
+                    class="auth-input"
+                    id="authCodeInput"
+                    placeholder="인증코드 입력"
+                    maxlength="20"
+                    onkeydown="if(event.key==='Enter') confirmAuth()"
+                >
+                <div class="auth-error-msg" id="authErrorMsg"></div>
+                <div class="auth-btn-row">
+                    <button class="auth-cancel-btn" onclick="closeAuthModal()">취소</button>
+                    <button class="auth-confirm-btn" onclick="confirmAuth()">
+                        <i class="fas fa-download"></i> 다운로드
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="app-shell">
+        <header class="header">
+            <div class="menu-btn" onclick="toggleMenu()" aria-label="메뉴 열기">
+                <i class="fas fa-bars"></i>
+            </div>
+
+            <div class="brand-wrap">
+                <div class="brand-icon">
+                    <i class="fas fa-gear"></i>
+                </div>
+                <div class="brand-text">
+                    <div class="brand-title">스프라켓 검색</div>
+                    <div class="brand-sub">SPROCKET DATABASE</div>
+                </div>
+            </div>
+
+            <div id="usageBadge" class="usage-badge">--/--</div>
+        </header>
+
+        <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+        <aside class="side-menu" id="sideMenu">
+            <div class="close-btn" onclick="toggleMenu()">
+                <i class="fas fa-times"></i>
+            </div>
+            <ul>
+                <li onclick="goToChainMode()">체인 검색 모드로 이동</li>
+                <li onclick="resetSearchLimit()">검색가능 횟수 제한 해제</li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <section class="search-panel">
+                <div class="panel-title">검색 조건</div>
+
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="searchModel">형번 (MODEL)</label>
+                        <div class="field-wrap">
+                            <select id="searchModel">
+                                <option value="">전체 형번</option>
+                            </select>
+                            <span class="select-arrow">
+                                <i class="fas fa-chevron-down"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="dual-row">
+                        <div class="input-group">
+                            <label for="searchNt">잇수 (NT)</label>
+                            <input type="number" id="searchNt" placeholder="예 : 10">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="searchOd">외경 (OD)</label>
+                            <input type="number" id="searchOd" placeholder="예 : 24">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="searchPcd">피치원 지름 (PCD)</label>
+                        <input type="text" id="searchPcd" placeholder="예 : 20.55">
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="reset-btn" onclick="clearFields()">
+                            <i class="fas fa-rotate-left"></i>
+                            초기화
+                        </button>
+                        <button class="search-btn" onclick="performSearch()">
+                            <i class="fas fa-magnifying-glass"></i>
+                            검색하기
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="resultArea" class="result-area"></section>
+
+            <section id="defaultState" class="hero-empty" aria-hidden="false">
+                <div class="hero-empty-icon">
+                    <i class="fas fa-gear"></i>
+                </div>
+                <div class="hero-empty-text">조건을 입력하고 검색하세요</div>
+                <div class="hero-empty-sub">총 <strong id="totalDataCount">0</strong>개의 스프라켓 데이터</div>
+                <div id="modelChipList" class="model-chip-list"></div>
+            </section>
+        </main>
+
+        <div class="bottom-bar">
+            <div class="bottom-left">
+                <div class="bottom-caption">SPEED &amp; SIMPLE DATA SEARCH</div>
+            </div>
+            <a href="../../index.html" class="bottom-home">CBN / CS HOME</a>
+        </div>
+    </div>
+
+    <script>
+        const MAX_DAILY_SEARCH = 10;
+        const SEARCH_COUNT_KEY = 'sprocket_search_count';
+        const SEARCH_DATE_KEY = 'sprocket_search_date';
+
+        /* [복구] 형번 선택 목록용 데이터 */
+        const MODEL_OPTIONS = [
+            { value: '#25',  label: '#25',  pathKey: '25'  },
+            { value: '#35',  label: '#35',  pathKey: '35'  },
+            { value: '#40',  label: '#40',  pathKey: '40'  },
+            { value: '#50',  label: '#50',  pathKey: '50'  },
+            { value: '#60',  label: '#60',  pathKey: '60'  },
+            { value: '#80',  label: '#80',  pathKey: '80'  },
+            { value: '#100', label: '#100', pathKey: '100' },
+            { value: '#120', label: '#120', pathKey: '120' },
+            { value: '#140', label: '#140', pathKey: '140' }
+
+        ];
+
+        const MODEL_PATH_KEY_MAP = MODEL_OPTIONS.reduce((acc, item) => {
+            acc[item.value] = item.pathKey;
+            return acc;
+        }, {});
+
+        const MODEL_DATA_PATHS = {
+            '#25':  '../../data/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/25/data_25.js',
+            '#35':  '../../data/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/35/data_35.js',
+            '#40':  '../../data/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/40/data_40.js',
+            '#50':  '../../data/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/50/data_50.js',
+            '#60':  '../../data/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/60/data_60.js',
+            '#80':  '../../data/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/80/data_80.js',
+            '#100': '../../data/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/100/data_100.js',
+            '#120': '../../data/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/120/data_120.js',
+            '#140': '../../data/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/140/data_140.js'
+
+        };
+
+        const loadedModels = new Set();
+        const RESULT_PAGE_SIZE = 5;
+        let currentSearchResults = [];
+
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function goToChainMode() {
+            window.location.href = '../chain/chain.html';
+        }
+
+        function getTodayString() {
+            return new Date().toLocaleDateString('ko-KR');
+        }
+
+        function getSearchCount() {
+            const today = getTodayString();
+            const savedDate = localStorage.getItem(SEARCH_DATE_KEY);
+
+            if (savedDate !== today) {
+                localStorage.setItem(SEARCH_DATE_KEY, today);
+                localStorage.setItem(SEARCH_COUNT_KEY, '0');
+                return 0;
+            }
+
+            return parseInt(localStorage.getItem(SEARCH_COUNT_KEY) || '0', 10);
+        }
+
+        function setSearchCount(count) {
+            localStorage.setItem(SEARCH_DATE_KEY, getTodayString());
+            localStorage.setItem(SEARCH_COUNT_KEY, String(count));
+        }
+
+        function updateUsageUI() {
+            const count = getSearchCount();
+            const remaining = Math.max(0, MAX_DAILY_SEARCH - count);
+            const badge = document.getElementById('usageBadge');
+            if (badge) badge.textContent = `${remaining}/${MAX_DAILY_SEARCH}`;
+            return remaining;
+        }
+
+        function checkSearchLimit() {
+            const count = getSearchCount();
+            updateUsageUI();
+            return count < MAX_DAILY_SEARCH;
+        }
+
+        /* [핵심] 형번 select 목록 생성 */
+        function populateModelSelect() {
+            const select = document.getElementById('searchModel');
+            if (!select) return;
+
+            select.innerHTML = '<option value="">형번을 선택하시오</option>';
+
+            MODEL_OPTIONS.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.value;
+                opt.textContent = item.label;
+                select.appendChild(opt);
+            });
+
+            renderModelChips(MODEL_OPTIONS);
+        }
+
+        function renderModelChips(modelOptions) {
+            const chipList = document.getElementById('modelChipList');
+            if (!chipList) return;
+
+            chipList.innerHTML = '';
+
+            modelOptions.forEach(item => {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'model-chip';
+                chip.textContent = item.label;
+                chip.onclick = async function () {
+                    document.getElementById('searchModel').value = item.value;
+                    await performSearch();
+                };
+                chipList.appendChild(chip);
+            });
+        }
+
+        function updateTotalCount() {
+            const totalCountEl = document.getElementById('totalDataCount');
+            if (totalCountEl) {
+                totalCountEl.textContent = Array.isArray(allSprocketData) ? allSprocketData.length : 0;
+            }
+        }
+
+        function showDefaultState(show) {
+            const defaultState = document.getElementById('defaultState');
+            if (!defaultState) return;
+            defaultState.style.display = show ? 'block' : 'none';
+            defaultState.setAttribute('aria-hidden', show ? 'false' : 'true');
+        }
+
+        function loadModelScript(modelValue) {
+            return new Promise((resolve, reject) => {
+                if (!modelValue) {
+                    resolve();
+                    return;
+                }
+
+                if (loadedModels.has(modelValue)) {
+                    resolve();
+                    return;
+                }
+
+                const scriptPath = MODEL_DATA_PATHS[modelValue];
+
+                if (!scriptPath) {
+                    reject(new Error(`데이터 경로가 정의되지 않았습니다: ${modelValue}`));
+                    return;
+                }
+
+                const script = document.createElement('script');
+                script.src = scriptPath;
+                script.async = true;
+
+                script.onload = function () {
+                    loadedModels.add(modelValue);
+                    updateTotalCount();
+                    resolve();
+                };
+
+                script.onerror = function () {
+                    reject(new Error(`데이터 파일을 불러올 수 없습니다: ${scriptPath}`));
+                };
+
+                document.head.appendChild(script);
+            });
+        }
+
+        async function loadAllModelScripts() {
+            const modelValues = MODEL_OPTIONS.map(item => item.value);
+            for (const modelValue of modelValues) {
+                if (!loadedModels.has(modelValue)) {
+                    await loadModelScript(modelValue);
+                }
+            }
+        }
+
+        function showLoadingMessage(message) {
+            const area = document.getElementById('resultArea');
+            area.innerHTML = `<div class="loading-message">${message}</div>`;
+        }
+
+        async function performSearch() {
+            if (!checkSearchLimit()) {
+                const area = document.getElementById('resultArea');
+                area.innerHTML = `<div class="limit-message">검색가능 횟수를 초과했습니다.</div>`;
+                showDefaultState(false);
+                return;
+            }
+
+            const model = document.getElementById('searchModel').value.trim();
+            const nt = document.getElementById('searchNt').value.trim();
+            const od = document.getElementById('searchOd').value.trim();
+            const pcd = document.getElementById('searchPcd').value.trim();
+
+            try {
+                if (model) {
+                    showLoadingMessage(`${model} 데이터 불러오는 중...`);
+                    await loadModelScript(model);
+                } else {
+                    showLoadingMessage('전체 형번 데이터 불러오는 중...');
+                    await loadAllModelScripts();
+                }
+            } catch (error) {
+                const area = document.getElementById('resultArea');
+                area.innerHTML = `<div class="empty-result">데이터 로드 실패: ${error.message}</div>`;
+                showDefaultState(false);
+                return;
+            }
+
+            let results = allSprocketData;
+
+            if (model) {
+                results = results.filter(d => d.model === model);
+            }
+            if (nt) {
+                results = results.filter(d => String(d.nt) == nt);
+            }
+            if (od) {
+                results = results.filter(d => String(d.od) == od);
+            }
+            if (pcd) {
+                results = results.filter(d => String(d.pitchCircle || d.pcd || '').includes(pcd));
+            }
+
+            currentSearchResults = results;
+            renderSearchResults();
+
+            const currentCount = getSearchCount();
+            setSearchCount(currentCount + 1);
+            updateUsageUI();
+            showDefaultState(false);
+        }
+
+        function getPathKeyFromModel(modelValue) {
+            return MODEL_PATH_KEY_MAP[modelValue] || String(modelValue).replace('#', '');
+        }
+
+        /* [핵심 수정]
+           실제 파일명 규칙 반영
+           PDF: 25-10nt.pdf
+           DWG: 25-10nt.dwg
+           미리보기: 25-10nt.jpg / 25-10nt.png
+        */
+        function getFilePaths(item) {
+            const pathKey = getPathKeyFromModel(item.model);   // "#25" -> "25"
+            const ntValue = `${item.nt}nt`;                    // "10nt"
+            const baseName = `${pathKey}-${ntValue}`;          // "25-10nt"
+
+            return {
+                pdf: `../../download/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/pdf/${pathKey}/${baseName}.pdf`,
+                dwg: `../../secure-download/dwg/1r_iso_roller_chain_s/${pathKey}/${baseName}.dwg`,
+                previewStep: `../../download/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/3d/${pathKey}/${baseName}.step`,
+                previewStp: `../../download/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/3d/${pathKey}/${baseName}.stp`
+            };
+        }
+
+        function toggleResultCard(buttonEl) {
+            const card = buttonEl.closest('.result-card-item');
+            if (!card) return;
+            card.classList.toggle('open');
+        }
+
+        function open3dDownload(stepPath, stpPath) {
+            const tryOpen = function (url, fallbackUrl) {
+                fetch(url, { method: 'HEAD' })
+                    .then(response => {
+                        if (response.ok) {
+                            window.open(url, '_blank');
+                        } else if (fallbackUrl) {
+                            tryOpen(fallbackUrl, null);
+                        } else {
+                            alert('3D 파일(STEP/STP)을 찾을 수 없습니다. 현재 압축본에는 3D 폴더만 있고 실제 3D 파일은 포함되어 있지 않습니다.');
+                        }
+                    })
+                    .catch(() => {
+                        if (fallbackUrl) {
+                            tryOpen(fallbackUrl, null);
+                        } else {
+                            alert('3D 파일(STEP/STP)을 찾을 수 없습니다. 현재 압축본에는 3D 폴더만 있고 실제 3D 파일은 포함되어 있지 않습니다.');
+                        }
+                    });
+            };
+
+            tryOpen(stepPath, stpPath);
+        }
+
+        function createResultCardHtml(item) {
+            const filePaths = getFilePaths(item);
+
+            return `
+                <div class="result-card-item">
+                    <div class="result-summary">
+                        <div class="model-pill">${item.model || ''}</div>
+
+                        <div class="summary-grid">
+                            <div class="summary-col">
+                                <div class="summary-label">잇수</div>
+                                <div class="summary-value">${item.nt != null ? item.nt + 'T' : ''}</div>
+                            </div>
+                            <div class="summary-col">
+                                <div class="summary-label">외경</div>
+                                <div class="summary-value">${item.od != null ? item.od : ''}<span class="summary-unit">mm</span></div>
+                            </div>
+                            <div class="summary-col">
+                                <div class="summary-label">PCD</div>
+                                <div class="summary-value">${item.pitchCircle ?? item.pcd ?? ''}</div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="toggle-btn" onclick="toggleResultCard(this)" aria-label="상세 열기/닫기">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+
+                    <div class="result-detail">
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">피치원</div>
+                                <div class="detail-value">${item.pitchCircle ?? item.pcd ?? ''}<span class="summary-unit">mm</span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">보스 길이</div>
+                                <div class="detail-value">${item.bossLength ?? ''}<span class="summary-unit">mm</span></div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">이뿌리원</div>
+                                <div class="detail-value">${item.rootCircle ?? ''}<span class="summary-unit">mm</span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">드릴</div>
+                                <div class="detail-value">${item.drill ?? ''}<span class="summary-unit">mm</span></div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">보스경</div>
+                                <div class="detail-value">${item.bossDiameter ?? ''}<span class="summary-unit">mm</span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">외경 (OD)</div>
+                                <div class="detail-value">${item.od ?? ''}<span class="summary-unit">mm</span></div>
+                            </div>
+                        </div>
+
+                        <div class="detail-actions">
+                            <a href="${filePaths.pdf}" class="detail-file-btn pdf" target="_blank">
+                                <i class="far fa-file-alt"></i> PDF 도면
+                            </a>
+
+                            <a href="javascript:void(0)"
+                               class="detail-file-btn dwg"
+                               onclick="requestDwgAuth('${filePaths.dwg}')">
+                                <i class="fas fa-wrench"></i> 2D 도면
+                            </a>
+
+                            <a href="javascript:void(0)"
+                               class="detail-file-btn dxf"
+                               onclick="open3dDownload('${filePaths.previewStep}', '${filePaths.previewStp}')">
+                                <i class="fas fa-eye"></i> 3D 도면
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function chunkResults(results, size) {
+            const pages = [];
+            for (let i = 0; i < results.length; i += size) {
+                pages.push(results.slice(i, i + size));
+            }
+            return pages;
+        }
+
+        function createResultWrapperHtml(totalCount, totalPages) {
+            return `
+                <div class="result-list-wrap">
+                    <div class="result-title-row">
+                        <div class="result-title-left">검색 결과</div>
+                        <div class="result-count-badge">${totalCount}건</div>
+                    </div>
+
+                    <div class="result-guide">
+                        아래 결과 영역만 스크롤됩니다. 한 화면에 5개씩 표시되며, 아래로 넘기면 다음 5개가 보입니다.
+                    </div>
+
+                    <div class="result-progress" id="resultProgress">
+                        1 / ${totalPages} 페이지
+                    </div>
+
+                    <div class="result-scroll-box" id="resultScrollBox">
+                        <div class="result-pages-container" id="resultPagesContainer"></div>
+                    </div>
+
+                    <div class="page-status" id="pageStatus">
+                        총 ${totalPages}페이지
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSearchResults() {
+            const area = document.getElementById('resultArea');
+
+            if (!currentSearchResults || currentSearchResults.length === 0) {
+                area.innerHTML = `<div class="empty-result">검색 결과가 없습니다.</div>`;
+                return;
+            }
+
+            const pages = chunkResults(currentSearchResults, RESULT_PAGE_SIZE);
+            area.innerHTML = createResultWrapperHtml(currentSearchResults.length, pages.length);
+
+            const pagesContainer = document.getElementById('resultPagesContainer');
+            pagesContainer.innerHTML = pages.map(pageItems => {
+                return `
+                    <div class="result-page">
+                        ${pageItems.map(item => createResultCardHtml(item)).join('')}
+                    </div>
+                `;
+            }).join('');
+
+            const resultScrollBox = document.getElementById('resultScrollBox');
+            resultScrollBox.scrollTop = 0;
+
+            resultScrollBox.removeEventListener('scroll', updatePageIndicatorFromScroll);
+            resultScrollBox.addEventListener('scroll', updatePageIndicatorFromScroll);
+
+            updatePageIndicator(1, pages.length);
+        }
+
+        function updatePageIndicatorFromScroll() {
+            const resultScrollBox = document.getElementById('resultScrollBox');
+            if (!resultScrollBox) return;
+
+            const pageHeight = resultScrollBox.clientHeight;
+            const currentPage = Math.round(resultScrollBox.scrollTop / pageHeight) + 1;
+            const totalPages = Math.max(1, Math.ceil(currentSearchResults.length / RESULT_PAGE_SIZE));
+            updatePageIndicator(currentPage, totalPages);
+        }
+
+        function updatePageIndicator(currentPage, totalPages) {
+            const progressEl = document.getElementById('resultProgress');
+            const statusEl = document.getElementById('pageStatus');
+
+            if (progressEl) {
+                progressEl.textContent = `${currentPage} / ${totalPages} 페이지`;
+            }
+
+            if (statusEl) {
+                statusEl.textContent = `현재 ${currentPage}페이지 · 총 ${totalPages}페이지`;
+            }
+        }
+
+        function clearFields() {
+            document.getElementById('searchModel').value = '';
+            document.getElementById('searchNt').value = '';
+            document.getElementById('searchOd').value = '';
+            document.getElementById('searchPcd').value = '';
+            document.getElementById('resultArea').innerHTML = '';
+            currentSearchResults = [];
+            showDefaultState(true);
+        }
+
+        function resetSearchLimit() {
+            setSearchCount(0);
+            updateUsageUI();
+            toggleMenu();
+        }
+
+        /* ===== DWG 인증 로직 ===== */
+        const DWG_AUTH_CODE = 'hkd8421';
+
+        const GOOGLE_FORM_URL  = 'https://docs.google.com/forms/d/e/1FAIpQLSeqElBNIHjkJhsIzNsH45j_cLnNm3lksRhlTtXKu_IfRLgFOg/formResponse';
+        const FORM_ENTRY_NAME  = 'entry.1293161912';
+        const FORM_ENTRY_EMAIL = 'entry.1030936526';
+
+        let _pendingDwgUrl = null;
+
+        function requestDwgAuth(dwgUrl) {
+            _pendingDwgUrl = dwgUrl;
+
+            document.getElementById('authNameInput').value = '';
+            document.getElementById('authEmailInput').value = '';
+            document.getElementById('authCodeInput').value = '';
+            document.getElementById('authStep1ErrorMsg').textContent = '';
+            document.getElementById('authErrorMsg').textContent = '';
+            document.getElementById('authNameInput').classList.remove('error');
+            document.getElementById('authEmailInput').classList.remove('error');
+            document.getElementById('authCodeInput').classList.remove('error');
+
+            document.getElementById('authStep1').style.display = 'block';
+            document.getElementById('authStep2').style.display = 'none';
+
+            document.getElementById('authModalBackdrop').classList.add('active');
+            setTimeout(() => document.getElementById('authNameInput').focus(), 120);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModalBackdrop').classList.remove('active');
+            _pendingDwgUrl = null;
+        }
+
+        async function submitUserInfo() {
+            const nameInput  = document.getElementById('authNameInput');
+            const emailInput = document.getElementById('authEmailInput');
+            const errMsg     = document.getElementById('authStep1ErrorMsg');
+            const nextBtn    = document.getElementById('authStep1').querySelector('.auth-confirm-btn');
+            const name  = nameInput.value.trim();
+            const email = emailInput.value.trim();
+
+            if (!name) {
+                nameInput.classList.remove('error');
+                void nameInput.offsetWidth;
+                nameInput.classList.add('error');
+                errMsg.textContent = '이름을 입력해 주세요.';
+                nameInput.focus();
+                return;
+            }
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                emailInput.classList.remove('error');
+                void emailInput.offsetWidth;
+                emailInput.classList.add('error');
+                errMsg.textContent = '올바른 이메일 주소를 입력해 주세요.';
+                emailInput.focus();
+                return;
+            }
+
+            nameInput.classList.remove('error');
+            emailInput.classList.remove('error');
+            errMsg.textContent = '';
+
+            nextBtn.disabled = true;
+            nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 처리 중...';
+
+            try {
+                const formData = new FormData();
+                formData.append(FORM_ENTRY_NAME,  name);
+                formData.append(FORM_ENTRY_EMAIL, email);
+                await fetch(GOOGLE_FORM_URL, { method: 'POST', mode: 'no-cors', body: formData });
+            } catch (e) {
+                // 네트워크 오류여도 다음 단계 진행
+            } finally {
+                nextBtn.disabled = false;
+                nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i> 다음';
+            }
+
+            document.getElementById('authStep1').style.display = 'none';
+            document.getElementById('authStep2').style.display = 'block';
+            setTimeout(() => document.getElementById('authCodeInput').focus(), 120);
+        }
+
+        async function confirmAuth() {
+            const input = document.getElementById('authCodeInput');
+            const errMsg = document.getElementById('authErrorMsg');
+            const confirmBtn = document.getElementById('authStep2').querySelector('.auth-confirm-btn');
+            const entered = input.value.trim();
+
+            if (entered !== DWG_AUTH_CODE) {
+                input.classList.remove('error');
+                void input.offsetWidth;
+                input.classList.add('error');
+                errMsg.textContent = '인증코드가 올바르지 않습니다.';
+                input.value = '';
+                input.focus();
+                return;
+            }
+
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 다운로드 중...';
+            errMsg.textContent = '';
+
+            try {
+                const response = await fetch(_pendingDwgUrl);
+                if (!response.ok) throw new Error(`파일을 찾을 수 없습니다. (${response.status})`);
+
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                const fileName = _pendingDwgUrl.split('/').pop();
+
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+                closeAuthModal();
+
+            } catch (err) {
+                errMsg.textContent = err.message || '다운로드 중 오류가 발생했습니다.';
+                input.classList.remove('error');
+                void input.offsetWidth;
+                input.classList.add('error');
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<i class="fas fa-download"></i> 다운로드';
+            }
+        }
+        /* ===== /DWG 인증 로직 ===== */
+
+        /* [핵심] 페이지 로드시 형번 목록 채움 */
+        window.onload = function() {
+            populateModelSelect();
+            updateTotalCount();
+            updateUsageUI();
+            showDefaultState(true);
+
+            // 팝업 바깥 클릭 시 닫기
+            document.getElementById('authModalBackdrop').addEventListener('click', function(e) {
+                if (e.target === this) closeAuthModal();
+            });
+        };
+    </script>
+</body>
+</html>

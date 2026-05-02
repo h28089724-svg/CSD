@@ -1,0 +1,27 @@
+CSD 경로 수정 및 검증 보고서
+
+수정 대상 HTML:
+- index.html
+- search_html/sprocket/sprocket_main.html
+- search_html/sprocket/sprocket.html
+- search_html/chain/chain_main.html
+- search_html/chain/chain.html
+
+핵심 수정:
+1. index.html의 스프라켓/체인 메뉴 이동 경로를 search_html 하위 실제 위치로 수정
+2. search_html 내부 HTML에서 images, manifest, sw.js, index.html 참조를 루트 기준 상대경로로 수정
+3. sprocket.html 데이터 JS 경로를 실제 data/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket 하위로 수정
+4. sprocket.html PDF 경로를 실제 download/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/pdf 하위로 수정
+5. sprocket.html DWG 경로를 실제 secure-download/dwg/1r_iso_roller_chain_s 하위로 수정
+6. sprocket.html 3D 버튼은 실제 3d 폴더 경로를 보도록 수정했으나, 업로드 압축본에는 3D 실제 파일이 없어 안내 메시지를 띄우도록 처리
+7. 압축본에 없는 CV_sprocket.html, CV_chain.html 파일 링크는 깨진 이동 대신 안내창으로 처리
+
+검증 결과:
+- 스프라켓 데이터 JS: 9개 경로 존재 확인
+- PDF 파일: 357개 존재 확인
+- DWG 파일: 598개 존재 확인
+- 3D 폴더: 존재하지만 실제 파일 0개
+- 체인 data_chain JS: 압축본에 없음. 체인 검색 데이터 로딩은 추가 파일 필요
+
+실행 위치:
+- C:\CSD\index.html 위치에 압축 해제 후 index.html 실행
