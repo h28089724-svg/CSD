@@ -7,7 +7,7 @@
     <!-- [유지] 모바일 반응형 기본 설정 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>스프라켓 검색</title>
+    <title>컨베이어용 스프라켓 검색</title>
 
     <!-- [유지] PWA 관련 설정 -->
     <link rel="manifest" href="../../manifest.json">
@@ -1170,8 +1170,8 @@
                     <i class="fas fa-gear"></i>
                 </div>
                 <div class="brand-text">
-                    <div class="brand-title">BS규격 체인 스프라켓</div>
-                    <div class="brand-sub">ISO B 계열 (BS 규격 기반)</div>
+                    <div class="brand-title">컨베이어용 스프라켓</div>
+                    <div class="brand-sub">배속체인용 스프라켓/소형/대형컨베이어용 스프라켓</div>
                 </div>
             </div>
 
@@ -1262,17 +1262,18 @@
         const SEARCH_COUNT_KEY = 'sprocket_search_count';
         const SEARCH_DATE_KEY = 'sprocket_search_date';
 
-        /* [복구] 형번 선택 목록용 데이터 */
+        /* 급속형번 선택 하단 목록용 데이터 */
+
+
         const MODEL_OPTIONS = [
-            { value: 'RS08B',  label: 'RS08B',  pathKey: 'RS08B'  },
-            { value: 'RS10B',  label: 'RS10B',  pathKey: 'RS10B'  },
-            { value: 'RS12B',  label: 'RS12B',  pathKey: 'RS12B'  },
-            { value: 'RS16B',  label: 'RS16B',  pathKey: 'RS16B'  },
-            { value: 'RS20B',  label: 'RS20B',  pathKey: 'RS20B'  },
-            { value: 'RS24B',  label: 'RS24B',  pathKey: 'RS24B'  },
-            { value: 'RS28B', label: 'RS28B', pathKey: 'RS28B' },
-            { value: 'RS32B', label: 'RS32B', pathKey: 'RS32B' },
-            { value: 'RS40B', label: 'RS40B', pathKey: 'RS40B' }
+
+            { value: '배속1',  label: '배속1',  pathKey: '배속1' },
+            { value: '배속2',  label: '배속2',  pathKey: '배속2' },
+            { value: '배속3',  label: '배속3',  pathKey: '배속3' },
+            { value: '배속4',  label: '배속4',  pathKey: '배속4' },
+            { value: '배속5',  label: '배속5',  pathKey: '배속5' },
+            { value: '배속6',  label: '배속6',  pathKey: '배속6' },
+        
 
         ];
 
@@ -1281,19 +1282,7 @@
             return acc;
         }, {});
 
-        const MODEL_DATA_PATHS = {
-            '08B':  '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_08B.js',
-            '10B':  '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_10B.js',
-            '12B':  '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_12B.js',
-            '16B':  '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_16B.js',
-            '20B':  '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_20B.js',
-            '24B':  '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_24B.js',
-            '28B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_28B.js',
-            '32B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_32B.js',
-            '40B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_40B.js'
-
-        };
-
+        
         const loadedModels = new Set();
         const RESULT_PAGE_SIZE = 5;
         let currentSearchResults = [];
@@ -1512,10 +1501,10 @@
             const baseName = `${pathKey}-${ntValue}`;          // "25-10nt"
 
             return {
-                pdf: `../../download/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/pdf/${pathKey}/${baseName}.pdf`,
+                pdf: `../../download/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/pdf/${pathKey}/${baseName}.pdf`,
                 dwg: `../../secure-download/dwg/1r_iso_roller_chain_s/${pathKey}/${baseName}.dwg`,
-                previewStep: `../../download/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/3d/${pathKey}/${baseName}.step`,
-                previewStp: `../../download/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/3d/${pathKey}/${baseName}.stp`
+                previewStep: `../../download/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/3d/${pathKey}/${baseName}.step`,
+                previewStp: `../../download/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/3d/${pathKey}/${baseName}.stp`
             };
         }
 
