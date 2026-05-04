@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>체인규격검색</title>
+
+    <link rel="manifest" href="../../manifest.json">
+    <meta name="theme-color" content="#3e8aae">
+
+    <style>
+        :root {
+            --accent-main: rgb(62, 138, 174);
+            --accent-soft: rgba(62, 138, 174, 0.15);
+            --accent-border: rgba(62, 138, 174, 0.34);
+
+            --bg-top: #e8f5fb;
+            --bg-bottom: #d7ebf4;
+
+            --text-main: #133241;
+            --text-sub: rgba(19, 50, 65, 0.72);
+
+            /* 패널과 버튼을 흰색이 아니라 같은 계열로 통일 */
+            --panel-bg: rgba(62, 138, 174, 0.08);
+            --panel-border: rgba(62, 138, 174, 0.22);
+
+            --btn-bg: rgba(62, 138, 174, 0.16);
+            --btn-border: rgba(62, 138, 174, 0.28);
+
+            --btn-hover-bg: var(--accent-main);
+            --btn-hover-text: #ffffff;
+
+            --home-btn-bg: rgba(62, 138, 174, 0.12);
+            --home-btn-border: rgba(62, 138, 174, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(62, 138, 174, 0.25), transparent 55%),
+                linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+            display: flex;
+            justify-content: center;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .page {
+            max-width: 800px;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 18px;
+        }
+
+        .hero-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .brand-tag {
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            border: 1px solid var(--accent-border);
+            color: var(--accent-main);
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+        }
+
+        .main-title {
+            margin: 10px 0 6px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .main-sub {
+            color: var(--text-sub);
+            font-size: 0.9rem;
+        }
+
+        .menu-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: 0 10px 30px rgba(62, 138, 174, 0.10);
+            backdrop-filter: blur(4px);
+        }
+
+        .mode-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+
+        .mode-item {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sub-search-list {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            padding: 0 4px 2px 76px;
+            animation: slideDown 0.18s ease;
+        }
+
+        .mode-item.open .sub-search-list {
+            display: flex;
+        }
+
+        .sub-search-btn {
+            width: 100%;
+            min-height: 44px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--btn-border);
+            background: rgba(255, 255, 255, 0.35);
+            color: var(--text-main);
+            font-size: 0.92rem;
+            font-weight: 700;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sub-search-btn:hover {
+            background: var(--accent-main);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(62, 138, 174, 0.20);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mode-btn {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid var(--btn-border);
+            background: var(--btn-bg);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            color: var(--text-main);
+        }
+
+        .mode-btn:hover {
+            background: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
+            transform: translateY(-4px);
+            box-shadow: 0 18px 36px rgba(62, 138, 174, 0.30);
+        }
+
+        .mode-image-wrap {
+            width: 60px;
+            min-width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.28);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex: 0 0 auto;
+            filter: drop-shadow(0 6px 12px rgba(62, 138, 174, 0.20));
+        }
+
+        .mode-image {
+            width: 60px;
+            height: auto;
+            display: block;
+        }
+
+        .mode-icon-fallback {
+            display: none;
+            font-size: 1.9rem;
+            line-height: 1;
+        }
+
+        .mode-image-wrap.image-error .mode-image {
+            display: none;
+        }
+
+        .mode-image-wrap.image-error .mode-icon-fallback {
+            display: block;
+        }
+
+        .mode-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .mode-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            line-height: 1.2;
+            margin: 0 0 4px 0;
+        }
+
+        .mode-desc {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin: 0;
+        }
+
+        .mode-btn:hover .mode-desc {
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .middle-image-zone {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .page-bg-image {
+            width: 260px;
+            max-width: 66%;
+            opacity: 0.10;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .bottom-area {
+            margin-top: auto;
+            text-align: center;
+        }
+
+        .home-btn {
+            margin-top: 10px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            border: 1px solid var(--home-btn-border);
+            background: var(--home-btn-bg);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            color: var(--accent-main);
+            font-size: 0.92rem;
+            font-weight: 500;
+        }
+
+        .home-btn:hover {
+            background: var(--accent-main);
+            color: #ffffff;
+        }
+
+        .bottom-brand {
+            margin-top: 14px;
+        }
+
+        .bottom-brand-name {
+            font-weight: 800;
+            color: var(--accent-main);
+            font-size: 1.15rem;
+            letter-spacing: -0.02em;
+        }
+
+        .bottom-sub {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+
+
+        /* [이번 수정] 메인 버튼을 누르기 전에는 기존의 흐린 체인 이미지를 표시하고,
+           메인 버튼을 누르면 아래 이미지 네비게이션 영역을 표시합니다. */
+        .middle-image-zone.is-hidden {
+            display: none;
+        }
+
+        /* [이번 수정] 이미지 네비게이션 전체 영역: 메뉴가 열릴 때만 표시됩니다.
+           앞으로 이미지가 22개 이상으로 늘어나도 아래 JS 배열에 항목만 추가하면 자동으로 버튼이 생성됩니다. */
+        .image-nav-zone {
+            display: none;
+            margin: 22px 0 24px;
+            animation: slideDown 0.22s ease;
+        }
+
+        .image-nav-zone.is-visible {
+            display: block;
+        }
+
+        .image-nav-head {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 0 0 12px;
+            padding: 0 2px;
+        }
+
+        .image-nav-title {
+            margin: 0;
+            font-size: 0.98rem;
+            font-weight: 850;
+            color: var(--accent-main);
+            letter-spacing: -0.03em;
+        }
+
+        .image-nav-note {
+            margin: 0;
+            font-size: 0.74rem;
+            color: rgba(19, 50, 65, 0.56);
+            white-space: nowrap;
+        }
+
+        /* [이번 수정] 계열별/사용빈도 순서로 정렬된 4열 이미지 네비게이션입니다.
+           이미지 버튼은 투명한 배경 + 얇은 테두리 + 둥근 모서리로 구성해 현재 화면 톤과 맞췄습니다. */
+        .image-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .chain-image-nav-btn {
+            min-height: 132px;
+            padding: 8px 8px 9px;
+            border-radius: 18px;
+            border: 1px solid rgba(62, 138, 174, 0.30);
+            background: rgba(255, 255, 255, 0.12);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+            overflow: hidden;
+            color: var(--text-main);
+        }
+
+        .chain-image-nav-btn:hover,
+        .chain-image-nav-btn.active {
+            background: linear-gradient(180deg, rgba(62, 138, 174, 0.98), rgba(46, 115, 148, 0.98));
+            border-color: rgba(255, 255, 255, 0.58);
+            color: #ffffff;
+            transform: translateY(-3px);
+            box-shadow: 0 14px 26px rgba(62, 138, 174, 0.26);
+        }
+
+        .chain-image-nav-btn:active {
+            transform: translateY(-1px) scale(0.985);
+        }
+
+        .nav-img-wrap {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* [이번 수정] 이미지는 검정/회색 계열로 낮은 대비를 주어 배경에 자연스럽게 스며들게 처리했습니다. */
+        .chain-image-nav-btn img {
+            width: 100%;
+            max-width: 118px;
+            height: 88px;
+            object-fit: contain;
+            opacity: 0.58;
+            filter: grayscale(1) contrast(0.86) brightness(0.68);
+            transition: opacity 0.18s ease, filter 0.18s ease, transform 0.18s ease;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* [이번 수정] hover/선택 시에는 반전 계열로 바뀌어 어두운 배경에서도 가독성이 좋아집니다. */
+        .chain-image-nav-btn:hover img,
+        .chain-image-nav-btn.active img {
+            opacity: 0.88;
+            filter: grayscale(1) invert(1) contrast(0.92) brightness(1.18);
+            transform: scale(1.03);
+        }
+
+        .nav-label {
+            width: 100%;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 5px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid rgba(62, 138, 174, 0.16);
+            font-size: 0.70rem;
+            font-weight: 800;
+            line-height: 1.15;
+            text-align: center;
+            letter-spacing: -0.04em;
+            transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+        }
+
+        .chain-image-nav-btn:hover .nav-label,
+        .chain-image-nav-btn.active .nav-label {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.34);
+            color: #ffffff;
+        }
+
+        @media (max-width: 560px) {
+            .page {
+                padding: 18px 12px;
+            }
+
+            .main-title {
+                font-size: 1.55rem;
+            }
+
+            .main-sub {
+                font-size: 0.86rem;
+            }
+
+            .menu-panel {
+                padding: 14px;
+                border-radius: 18px;
+            }
+
+            .mode-btn {
+                padding: 14px;
+                gap: 14px;
+                border-radius: 14px;
+            }
+
+            .mode-image-wrap {
+                width: 52px;
+                min-width: 52px;
+                height: 52px;
+            }
+
+            .mode-image {
+                width: 52px;
+            }
+
+            .sub-search-list {
+                padding-left: 0;
+            }
+
+            .sub-search-btn {
+                font-size: 0.86rem;
+                min-height: 42px;
+            }
+
+            .mode-title {
+                font-size: 0.98rem;
+            }
+
+            .mode-desc {
+                font-size: 0.8rem;
+            }
+
+            .page-bg-image {
+                width: 220px;
+                max-width: 72%;
+            }
+
+            /* [이번 수정] 모바일에서도 4열을 유지하되 버튼 크기와 라벨을 줄여 화면이 복잡해지지 않게 조정 */
+            .image-nav-head {
+                align-items: center;
+                margin-bottom: 10px;
+            }
+
+            .image-nav-title {
+                font-size: 0.9rem;
+            }
+
+            .image-nav-note {
+                display: none;
+            }
+
+            .image-nav-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 8px;
+            }
+
+            .chain-image-nav-btn {
+                min-height: 94px;
+                padding: 5px;
+                border-radius: 14px;
+                gap: 4px;
+            }
+
+            .chain-image-nav-btn img {
+                max-width: 72px;
+                height: 58px;
+            }
+
+            .nav-label {
+                min-height: 20px;
+                padding: 3px 4px;
+                font-size: 0.58rem;
+            }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="hero-header">
+            <div class="brand-tag">CHAIN MENU</div>
+            <div class="main-title">체인 선택</div>
+            <div class="main-sub">용도에 맞는 항목을 선택하세요</div>
+        </div>
+
+        <div class="menu-panel">
+            <div class="mode-list">
+                <div class="mode-item">
+                    <button class="mode-btn" type="button" onclick="toggleSubMenu(this)">
+                        <span class="mode-image-wrap">
+                            <img src="../../images/chain.png" alt="RS체인 이미지" class="mode-image" data-fallbacks="../images/chain.png|./images/chain.png|/images/chain.png" onerror="tryImageFallback(this)">
+                            <span class="mode-icon-fallback" aria-hidden="true">⛓️</span>
+                        </span>
+                        <div class="mode-text">
+                            <div class="mode-title">동력전달용 체인</div>
+                            <p class="mode-desc">ISO A 계열롤러체인 / ISO-B 계열롤러체인 / 할로우핀체인 </p>
+                        </div>
+                    </button>
+                    <div class="sub-search-list" aria-label="동력전달용 2차 검색">
+                        <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-iso-a.html')">ISO A 계열롤러체인</button>
+                        <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-iso-b.html')">ISO-B 계열롤러체인</button>
+                        <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-double.html')">더블피치체인</button>
+                        <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-hollow.html')">할로우핀체인</button>
+                    </div>
+                </div>
+
+                <div class="mode-item">
+                    <button class="mode-btn" type="button" onclick="toggleSubMenu(this)">
+                        <span class="mode-image-wrap">
+                            <img src="../../images/icon_data_3.png" alt="CV체인 이미지" class="mode-image" data-fallbacks="../images/icon_data_3.png|./images/icon_data_3.png|../../images/chain.png|../images/chain.png|./images/chain.png|/images/icon_data_3.png" onerror="tryImageFallback(this)">
+                            <span class="mode-icon-fallback" aria-hidden="true">⚙️</span>
+                        </span>
+                        <div class="mode-text">
+                            <div class="mode-title">컨베이어용</div>
+                            <p class="mode-desc">컨베이어 체인 검색</p>
+                        </div>
+                    </button>
+                    <div class="sub-search-list" aria-label="컨베이어용 2차 검색">
+                        <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-attach.html')">어태치먼트 체인 </button>
+                        <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-freeflow.html')">배속체인(조립라인용)</button>
+                        <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-center.html')">센터롤라/탑롤라/사이드롤라체인</button>
+                        <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-large-con.html')">대형컨베이어체인</button>
+                        <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-small.html')">소형컨베이어체인</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- [기존 유지] 메인 버튼을 누르기 전에는 흐린 단일 체인 이미지를 표시합니다. -->
+        <div id="middleImageZone" class="middle-image-zone" aria-hidden="true">
+            <img src="../../images/chain.png" alt="" class="page-bg-image" data-fallbacks="../images/chain.png|./images/chain.png|/images/chain.png" onerror="tryImageFallback(this)">
+        </div>
+
+        <!-- [이번 수정] 메인 버튼 클릭 후 표시되는 이미지 네비게이션 영역입니다.
+             계열별로 묶되, 일반적으로 많이 쓰는 A/K/SA 계열을 위쪽에 우선 배치했습니다.
+             실제 페이지 연결은 나중에 chainImageNavItems 배열의 target 값에 넣으면 됩니다. -->
+        <div id="imageNavZone" class="image-nav-zone" aria-label="체인 이미지 네비게이션">
+            <div class="image-nav-head">
+                <div class="image-nav-title">이미지로 체인 형식 선택</div>
+                <p class="image-nav-note">자주 쓰는 형식부터 정렬</p>
+            </div>
+            <div id="imageNavGrid" class="image-nav-grid"></div>
+        </div>
+
+        <div class="bottom-area">
+            <button class="home-btn" onclick="goHome()">🏠 홈으로</button>
+
+            <div class="bottom-brand" aria-label="브랜드 정보">
+                <div class="bottom-brand-name">MYCAD</div>
+                <div class="bottom-sub">Speed &amp; Simple Data Search</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* [이번 수정] 이미지 네비 버튼 목록입니다.
+           - file: C:/CSD/images 폴더에 둘 이미지 파일명
+           - label: 버튼에 표시할 이름
+           - category: 보조 설명
+           - target: 추후 연결할 검색 페이지 경로, 아직 미정이면 빈 문자열 유지 */
+        const chainImageNavItems = [
+            { file: '1LA1(2).png', label: '1LA1', category: 'A계열 / 한쪽', target: '' },
+            { file: '1LAA1(3).png', label: '1LAA1', category: 'A계열 / 양쪽', target: '' },
+            { file: '2LA1(2).png', label: '2LA1', category: 'A계열 2열 / 한쪽', target: '' },
+            { file: '2LAA1.png', label: '2LAA1', category: 'A계열 2열 / 양쪽', target: '' },
+            { file: '1LK1(2).png', label: '1LK1', category: 'K계열 / 한쪽', target: '' },
+            { file: '1LKK1(2).png', label: '1LKK1', category: 'K계열 / 양쪽', target: '' },
+            { file: '2LK1(2).png', label: '2LK1', category: 'K계열 2열 / 한쪽', target: '' },
+            { file: '2LKK1.png', label: '2LKK1', category: 'K계열 2열 / 양쪽', target: '' },
+            { file: '1LSA1(2).png', label: '1LSA1', category: 'SA계열 / 한쪽', target: '' },
+            { file: '1LSAA1(2).png', label: '1LSAA1', category: 'SA계열 / 양쪽', target: '' },
+            { file: '2LSA1(2).png', label: '2LSA1', category: 'SA계열 2열 / 한쪽', target: '' },
+            { file: '2LSAA1.png', label: '2LSAA1', category: 'SA계열 2열 / 양쪽', target: '' },
+            { file: '1LSK1(2).png', label: '1LSK1', category: 'SK계열 / 한쪽', target: '' },
+            { file: '1LSKK1(2).png', label: '1LSKK1', category: 'SK계열 / 양쪽', target: '' },
+            { file: '2LSK1(2).png', label: '2LSK1', category: 'SK계열 2열 / 한쪽', target: '' },
+            { file: '2LSKK1.png', label: '2LSKK1', category: 'SK계열 2열 / 양쪽', target: '' },
+            { file: '2LWA1(2).png', label: '2LWA1', category: 'WA계열 / 한쪽', target: '' },
+            { file: '2LWA2(2).png', label: '2LWA2', category: 'WA계열 / 변형', target: '' },
+            { file: '2LWK1(2).png', label: '2LWK1', category: 'WK계열 / 한쪽', target: '' },
+            { file: '2LWK2(2).png', label: '2LWK2', category: 'WK계열 / 변형', target: '' },
+            { file: '2LWSA1(2).png', label: '2LWSA1', category: 'WSA계열 / 한쪽', target: '' },
+            { file: '2LWSA2.png', label: '2LWSA2', category: 'WSA계열 / 변형', target: '' },
+            { file: '2LWSK1(2).png', label: '2LWSK1', category: 'WSK계열 / 한쪽', target: '' },
+            { file: '2LWSK2.png', label: '2LWSK2', category: 'WSK계열 / 변형', target: '' },
+            { file: '1LEP1.png', label: '1LEP1', category: 'EP계열 / 1열', target: '' },
+            { file: '2LEP1.png', label: '2LEP1', category: 'EP계열 / 2열', target: '' },
+        ];
+
+        function renderImageNavigation() {
+            const grid = document.getElementById('imageNavGrid');
+            if (!grid) return;
+
+            grid.innerHTML = chainImageNavItems.map((item, index) => `
+                <button class="chain-image-nav-btn" type="button"
+                        onclick="selectImageNav(this, ${index})"
+                        aria-label="${item.label} ${item.category}">
+                    <span class="nav-img-wrap">
+                        <img src="../../images/${item.file}" alt="${item.label} 이미지">
+                    </span>
+                    <span class="nav-label">${item.label}</span>
+                </button>
+            `).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', renderImageNavigation);
+
+
+        function tryImageFallback(img) {
+            const fallbacks = (img.dataset.fallbacks || '').split('|').filter(Boolean);
+            const index = Number(img.dataset.fallbackIndex || 0);
+
+            if (index < fallbacks.length) {
+                img.dataset.fallbackIndex = index + 1;
+                img.src = fallbacks[index];
+                return;
+            }
+
+            const wrap = img.closest('.mode-image-wrap');
+            if (wrap) {
+                wrap.classList.add('image-error');
+            } else {
+                img.style.display = 'none';
+            }
+        }
+
+        function toggleSubMenu(el) {
+            const currentItem = el.closest('.mode-item');
+
+            document.querySelectorAll('.mode-item').forEach(item => {
+                if (item !== currentItem) {
+                    item.classList.remove('open');
+                }
+            });
+
+            currentItem.classList.toggle('open');
+
+            /* [이번 수정] 동력전달용/컨베이어용 중 하나라도 열리면
+               기존의 흐린 단일 체인 이미지를 숨기고 이미지 네비게이션을 표시합니다. */
+            updateImageNavigationVisibility();
+        }
+
+        function updateImageNavigationVisibility() {
+            const hasOpenMenu = document.querySelectorAll('.mode-item.open').length > 0;
+            const middleImageZone = document.getElementById('middleImageZone');
+            const imageNavZone = document.getElementById('imageNavZone');
+
+            if (middleImageZone) {
+                middleImageZone.classList.toggle('is-hidden', hasOpenMenu);
+            }
+
+            if (imageNavZone) {
+                imageNavZone.classList.toggle('is-visible', hasOpenMenu);
+            }
+        }
+
+        function selectImageNav(el, index) {
+            /* [이번 수정] 이미지 네비 버튼 클릭 반응입니다.
+               추후 각 이미지별 검색 페이지가 정해지면 chainImageNavItems[index].target에 경로를 넣으면 자동 이동됩니다. */
+            document.querySelectorAll('.chain-image-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            el.classList.add('active');
+
+            const item = chainImageNavItems[index];
+            if (item && item.target) {
+                setTimeout(() => {
+                    window.location.href = item.target;
+                }, 120);
+            }
+        }
+
+        function selectAndGo(el, url) {
+            document.querySelectorAll('.mode-btn, .sub-search-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            el.classList.add('active');
+
+            setTimeout(() => {
+                window.location.href = url;
+            }, 150);
+        }
+
+        function goHome() {
+            window.location.href = '../../index.html';
+        }
+    </script>
+</body>
+</html>

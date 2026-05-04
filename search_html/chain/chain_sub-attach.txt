@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>어태치먼트 체인검색</title>
+
+    <link rel="manifest" href="../../manifest.json">
+    <meta name="theme-color" content="#3e8aae">
+
+    <style>
+        :root {
+            --accent-main: rgb(62, 138, 174);
+            --accent-soft: rgba(62, 138, 174, 0.15);
+            --accent-border: rgba(62, 138, 174, 0.34);
+            --bg-top: #e8f5fb;
+            --bg-bottom: #d7ebf4;
+            --text-main: #133241;
+            --text-sub: rgba(19, 50, 65, 0.72);
+            --home-btn-bg: rgba(62, 138, 174, 0.12);
+            --home-btn-border: rgba(62, 138, 174, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(62, 138, 174, 0.25), transparent 55%),
+                linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+            display: flex;
+            justify-content: center;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .page {
+            max-width: 800px;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 34px 20px 42px;
+        }
+
+        .hero-header {
+            text-align: center;
+            margin-bottom: 34px;
+        }
+
+        .brand-tag {
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            border: 1px solid var(--accent-border);
+            color: var(--accent-main);
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+        }
+
+        .main-title {
+            margin: 12px 0 0;
+            font-size: 1.85rem;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+        }
+
+        /* [이번 수정] 안내 문구는 삭제하고, 네비 자체가 중심이 되도록 여백만 남깁니다. */
+        .attachment-nav-wrap {
+            width: 100%;
+            max-width: 620px;
+            margin: 0 auto 56px; /* [이번 수정] 아래쪽 여백을 기존보다 약 30% 이상 넓게 확보 */
+            padding: 0 26px;
+        }
+
+        .attachment-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 20px; /* [이번 수정] 버튼 사이 간격을 넓혀 답답함을 줄임 */
+        }
+
+        .attachment-nav-btn {
+            aspect-ratio: 1 / 1; /* [이번 수정] 정사각형 버튼 고정 */
+            width: 100%;
+            padding: 13px;
+            border: 0; /* [이번 수정] 바깥쪽 테두리 제거 */
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.26);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition:
+                transform 0.18s ease,
+                background 0.18s ease,
+                box-shadow 0.18s ease;
+        }
+
+        .attachment-nav-btn img {
+            width: 78%;
+            max-height: 78%;
+            object-fit: contain;
+            opacity: 0.64;
+            filter: grayscale(1) brightness(0.25);
+            transition:
+                opacity 0.18s ease,
+                filter 0.18s ease,
+                transform 0.18s ease;
+        }
+
+        .attachment-nav-btn:hover {
+            background: var(--accent-main);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(62, 138, 174, 0.24);
+        }
+
+        .attachment-nav-btn:hover img {
+            opacity: 1;
+            filter: brightness(0) invert(1);
+            transform: scale(1.05);
+        }
+
+        /* [이번 수정] 선택한 이미지 버튼은 페이지를 벗어나기 전까지 강조 상태 유지 */
+        .attachment-nav-btn.active {
+            background: rgba(62, 138, 174, 0.20);
+            box-shadow:
+                0 0 0 2px rgba(62, 138, 174, 0.34),
+                0 12px 24px rgba(62, 138, 174, 0.12);
+        }
+
+        .attachment-nav-btn.active img {
+            opacity: 0.9;
+            filter: grayscale(1) brightness(0.20);
+            transform: scale(1.04);
+        }
+
+        .bottom-area {
+            margin-top: auto;
+            padding-top: 28px; /* [이번 수정] 네비와 하단 로고 사이 여백 추가 */
+            text-align: center;
+        }
+
+        .home-btn {
+            margin-top: 10px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            border: 1px solid var(--home-btn-border);
+            background: var(--home-btn-bg);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            color: var(--accent-main);
+            font-size: 0.92rem;
+            font-weight: 700;
+        }
+
+        .home-btn:hover {
+            background: var(--accent-main);
+            color: #ffffff;
+        }
+
+        .bottom-brand {
+            margin-top: 14px;
+            cursor: pointer;
+        }
+
+        .bottom-brand-name {
+            font-weight: 800;
+            color: var(--accent-main);
+            font-size: 1.15rem;
+            letter-spacing: -0.02em;
+        }
+
+        .bottom-sub {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+
+        @media (max-width: 560px) {
+            .page {
+                padding: 28px 14px 34px;
+            }
+
+            .hero-header {
+                margin-bottom: 28px;
+            }
+
+            .main-title {
+                font-size: 1.55rem;
+            }
+
+            .attachment-nav-wrap {
+                max-width: 420px;
+                padding: 0 12px;
+                margin-bottom: 48px;
+            }
+
+            .attachment-nav-grid {
+                gap: 13px;
+            }
+
+            .attachment-nav-btn {
+                padding: 8px;
+                border-radius: 14px;
+            }
+
+            .attachment-nav-btn img {
+                width: 82%;
+                max-height: 82%;
+            }
+
+            .bottom-area {
+                padding-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="hero-header">
+            <div class="brand-tag">CHAIN MENU</div>
+            <div class="main-title">어태치먼트 체인검색</div>
+        </div>
+
+        <!-- [이번 수정] 기존 2개 큰 버튼 영역을 삭제하고, 22개 어태치먼트 네비 버튼만 표시 -->
+        <section class="attachment-nav-wrap" aria-label="어태치먼트 체인 형식 이미지 네비">
+            <div id="attachmentNavGrid" class="attachment-nav-grid"></div>
+        </section>
+
+        <!-- [기존 유지] 맨 아래 홈 버튼 + MYCAD 로고 영역 -->
+        <div class="bottom-area">
+            <button class="home-btn" type="button" onclick="goHome()">🏠 홈으로</button>
+
+            <!-- [이번 수정] MYCAD 터치 시 최상위 index.html로 이동 -->
+            <div class="bottom-brand" aria-label="브랜드 정보" role="button" tabindex="0" onclick="goIndex()" onkeydown="handleBrandKey(event)">
+                <div class="bottom-brand-name">MYCAD</div>
+                <div class="bottom-sub">Speed &amp; Simple Data Search</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* [이번 수정] 어태치먼트 이미지 네비 데이터
+           - image: C:/CSD/images 폴더 기준 파일명
+           - url: 검색 연결 페이지가 정해지면 여기에 넣으면 됩니다.
+             예) url: "./chain_sub-attach-search.html?type=1LA1"
+           - 현재 url이 비어 있으면 선택 강조와 선택값 저장만 동작합니다. */
+        const attachmentNavItems = [
+            { name: "1LA1", image: "1LA1(2).png", url: "" },
+            { name: "1LAA1", image: "1LAA1(3).png", url: "" },
+            { name: "2LA1", image: "2LA1(2).png", url: "" },
+            { name: "2LAA1", image: "2LAA1.png", url: "" },
+            { name: "1LK1", image: "1LK1(2).png", url: "" },
+            { name: "1LKK1", image: "1LKK1(2).png", url: "" },
+            { name: "2LK1", image: "2LK1(2).png", url: "" },
+            { name: "2LKK1", image: "2LKK1.png", url: "" },
+            { name: "1LSA1", image: "1LSA1(2).png", url: "" },
+            { name: "1LSAA1", image: "1LSAA1(2).png", url: "" },
+            { name: "1LSK1", image: "1LSK1(2).png", url: "" },
+            { name: "1LSKK1", image: "1LSKK1(2).png", url: "" },
+            { name: "2LSA1", image: "2LSA1(2).png", url: "" },
+            { name: "2LSAA1", image: "2LSAA1.png", url: "" },
+            { name: "2LSK1", image: "2LSK1(2).png", url: "" },
+            { name: "2LSKK1", image: "2LSKK1.png", url: "" },
+            { name: "2LWA1", image: "2LWA1(2).png", url: "" },
+            { name: "2LWA2", image: "2LWA2(2).png", url: "" },
+            { name: "2LWK1", image: "2LWK1(2).png", url: "" },
+            { name: "2LWK2", image: "2LWK2(2).png", url: "" },
+            { name: "2LWSA1", image: "2LWSA1(2).png", url: "" },
+            { name: "2LWSA2", image: "2LWSA2.png", url: "" }
+        ];
+
+        const ACTIVE_KEY = 'selected_attachment_chain_type';
+
+        function renderAttachmentNav() {
+            const grid = document.getElementById('attachmentNavGrid');
+            const savedName = localStorage.getItem(ACTIVE_KEY);
+
+            grid.innerHTML = attachmentNavItems.map(item => `
+                <button class="attachment-nav-btn ${savedName === item.name ? 'active' : ''}"
+                        type="button"
+                        title="${item.name}"
+                        aria-label="${item.name}"
+                        onclick="selectAttachmentNav(this, '${item.name}', '${item.url}')">
+                    <!-- [이번 수정] chain-sub 폴더 기준 이미지 경로: ../../../images/파일명 -->
+                    <img src="../../../images/${item.image}" alt="${item.name}">
+                </button>
+            `).join('');
+        }
+
+        function selectAttachmentNav(el, name, url) {
+            document.querySelectorAll('.attachment-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            el.classList.add('active');
+            localStorage.setItem(ACTIVE_KEY, name);
+
+            /* [이번 수정] 검색 페이지 연결 준비
+               지금은 url이 비어 있으므로 이동하지 않습니다.
+               나중에 attachmentNavItems의 url 값에 경로를 넣으면 자동 이동합니다. */
+            if (url) {
+                setTimeout(() => {
+                    window.location.href = url;
+                }, 120);
+            }
+        }
+
+        /* [기존 유지] 홈 버튼은 체인 메인페이지로 이동
+           현재 파일 위치 기준: C:/CSD/search_html/chain/chain-sub/chain_sub-attach.html
+           메인 위치 기준: C:/CSD/search_html/chain/chain_main.html */
+        function goHome() {
+            window.location.href = '../chain_main.html';
+        }
+
+        /* [이번 수정] MYCAD 클릭 시 C:/CSD/index.html로 이동 */
+        function goIndex() {
+            window.location.href = '../../../index.html';
+        }
+
+        function handleBrandKey(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                goIndex();
+            }
+        }
+
+        window.onload = renderAttachmentNav;
+    </script>
+</body>
+</html>
