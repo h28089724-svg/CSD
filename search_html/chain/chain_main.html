@@ -178,11 +178,38 @@
             box-shadow: 0 18px 36px rgba(62, 138, 174, 0.30);
         }
 
+        .mode-image-wrap {
+            width: 60px;
+            min-width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.28);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex: 0 0 auto;
+            filter: drop-shadow(0 6px 12px rgba(62, 138, 174, 0.20));
+        }
+
         .mode-image {
             width: 60px;
             height: auto;
-            flex: 0 0 auto;
-            filter: drop-shadow(0 6px 12px rgba(62, 138, 174, 0.20));
+            display: block;
+        }
+
+        .mode-icon-fallback {
+            display: none;
+            font-size: 1.9rem;
+            line-height: 1;
+        }
+
+        .mode-image-wrap.image-error .mode-image {
+            display: none;
+        }
+
+        .mode-image-wrap.image-error .mode-icon-fallback {
+            display: block;
         }
 
         .mode-text {
@@ -267,100 +294,139 @@
         }
 
 
-        /* [이번 수정] 어태치먼트 체인 선택 시에만 표시되는 이미지 네비 영역 */
-        .attachment-nav-wrap {
+        /* [이번 수정] 메인 버튼을 누르기 전에는 기존의 흐린 체인 이미지를 표시하고,
+           메인 버튼을 누르면 아래 이미지 네비게이션 영역을 표시합니다. */
+        .middle-image-zone.is-hidden {
             display: none;
-            margin: 14px auto 0;
-            width: 100%;
-            max-width: 640px;
-            padding: 16px 22px 18px; /* 좌우측에 여유공간을 주기 위한 패딩 */
-            border-radius: 20px;
-            border: 1px solid rgba(62, 138, 174, 0.20);
-            background: rgba(62, 138, 174, 0.055);
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.30), 0 10px 24px rgba(62, 138, 174, 0.08);
-            animation: slideDown 0.18s ease;
         }
 
-        .attachment-nav-wrap.open {
+        /* [이번 수정] 이미지 네비게이션 전체 영역: 메뉴가 열릴 때만 표시됩니다.
+           앞으로 이미지가 22개 이상으로 늘어나도 아래 JS 배열에 항목만 추가하면 자동으로 버튼이 생성됩니다. */
+        .image-nav-zone {
+            display: none;
+            margin: 22px 0 24px;
+            animation: slideDown 0.22s ease;
+        }
+
+        .image-nav-zone.is-visible {
             display: block;
         }
 
-        .attachment-nav-title {
+        .image-nav-head {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 12px;
             margin: 0 0 12px;
-            text-align: center;
+            padding: 0 2px;
         }
 
-        .attachment-nav-title strong {
-            display: inline-block;
-            color: var(--text-main);
-            font-size: 1.08rem;
-            font-weight: 800;
+        .image-nav-title {
+            margin: 0;
+            font-size: 0.98rem;
+            font-weight: 850;
+            color: var(--accent-main);
             letter-spacing: -0.03em;
         }
 
-        .attachment-nav-title span {
-            display: none; /* 제목 아래로 바로 이미지 네비가 오도록 보조문구는 숨김 */
+        .image-nav-note {
+            margin: 0;
+            font-size: 0.74rem;
+            color: rgba(19, 50, 65, 0.56);
+            white-space: nowrap;
         }
 
-        .attachment-nav-grid {
+        /* [이번 수정] 계열별/사용빈도 순서로 정렬된 4열 이미지 네비게이션입니다.
+           이미지 버튼은 투명한 배경 + 얇은 테두리 + 둥근 모서리로 구성해 현재 화면 톤과 맞췄습니다. */
+        .image-nav-grid {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr)); /* [이번 수정] 4열 배열 */
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 12px;
         }
 
-        .attachment-nav-btn {
-            position: relative;
-            min-height: 66px;
-            aspect-ratio: 1 / 0.78;
-            padding: 8px;
-            border-radius: 16px;
-            border: 1px solid rgba(62, 138, 174, 0.26);
-            background: rgba(255, 255, 255, 0.20); /* 투명감 있는 배경 */
+        .chain-image-nav-btn {
+            min-height: 132px;
+            padding: 8px 8px 9px;
+            border-radius: 18px;
+            border: 1px solid rgba(62, 138, 174, 0.30);
+            background: rgba(255, 255, 255, 0.12);
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+            overflow: hidden;
+            color: var(--text-main);
+        }
+
+        .chain-image-nav-btn:hover,
+        .chain-image-nav-btn.active {
+            background: linear-gradient(180deg, rgba(62, 138, 174, 0.98), rgba(46, 115, 148, 0.98));
+            border-color: rgba(255, 255, 255, 0.58);
+            color: #ffffff;
+            transform: translateY(-3px);
+            box-shadow: 0 14px 26px rgba(62, 138, 174, 0.26);
+        }
+
+        .chain-image-nav-btn:active {
+            transform: translateY(-1px) scale(0.985);
+        }
+
+        .nav-img-wrap {
+            width: 100%;
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
         }
 
-        .attachment-nav-btn img {
-            width: 84%;
-            max-height: 46px;
+        /* [이번 수정] 이미지는 검정/회색 계열로 낮은 대비를 주어 배경에 자연스럽게 스며들게 처리했습니다. */
+        .chain-image-nav-btn img {
+            width: 100%;
+            max-width: 118px;
+            height: 88px;
             object-fit: contain;
-            opacity: 0.50;
-            filter: grayscale(1) brightness(0.22); /* 검정 계열이지만 배경에 스며드는 톤 */
+            opacity: 0.58;
+            filter: grayscale(1) contrast(0.86) brightness(0.68);
             transition: opacity 0.18s ease, filter 0.18s ease, transform 0.18s ease;
+            pointer-events: none;
+            user-select: none;
         }
 
-        .attachment-nav-btn:hover {
-            background: var(--accent-main);
-            border-color: var(--accent-main);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(62, 138, 174, 0.24);
+        /* [이번 수정] hover/선택 시에는 반전 계열로 바뀌어 어두운 배경에서도 가독성이 좋아집니다. */
+        .chain-image-nav-btn:hover img,
+        .chain-image-nav-btn.active img {
+            opacity: 0.88;
+            filter: grayscale(1) invert(1) contrast(0.92) brightness(1.18);
+            transform: scale(1.03);
         }
 
-        .attachment-nav-btn:hover img {
-            opacity: 1;
-            filter: brightness(0) invert(1); /* hover 시 반전색상으로 가독성 확보 */
-            transform: scale(1.04);
+        .nav-label {
+            width: 100%;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 5px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid rgba(62, 138, 174, 0.16);
+            font-size: 0.70rem;
+            font-weight: 800;
+            line-height: 1.15;
+            text-align: center;
+            letter-spacing: -0.04em;
+            transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
         }
 
-        .attachment-nav-btn.active {
-            background: rgba(62, 138, 174, 0.18);
-            border-color: var(--accent-main);
-            box-shadow: 0 0 0 2px rgba(62, 138, 174, 0.18);
+        .chain-image-nav-btn:hover .nav-label,
+        .chain-image-nav-btn.active .nav-label {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.34);
+            color: #ffffff;
         }
-
-        .attachment-nav-btn.active img {
-            opacity: 0.82;
-            filter: grayscale(1) brightness(0.18);
-        }
-
-        /* [이번 수정] 어태치먼트 이미지 네비가 열렸을 때 기존 흐린 체인 1개 이미지는 숨김 */
-        body.attachment-nav-open .middle-image-zone {
-            display: none;
-        }
-
 
         @media (max-width: 560px) {
             .page {
@@ -386,6 +452,12 @@
                 border-radius: 14px;
             }
 
+            .mode-image-wrap {
+                width: 52px;
+                min-width: 52px;
+                height: 52px;
+            }
+
             .mode-image {
                 width: 52px;
             }
@@ -399,38 +471,6 @@
                 min-height: 42px;
             }
 
-
-            .attachment-nav-wrap {
-                margin-top: 12px;
-                padding: 14px 16px 16px; /* 모바일에서도 좌우 여백 유지 */
-                border-radius: 16px;
-            }
-
-            .attachment-nav-title {
-                margin-bottom: 10px;
-            }
-
-            .attachment-nav-title strong {
-                font-size: 1rem;
-            }
-
-            .attachment-nav-grid {
-                grid-template-columns: repeat(4, minmax(0, 1fr)); /* [이번 수정] 모바일도 4열 유지 */
-                gap: 9px;
-            }
-
-            .attachment-nav-btn {
-                min-height: 54px;
-                padding: 6px;
-                border-radius: 12px;
-            }
-
-            .attachment-nav-btn img {
-                width: 88%;
-                max-height: 38px;
-            }
-
-
             .mode-title {
                 font-size: 0.98rem;
             }
@@ -443,6 +483,44 @@
                 width: 220px;
                 max-width: 72%;
             }
+
+            /* [이번 수정] 모바일에서도 4열을 유지하되 버튼 크기와 라벨을 줄여 화면이 복잡해지지 않게 조정 */
+            .image-nav-head {
+                align-items: center;
+                margin-bottom: 10px;
+            }
+
+            .image-nav-title {
+                font-size: 0.9rem;
+            }
+
+            .image-nav-note {
+                display: none;
+            }
+
+            .image-nav-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 8px;
+            }
+
+            .chain-image-nav-btn {
+                min-height: 94px;
+                padding: 5px;
+                border-radius: 14px;
+                gap: 4px;
+            }
+
+            .chain-image-nav-btn img {
+                max-width: 72px;
+                height: 58px;
+            }
+
+            .nav-label {
+                min-height: 20px;
+                padding: 3px 4px;
+                font-size: 0.58rem;
+            }
+
         }
     </style>
 </head>
@@ -458,7 +536,10 @@
             <div class="mode-list">
                 <div class="mode-item">
                     <button class="mode-btn" type="button" onclick="toggleSubMenu(this)">
-                        <img src="../../images/chain.png" alt="RS체인 이미지" class="mode-image">
+                        <span class="mode-image-wrap">
+                            <img src="../../images/chain.png" alt="RS체인 이미지" class="mode-image" data-fallbacks="../images/chain.png|./images/chain.png|/images/chain.png" onerror="tryImageFallback(this)">
+                            <span class="mode-icon-fallback" aria-hidden="true">⛓️</span>
+                        </span>
                         <div class="mode-text">
                             <div class="mode-title">동력전달용 체인</div>
                             <p class="mode-desc">ISO A 계열롤러체인 / ISO-B 계열롤러체인 / 할로우핀체인 </p>
@@ -474,14 +555,17 @@
 
                 <div class="mode-item">
                     <button class="mode-btn" type="button" onclick="toggleSubMenu(this)">
-                        <img src="../../images/icon_data_3.png" alt="CV체인 이미지" class="mode-image">
+                        <span class="mode-image-wrap">
+                            <img src="../../images/icon_data_3.png" alt="CV체인 이미지" class="mode-image" data-fallbacks="../images/icon_data_3.png|./images/icon_data_3.png|../../images/chain.png|../images/chain.png|./images/chain.png|/images/icon_data_3.png" onerror="tryImageFallback(this)">
+                            <span class="mode-icon-fallback" aria-hidden="true">⚙️</span>
+                        </span>
                         <div class="mode-text">
                             <div class="mode-title">컨베이어용</div>
                             <p class="mode-desc">컨베이어 체인 검색</p>
                         </div>
                     </button>
                     <div class="sub-search-list" aria-label="컨베이어용 2차 검색">
-                        <button class="sub-search-btn" type="button" onclick="toggleAttachmentNav(this)">어태치먼트 체인 </button>
+                        <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-attach.html')">어태치먼트 체인 </button>
                         <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-freeflow.html')">배속체인(조립라인용)</button>
                         <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-center.html')">센터롤라/탑롤라/사이드롤라체인</button>
                         <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-large-con.html')">대형컨베이어체인</button>
@@ -491,21 +575,20 @@
             </div>
         </div>
 
+        <!-- [기존 유지] 메인 버튼을 누르기 전에는 흐린 단일 체인 이미지를 표시합니다. -->
+        <div id="middleImageZone" class="middle-image-zone" aria-hidden="true">
+            <img src="../../images/chain.png" alt="" class="page-bg-image" data-fallbacks="../images/chain.png|./images/chain.png|/images/chain.png" onerror="tryImageFallback(this)">
+        </div>
 
-        <!-- [이번 수정] 어태치먼트 체인 전용 이미지 네비
-             컨베이어용 > 어태치먼트 체인을 선택했을 때만 아래 영역이 펼쳐집니다.
-             추후 실제 검색 페이지 연결은 JS의 attachmentNavItems 배열에서 url 값을 넣으면 됩니다. -->
-        <section id="attachmentNavWrap" class="attachment-nav-wrap" aria-label="어태치먼트 체인 이미지 네비">
-            <div class="attachment-nav-title">
-                <!-- [이번 수정] 어태치먼트 체인을 선택했을 때 상단 제목으로 표시 -->
-                <strong>어태치먼트체인</strong>
-                <span>이미지를 선택하면 강조 표시됩니다</span>
+        <!-- [이번 수정] 메인 버튼 클릭 후 표시되는 이미지 네비게이션 영역입니다.
+             계열별로 묶되, 일반적으로 많이 쓰는 A/K/SA 계열을 위쪽에 우선 배치했습니다.
+             실제 페이지 연결은 나중에 chainImageNavItems 배열의 target 값에 넣으면 됩니다. -->
+        <div id="imageNavZone" class="image-nav-zone" aria-label="체인 이미지 네비게이션">
+            <div class="image-nav-head">
+                <div class="image-nav-title">이미지로 체인 형식 선택</div>
+                <p class="image-nav-note">자주 쓰는 형식부터 정렬</p>
             </div>
-            <div id="attachmentNavGrid" class="attachment-nav-grid"></div>
-        </section>
-
-        <div class="middle-image-zone" aria-hidden="true">
-            <img src="../../images/chain.png" alt="" class="page-bg-image">
+            <div id="imageNavGrid" class="image-nav-grid"></div>
         </div>
 
         <div class="bottom-area">
@@ -519,201 +602,51 @@
     </div>
 
     <script>
+        /* [이번 수정] 이미지 네비 버튼 목록입니다.
+           - file: C:/CSD/images 폴더에 둘 이미지 파일명
+           - label: 버튼에 표시할 이름
+           - category: 보조 설명
+           - target: 추후 연결할 검색 페이지 경로, 아직 미정이면 빈 문자열 유지 */
+       
+        function renderImageNavigation() {
+            const grid = document.getElementById('imageNavGrid');
+            if (!grid) return;
 
-        /* [이번 수정] 어태치먼트 체인 이미지 네비 데이터
-           - image: C:/CSD/images 폴더 기준 파일명
-           - url: 추후 해당 검색 페이지가 정해지면 여기에 경로를 넣으면 됩니다.
-             예) url: "./chain-sub/chain_sub-attach.html?type=1LA1" */
-        const attachmentNavItems = [
-            {
-                        "name": "1LA1",
-                        "image": "1LA1(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "1LAA1",
-                        "image": "1LAA1(3).png",
-                        "url": ""
-            },
-            {
-                        "name": "2LA1",
-                        "image": "2LA1(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "2LAA1",
-                        "image": "2LAA1.png",
-                        "url": ""
-            },
-            {
-                        "name": "1LK1",
-                        "image": "1LK1(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "1LKK1",
-                        "image": "1LKK1(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "2LK1",
-                        "image": "2LK1(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "2LKK1",
-                        "image": "2LKK1.png",
-                        "url": ""
-            },
-            {
-                        "name": "1LSA1",
-                        "image": "1LSA1(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "1LSAA1",
-                        "image": "1LSAA1(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "1LSK1",
-                        "image": "1LSK1(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "1LSKK1",
-                        "image": "1LSKK1(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "2LSA1",
-                        "image": "2LSA1(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "2LSAA1",
-                        "image": "2LSAA1.png",
-                        "url": ""
-            },
-            {
-                        "name": "2LSK1",
-                        "image": "2LSK1(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "2LSKK1",
-                        "image": "2LSKK1.png",
-                        "url": ""
-            },
-            {
-                        "name": "2LWA1",
-                        "image": "2LWA1(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "2LWA2",
-                        "image": "2LWA2(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "2LWK1",
-                        "image": "2LWK1(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "2LWK2",
-                        "image": "2LWK2(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "2LWSA1",
-                        "image": "2LWSA1(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "2LWSA2",
-                        "image": "2LWSA2.png",
-                        "url": ""
-            },
-            {
-                        "name": "2LWSK1",
-                        "image": "2LWSK1(2).png",
-                        "url": ""
-            },
-            {
-                        "name": "2LWSK2",
-                        "image": "2LWSK2.png",
-                        "url": ""
-            },
-            {
-                        "name": "1LEP1",
-                        "image": "1LEP1.png",
-                        "url": ""
-            },
-            {
-                        "name": "2LEP1",
-                        "image": "2LEP1.png",
-                        "url": ""
-            }
-];
-
-        function renderAttachmentNav() {
-            const grid = document.getElementById('attachmentNavGrid');
-            if (!grid || grid.dataset.rendered === 'true') return;
-
-            grid.innerHTML = attachmentNavItems.map((item, index) => `
-                <button class="attachment-nav-btn" type="button"
-                        title="${item.name}"
-                        aria-label="${item.name}"
-                        onclick="selectAttachmentNav(this, '${item.url}')">
-                    <img src="../../images/${item.image}" alt="${item.name}">
+            grid.innerHTML = chainImageNavItems.map((item, index) => `
+                <button class="chain-image-nav-btn" type="button"
+                        onclick="selectImageNav(this, ${index})"
+                        aria-label="${item.label} ${item.category}">
+                    <span class="nav-img-wrap">
+                        <img src="../../images/${item.file}" alt="${item.label} 이미지">
+                    </span>
+                    <span class="nav-label">${item.label}</span>
                 </button>
             `).join('');
-
-            grid.dataset.rendered = 'true';
         }
 
-        function closeAttachmentNav() {
-            const wrap = document.getElementById('attachmentNavWrap');
-            if (wrap) wrap.classList.remove('open');
-            document.body.classList.remove('attachment-nav-open');
-        }
+        document.addEventListener('DOMContentLoaded', renderImageNavigation);
 
-        function toggleAttachmentNav(el) {
-            document.querySelectorAll('.mode-btn, .sub-search-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            el.classList.add('active');
 
-            renderAttachmentNav();
+        function tryImageFallback(img) {
+            const fallbacks = (img.dataset.fallbacks || '').split('|').filter(Boolean);
+            const index = Number(img.dataset.fallbackIndex || 0);
 
-            const wrap = document.getElementById('attachmentNavWrap');
-            if (!wrap) return;
+            if (index < fallbacks.length) {
+                img.dataset.fallbackIndex = index + 1;
+                img.src = fallbacks[index];
+                return;
+            }
 
-            const willOpen = !wrap.classList.contains('open');
-            wrap.classList.toggle('open', willOpen);
-            document.body.classList.toggle('attachment-nav-open', willOpen);
-        }
-
-        function selectAttachmentNav(el, url) {
-            document.querySelectorAll('.attachment-nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            el.classList.add('active');
-
-            /* [이번 수정] 현재는 선택 강조만 처리합니다.
-               나중에 url 값을 지정하면 아래 코드로 해당 검색 페이지 연결이 가능합니다. */
-            if (url) {
-                setTimeout(() => {
-                    window.location.href = url;
-                }, 120);
+            const wrap = img.closest('.mode-image-wrap');
+            if (wrap) {
+                wrap.classList.add('image-error');
+            } else {
+                img.style.display = 'none';
             }
         }
-
 
         function toggleSubMenu(el) {
             const currentItem = el.closest('.mode-item');
-            closeAttachmentNav();
 
             document.querySelectorAll('.mode-item').forEach(item => {
                 if (item !== currentItem) {
@@ -722,10 +655,43 @@
             });
 
             currentItem.classList.toggle('open');
+
+            /* [이번 수정] 동력전달용/컨베이어용 중 하나라도 열리면
+               기존의 흐린 단일 체인 이미지를 숨기고 이미지 네비게이션을 표시합니다. */
+            updateImageNavigationVisibility();
+        }
+
+        function updateImageNavigationVisibility() {
+            const hasOpenMenu = document.querySelectorAll('.mode-item.open').length > 0;
+            const middleImageZone = document.getElementById('middleImageZone');
+            const imageNavZone = document.getElementById('imageNavZone');
+
+            if (middleImageZone) {
+                middleImageZone.classList.toggle('is-hidden', hasOpenMenu);
+            }
+
+            if (imageNavZone) {
+                imageNavZone.classList.toggle('is-visible', hasOpenMenu);
+            }
+        }
+
+        function selectImageNav(el, index) {
+            /* [이번 수정] 이미지 네비 버튼 클릭 반응입니다.
+               추후 각 이미지별 검색 페이지가 정해지면 chainImageNavItems[index].target에 경로를 넣으면 자동 이동됩니다. */
+            document.querySelectorAll('.chain-image-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            el.classList.add('active');
+
+            const item = chainImageNavItems[index];
+            if (item && item.target) {
+                setTimeout(() => {
+                    window.location.href = item.target;
+                }, 120);
+            }
         }
 
         function selectAndGo(el, url) {
-            closeAttachmentNav();
             document.querySelectorAll('.mode-btn, .sub-search-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
