@@ -1264,15 +1264,18 @@
 
         /* [복구] 형번 선택 목록용 데이터 */
         const MODEL_OPTIONS = [
-            { value: 'RS25',  label: 'RS25',  pathKey: 'RS25'  },
-            { value: 'RS35',  label: 'RS35',  pathKey: 'RS35'  },
-            { value: 'RS40',  label: 'RS40',  pathKey: 'RS40'  },
-            { value: 'RS50',  label: 'RS50',  pathKey: 'RS50'  },
-            { value: 'RS60',  label: 'RS60',  pathKey: 'RS60'  },
-            { value: 'RS80',  label: 'RS80',  pathKey: 'RS80'  },
-            { value: 'RS100', label: 'RS100', pathKey: 'RS100' },
-            { value: 'RS120', label: 'RS120', pathKey: 'RS120' },
-            { value: 'RS140', label: 'RS140', pathKey: 'RS140' }
+            /* [수정] 데이터 로드용 value/label은 기존 그대로 유지하고,
+               다운로드 파일명 생성에만 쓰는 pathKey만 실제 폴더/파일명 규칙에 맞게 수정.
+               예: RS25 검색 결과 → 25/25-10nt.pdf */
+            { value: 'RS25',  label: 'RS25',  pathKey: '25'  },
+            { value: 'RS35',  label: 'RS35',  pathKey: '35'  },
+            { value: 'RS40',  label: 'RS40',  pathKey: '40'  },
+            { value: 'RS50',  label: 'RS50',  pathKey: '50'  },
+            { value: 'RS60',  label: 'RS60',  pathKey: '60'  },
+            { value: 'RS80',  label: 'RS80',  pathKey: '80'  },
+            { value: 'RS100', label: 'RS100', pathKey: '100' },
+            { value: 'RS120', label: 'RS120', pathKey: '120' },
+            { value: 'RS140', label: 'RS140', pathKey: '140' }
 
         ];
 
@@ -1501,20 +1504,35 @@
             return MODEL_PATH_KEY_MAP[modelValue] || String(modelValue).replace('#', '');
         }
 
-        /* [핵심 수정]
-           실제 파일명 규칙 반영
-           PDF: 25-10nt.pdf
-           DWG: 25-10nt.dwg
-           미리보기: 25-10nt.jpg / 25-10nt.png
+        /* [수정] 다운로드 링크 생성 전용 함수
+           주의:
+           - 데이터 로드 경로(MODEL_DATA_PATHS)는 건드리지 않음.
+             검색 결과가 안 나오는 문제를 막기 위해 기존 데이터 경로는 그대로 유지.
+           - pathKey는 MODEL_OPTIONS의 pathKey를 사용하여 RS25 → 25로 변환.
+           - PDF 파일명 규칙: 25-10nt.pdf
+           - 2D DWG 파일명 규칙: 25-10nt.dwg
+           - 3D 파일명 규칙: 25-10nt.step 또는 25-10nt.stp
         */
         function getFilePaths(item) {
-            const pathKey = getPathKeyFromModel(item.model);   // "#25" -> "25"
-            const ntValue = `${item.nt}nt`;                    // "10nt"
-            const baseName = `${pathKey}-${ntValue}`;          // "25-10nt"
+            const pathKey = getPathKeyFromModel(item.model);   // RS25 -> 25
+            const ntValue = `${item.nt}nt`;                    // 10nt
+            const baseName = `${pathKey}-${ntValue}`;          // 25-10nt
 
             return {
+                /* [PDF 도면 수정]
+                   기존 오류 가능성:
+                   - RS25/RS25-10nt.pdf처럼 만들어지면 실제 파일명과 맞지 않음.
+                   수정 후:
+                   - pdf/25/25-10nt.pdf */
                 pdf: `../../download/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/pdf/${pathKey}/${baseName}.pdf`,
+
+                /* [2D 도면 수정]
+                   secure-download 기준 구조에 맞춰 DWG 경로 유지.
+                   예: ../../secure-download/dwg/1r_iso_roller_chain_s/25/25-10nt.dwg */
                 dwg: `../../secure-download/dwg/1r_iso_roller_chain_s/${pathKey}/${baseName}.dwg`,
+
+                /* [3D 도면 수정]
+                   STEP 우선 확인 후 없으면 STP를 확인하는 기존 open3dDownload 로직을 유지. */
                 previewStep: `../../download/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/3d/${pathKey}/${baseName}.step`,
                 previewStp: `../../download/sprocket/isoA_drive_rollerchain_s/1-rs-rollerchain_sprocket/3d/${pathKey}/${baseName}.stp`
             };
