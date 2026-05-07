@@ -1758,7 +1758,24 @@
         const FORM_ENTRY_NAME  = 'entry.1293161912';
         const FORM_ENTRY_EMAIL = 'entry.1030936526';
 
+        /* 수정: Google Form에 '다운로드 파일명' 질문을 추가한 뒤,
+           아래 entry 값을 해당 질문의 entry 번호로 교체하세요.
+           예: const FORM_ENTRY_FILE  = 'entry.352673039'; */
+        const FORM_ENTRY_FILE  = 'entry.352673039';
+
         let _pendingDwgUrl = null;
+
+        /* 수정: 현재 다운로드 예정인 DWG 파일명 추출 */
+        function getPendingDwgFileName() {
+            if (!_pendingDwgUrl) return '';
+            return _pendingDwgUrl.split('/').pop() || _pendingDwgUrl;
+        }
+
+        /* 수정: 현재 다운로드 예정인 DWG 경로까지 같이 기록하고 싶을 때 사용 */
+        function getPendingDwgLogText() {
+            const fileName = getPendingDwgFileName();
+            return fileName ? `${fileName} | ${_pendingDwgUrl}` : '';
+        }
 
         function requestDwgAuth(dwgUrl) {
             _pendingDwgUrl = dwgUrl;
@@ -1820,6 +1837,8 @@
                 const formData = new FormData();
                 formData.append(FORM_ENTRY_NAME,  name);
                 formData.append(FORM_ENTRY_EMAIL, email);
+                /* 수정: 다운로드할 DWG 파일명/경로를 Google Sheet에 기록 */
+                formData.append(FORM_ENTRY_FILE, getPendingDwgLogText());
                 await fetch(GOOGLE_FORM_URL, { method: 'POST', mode: 'no-cors', body: formData });
             } catch (e) {
                 // 네트워크 오류여도 다음 단계 진행
@@ -1854,21 +1873,25 @@
             errMsg.textContent = '';
 
             try {
-                const response = await fetch(_pendingDwgUrl);
-                if (!response.ok) throw new Error(`파일을 찾을 수 없습니다. (${response.status})`);
+                /* 수정 : fetch 방식 제거 → 로컬모드 + 서버모드 모두 대응 */
 
-                const blob = await response.blob();
-                const blobUrl = URL.createObjectURL(blob);
                 const fileName = _pendingDwgUrl.split('/').pop();
 
                 const link = document.createElement('a');
-                link.href = blobUrl;
+
+                link.href = _pendingDwgUrl;
+
                 link.download = fileName;
+
+                /* 수정 : 새창 방지 */
+                link.target = '_self';
+
                 document.body.appendChild(link);
+
                 link.click();
+
                 document.body.removeChild(link);
 
-                setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
                 closeAuthModal();
 
             } catch (err) {

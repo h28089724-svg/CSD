@@ -3,40 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ISO-A 계열롤러체인 검색</title>
-    
-    <!-- [기존 유지] 루트 기준 파일 배치를 맞추기 위해 manifest 경로를 ./ 로 유지 -->
+    <title>ISO-A (ANSI)계열롤러체인</title>
+
     <link rel="manifest" href="../../manifest.json">
     <meta name="theme-color" content="#f5f7fa">
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <script>
-        var allSprocketData = [];
+        var allRollerChainData = [];
 
         if ('serviceWorker' in navigator) {
-            /* [기존 유지] 루트 기준 파일 배치를 맞추기 위해 sw.js 경로를 ./ 로 유지 */
             navigator.serviceWorker.register('../../sw.js')
             .then(() => console.log('오프라인 모드 준비 완료'))
             .catch(err => console.log('오프라인 모드 오류:', err));
         }
     </script>
 
-    <!-- [기존 유지] 루트 기준에서 data_chain 폴더를 직접 읽도록 경로 유지 -->
-    <script src="../../data_chain/data_rs25.js"></script>
-    <script src="../../data_chain/data_rs35.js"></script>
-    <script src="../../data_chain/data_rs40.js"></script>
-    <script src="../../data_chain/data_rs50.js"></script>
-    <script src="../../data_chain/data_rs60.js"></script>
-    <script src="../../data_chain/data_rs80.js"></script>
-    <script src="../../data_chain/data_rs100.js"></script>
-    <script src="../../data_chain/data_rs120.js"></script>
-    <script src="../../data_chain/data_rs140.js"></script>
-
+    <!-- ISO-A 계열 롤러체인 데이터 파일 -->
+    <script src="../../../data/chain/isoA_drive_roller_chain_data_js_file/isoA_drive_roller_chain_data.js"></script>
 
     <style>
         :root {
-            /* [기존 유지] 체인 모드는 파란색 컨셉 유지 */
             --primary-bg: #f5f7fa;
             --card-bg: #f5f7fa;
             --header-bg: #f5f7fa;
@@ -48,14 +36,14 @@
             --btn-text: #ffffff;
         }
 
-        body { 
+        body {
             margin: 0;
             padding: 0;
-            background-color: var(--primary-bg); 
-            color: var(--text-main); 
-            font-family: 'Pretendard', sans-serif; 
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            font-family: 'Pretendard', sans-serif;
             overflow-x: hidden;
-            transition: all 0.4s ease; 
+            transition: all 0.4s ease;
             min-height: 100vh;
         }
 
@@ -63,8 +51,8 @@
             display: grid;
             grid-template-columns: 50px 1fr 68px;
             align-items: center;
-            padding: 10px 18px 22px; 
-            background: var(--header-bg); 
+            padding: 10px 18px 22px;
+            background: var(--header-bg);
             border-bottom: 2px solid var(--accent-color);
             position: sticky;
             top: 0;
@@ -91,9 +79,7 @@
             box-shadow: inset 0 0 0 2px rgba(255,255,255,0.55), 0 3px 10px rgba(33, 150, 243, 0.12);
         }
 
-        .logo-text {
-            display: inline-block;
-        }
+        .logo-text { display: inline-block; }
 
         .menu-btn {
             font-size: 1.3rem;
@@ -193,11 +179,11 @@
             flex-direction: column;
         }
 
-        .search-card { 
-            background: var(--card-bg); 
+        .search-card {
+            background: var(--card-bg);
             padding: 15px 20px;
-            border-radius: 12px; 
-            margin-bottom: 15px; 
+            border-radius: 12px;
+            margin-bottom: 15px;
             border: 1px solid var(--border-color);
         }
 
@@ -211,15 +197,15 @@
             font-weight: bold;
         }
 
-        select, input { 
+        select, input {
             width: 100%;
             padding: 10px;
-            border-radius: 8px; 
-            border: 1px solid var(--border-color); 
-            background: var(--input-bg); 
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
             font-size: 0.95rem;
             box-sizing: border-box;
-            outline: none; 
+            outline: none;
         }
 
         .btn-row {
@@ -227,14 +213,14 @@
             gap: 10px;
             margin-top: 5px;
         }
-        
-        button { 
-            flex: 1; 
+
+        button {
+            flex: 1;
             padding: 10px;
-            border-radius: 8px; 
+            border-radius: 8px;
             font-size: 0.9rem;
-            cursor: pointer; 
-            border: 1px solid var(--accent-color); 
+            cursor: pointer;
+            border: 1px solid var(--accent-color);
             background: #fff;
         }
 
@@ -256,63 +242,158 @@
             overflow-x: hidden;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            table-layout: fixed;
-        }
-        
-        th:nth-child(1), td:nth-child(1) { width: 22%; }
-        th:nth-child(2), td:nth-child(2) { width: 14%; }
-        th:nth-child(3), td:nth-child(3) { width: 14%; }
-        th:nth-child(4), td:nth-child(4) { width: 20%; }
-        th:nth-child(5), td:nth-child(5) { width: 30%; }
-
-        th {
-            background: rgba(0,0,0,0.03);
-            padding: 8px 2px;
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-
-        td {
-            padding: 10px 2px;
-            border-bottom: 1px solid var(--border-color);
-            text-align: center;
-            font-size: 0.8rem;
-        }
-
-        .file-group {
-            display: flex;
-            gap: 4px;
-            justify-content: center;
-        }
-
-        .file-link {
-            padding: 5px 0;
-            width: 40px;
-            border-radius: 4px;
-            font-size: 0.65rem;
-            font-weight: bold;
-            color: white;
-            text-decoration: none;
-            text-align: center;
-        }
-
-        .pdf-btn { background: #3498db; }
-        .dwg-btn { background: #e74c3c; }
-
-        .placeholder-text {
-            display: none;
-        }
+        .placeholder-text { display: none; }
 
         .usage-info {
             text-align: right;
             margin-top: 8px;
             font-size: 0.7rem;
             color: var(--text-dim);
+        }
+
+        .result-summary {
+            margin: 6px 0 14px;
+            padding: 10px 12px;
+            border-radius: 14px;
+            background: rgba(33, 150, 243, 0.08);
+            color: #486375;
+            font-size: 0.82rem;
+            line-height: 1.45;
+        }
+
+        .result-card {
+            background: #b5aabe;
+            border-radius: 20px;
+            margin-bottom: 14px;
+            overflow: hidden;
+            color: #ffffff;
+            box-shadow: 0 8px 22px rgba(56, 48, 72, 0.13);
+        }
+
+        .result-top {
+            display: grid;
+            /* 수정: 결과 상단을 형번 / 피치 / 펼침버튼 3영역으로 정리 */
+            grid-template-columns: minmax(0, 1.35fr) minmax(90px, 0.8fr) 38px;
+            gap: 10px;
+            align-items: center;
+            padding: 16px 16px;
+        }
+
+        .result-model {
+            color: #172335;
+            font-size: 1.02rem;
+            font-weight: 850;
+            /* 수정: 형번 영역 줄바꿈/정렬 안정화 */
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            word-break: break-word;
+        }
+
+        .result-spec {
+            text-align: center;
+            min-width: 0;
+            /* 수정: 피치 표시를 세로 중앙 정렬 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .result-spec div {
+            font-size: 0.72rem;
+            color: rgba(40, 32, 52, 0.65);
+            margin-bottom: 3px;
+            white-space: nowrap;
+        }
+
+        .result-spec strong {
+            color: #ffffff;
+            font-size: 0.98rem;
+            font-weight: 850;
+            word-break: keep-all;
+        }
+
+        .result-unit {
+            font-size: 0.66rem;
+            opacity: 0.9;
+            margin-left: 2px;
+        }
+
+        .toggle-result-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            padding: 0;
+            border: 1px solid rgba(255,255,255,0.16);
+            background: rgba(255,255,255,0.09);
+            color: #ffffff;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            flex: none;
+        }
+
+        .result-detail {
+            display: none;
+            background: rgba(39, 35, 51, 0.30);
+            padding: 16px 18px 12px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .result-card.open .result-detail {
+            display: block;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 7px;
+        }
+
+        .detail-row span {
+            color: #b8c5ff;
+            font-weight: 750;
+            font-size: 0.84rem;
+        }
+
+        .detail-row strong {
+            color: #ffffff;
+            font-size: 0.94rem;
+            white-space: nowrap;
+        }
+
+        .result-buttons {
+            display: flex;
+            gap: 8px;
+            padding: 14px 16px 16px;
+        }
+
+        .result-buttons a {
+            flex: 1;
+            text-align: center;
+            padding: 10px 6px;
+            border-radius: 10px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 850;
+            font-size: 0.82rem;
+            box-sizing: border-box;
+        }
+
+        .pdf-btn { background: #1976d2; }
+        .dwg-btn { background: #c62828; }
+        .dxf-btn {
+            background: #b7f238;
+            color: #111 !important;
         }
 
         .middle-visual-zone {
@@ -322,6 +403,10 @@
             justify-content: center;
             padding: 8px 0 24px;
             min-height: 180px;
+        }
+
+        .middle-visual-zone.is-hidden {
+            display: none;
         }
 
         .middle-chain-image {
@@ -335,8 +420,6 @@
             transform: translateY(-14px);
         }
 
-
-        /* [이번 수정] 기존 CBN 하단 로고 배너를 제거하고, 공통 하단 영역(bottom-area)으로 통일 */
         .bottom-area {
             position: fixed;
             left: 50%;
@@ -355,7 +438,6 @@
             box-sizing: border-box;
         }
 
-        /* [이번 수정] 홈으로 버튼 스타일 - 클릭 시 chain_main.html로 이동 */
         .home-btn {
             padding: 10px 18px;
             border-radius: 999px;
@@ -379,7 +461,6 @@
             color: #ffffff;
         }
 
-        /* [이번 수정] MYCAD 브랜드 영역 - 클릭 시 index.html로 이동 */
         .bottom-brand {
             margin-top: 12px;
             cursor: pointer;
@@ -431,6 +512,47 @@
                 min-height: calc(100vh - 82px);
             }
 
+            .result-top {
+                /* 수정: 모바일 결과 상단도 형번 / 피치 / 펼침버튼으로 정리 */
+                grid-template-columns: minmax(0, 1.2fr) minmax(82px, 0.8fr) 36px;
+                padding: 14px 14px;
+                gap: 8px;
+            }
+
+            .result-model {
+                font-size: 0.96rem;
+            }
+
+            .result-spec div {
+                font-size: 0.67rem;
+            }
+
+            .result-spec strong {
+                font-size: 0.9rem;
+            }
+
+            .detail-grid {
+                gap: 10px 14px;
+            }
+
+            .detail-row span {
+                font-size: 0.78rem;
+            }
+
+            .detail-row strong {
+                font-size: 0.86rem;
+            }
+
+            .result-buttons {
+                gap: 7px;
+                padding: 12px 14px 14px;
+            }
+
+            .result-buttons a {
+                font-size: 0.76rem;
+                padding: 9px 4px;
+            }
+
             .middle-visual-zone {
                 padding: 4px 0 18px;
                 min-height: 140px;
@@ -442,7 +564,6 @@
                 transform: translateY(-10px);
             }
 
-            /* [이번 수정] 모바일에서도 공통 하단 영역이 화면 폭에 맞게 표시되도록 조정 */
             .bottom-area {
                 width: calc(100% - 20px);
                 padding: 12px 12px 10px;
@@ -462,14 +583,180 @@
                 font-size: 0.76rem;
             }
         }
+
+        /* ===== 수정: DWG 인증 팝업 ===== */
+        .auth-modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: 300;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-modal-backdrop.active { display: flex; }
+
+        .auth-modal {
+            width: 320px;
+            max-width: calc(100vw - 32px);
+            background: rgba(245, 247, 250, 0.98);
+            border: 1px solid rgba(33, 150, 243, 0.28);
+            border-radius: 22px;
+            padding: 28px 24px 24px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(12px);
+            text-align: center;
+            animation: modalPop 0.22s ease;
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.88); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+
+        .auth-modal-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #c62828;
+        }
+
+        .auth-modal-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .auth-modal-sub {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .auth-input {
+            width: 100%;
+            height: 48px;
+            border-radius: 13px;
+            border: 1px solid rgba(33, 150, 243, 0.28);
+            background: rgba(83, 83, 83, 0.9);
+            color: #fff;
+            font-size: 1.15rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.08em;
+            outline: none;
+            margin-bottom: 8px;
+            padding: 0 16px;
+            transition: border-color 0.2s;
+        }
+
+        .auth-input::placeholder {
+            font-size: 0.85rem;
+            color: rgba(180, 180, 180, 0.75);
+            letter-spacing: 0;
+        }
+
+        .auth-input:focus {
+            border-color: rgba(33, 150, 243, 0.65);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.14);
+        }
+
+        .auth-input.error {
+            border-color: #e05555;
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        .auth-error-msg {
+            font-size: 0.8rem;
+            color: #d94040;
+            min-height: 18px;
+            margin-bottom: 14px;
+            font-weight: 700;
+        }
+
+        .auth-btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .auth-cancel-btn,
+        .auth-confirm-btn {
+            height: 44px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.18s;
+            padding: 0 10px;
+        }
+
+        .auth-cancel-btn {
+            border: 1px solid #dcdfe6;
+            background: #ffffff;
+            color: #7f8c8d;
+        }
+
+        .auth-confirm-btn {
+            border: none;
+            background: linear-gradient(135deg, #c62828, #e53935);
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(198, 40, 40, 0.30);
+        }
+
+        .auth-confirm-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(198, 40, 40, 0.40);
+        }
+        /* ===== /수정: DWG 인증 팝업 ===== */
+
     </style>
 </head>
 <body>
+
+    <!-- 수정: DWG 도면 다운로드 전용 인증 팝업 -->
+    <div class="auth-modal-backdrop" id="authModalBackdrop">
+        <div class="auth-modal">
+            <div id="authStep1">
+                <div class="auth-modal-icon"><i class="fas fa-user"></i></div>
+                <div class="auth-modal-title">정보 입력</div>
+                <div class="auth-modal-sub">DWG 파일 다운로드를 위해<br>아래 정보를 입력해 주세요</div>
+                <input type="text" class="auth-input" id="authNameInput" placeholder="이름을 입력하세요" maxlength="30" onkeydown="if(event.key==='Enter') document.getElementById('authEmailInput').focus()" style="margin-bottom: 10px;">
+                <input type="email" class="auth-input" id="authEmailInput" placeholder="이메일을 입력하세요" maxlength="60" onkeydown="if(event.key==='Enter') submitUserInfo()">
+                <div class="auth-error-msg" id="authStep1ErrorMsg"></div>
+                <div class="auth-btn-row">
+                    <button class="auth-cancel-btn" onclick="closeAuthModal()">취소</button>
+                    <button class="auth-confirm-btn" onclick="submitUserInfo()"><i class="fas fa-arrow-right"></i> 다음</button>
+                </div>
+            </div>
+
+            <div id="authStep2" style="display:none;">
+                <div class="auth-modal-icon"><i class="fas fa-lock"></i></div>
+                <div class="auth-modal-title">인증코드 입력</div>
+                <div class="auth-modal-sub">담당자에게 받은<br>인증코드를 입력하세요</div>
+                <input type="password" class="auth-input" id="authCodeInput" placeholder="인증코드 입력" maxlength="20" onkeydown="if(event.key==='Enter') confirmAuth()">
+                <div class="auth-error-msg" id="authErrorMsg"></div>
+                <div class="auth-btn-row">
+                    <button class="auth-cancel-btn" onclick="closeAuthModal()">취소</button>
+                    <button class="auth-confirm-btn" onclick="confirmAuth()"><i class="fas fa-download"></i> 다운로드</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="header">
         <div class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
 
         <div id="mainLogo" class="logo">
-            <span class="logo-text">ISO-A 계열롤러체인 검색</span>
+            <span class="logo-text">ISO-A (ANSI)계열롤러체인</span>
         </div>
 
         <div class="header-right">
@@ -492,20 +779,23 @@
         <div id="searchSection" class="search-card">
             <div class="input-group">
                 <label>형번 선택 (MODEL)</label>
-                <select id="searchModel"><option value="">형번을 선택하세요</option></select>
+                <select id="searchModel">
+                    <option value="">형번을 선택하세요</option>
+                </select>
             </div>
+
             <div class="input-group">
-                <label>잇수 입력 (NT)</label>
-                <input type="number" id="searchNt" placeholder="잇수">
+                <label>피치 입력 (P)</label>
+                <input type="number" id="searchPitch" placeholder="피치" step="0.01">
             </div>
+
+            <!-- 수정: 피치 검색 시 ±1~10% 오차범위를 적용할 수 있도록 입력창 추가 -->
             <div class="input-group">
-                <label>외경 입력 (OD)</label>
-                <input type="number" id="searchOd" placeholder="외경">
+                <label>피치 오차범위 (%)</label>
+                <input type="number" id="pitchTolerance" placeholder="1~10 사이 입력" min="1" max="10" value="10">
             </div>
-            <div class="input-group">
-                <label>피치원 지름 (PCD)</label>
-                <input type="text" id="searchPcd" placeholder="PCD">
-            </div>
+
+            <!-- 수정: 검색항목에서 롤러경 입력, 링크핀경 입력 제거 -->
             <div class="btn-row">
                 <button class="reset-btn" onclick="clearFields()">초기화</button>
                 <button class="search-btn" onclick="performSearch()">검색하기</button>
@@ -517,16 +807,14 @@
             <div class="placeholder-text"></div>
         </div>
 
-        <div class="middle-visual-zone" aria-hidden="true">
+        <div id="middleVisualZone" class="middle-visual-zone" aria-hidden="true">
             <img src="../../images/chain.png" alt="" class="middle-chain-image">
         </div>
     </div>
-    <!-- [이번 수정] 기존 CBN 하단 로고 배너를 제거하고, 홈 버튼 + MYCAD 브랜드 영역으로 교체 -->
+
     <div class="bottom-area">
-        <!-- [이번 수정] 홈으로 버튼은 아래 goHome() 함수에서 체인 메인페이지로 이동 -->
         <button class="home-btn" type="button" onclick="goHome()">🏠 홈으로</button>
 
-        <!-- [이번 수정] MYCAD 영역을 터치하면 아래 goIndex() 함수에서 CSD/index.html로 이동 -->
         <div class="bottom-brand" aria-label="브랜드 정보" onclick="goIndex()" role="button" tabindex="0">
             <div class="bottom-brand-name">MYCAD</div>
             <div class="bottom-sub">Speed &amp; Simple Data Search</div>
@@ -545,23 +833,17 @@
             window.location.href = '../sprocket/sprocket.html';
         }
 
-        /* [이번 수정] 하단 홈 버튼 이동 위치 지정
-           현재 요청 기준 홈 파일 위치: C:\CSD\search_html\chain\chain_main.html
-           서브페이지 위치가 chain/chain-sub 폴더이므로 ../chain_main.html 상대경로를 사용합니다. */
         function goHome() {
             window.location.href = '../chain_main.html';
         }
 
-        /* [이번 수정] MYCAD 클릭 시 최상위 index.html로 이동
-           현재 요청 기준 위치: C:\CSD\index.html
-           서브페이지 위치가 chain/chain-sub 폴더이므로 ../../../index.html 상대경로를 사용합니다. */
         function goIndex() {
             window.location.href = '../../../index.html';
         }
 
         const MAX_DAILY_SEARCH = 10;
-        const SEARCH_COUNT_KEY = 'chain_search_count';
-        const SEARCH_DATE_KEY = 'chain_search_date';
+        const SEARCH_COUNT_KEY = 'chain_iso_a_search_count';
+        const SEARCH_DATE_KEY = 'chain_iso_a_search_date';
 
         function getTodayString() {
             return new Date().toLocaleDateString('ko-KR');
@@ -593,27 +875,74 @@
         }
 
         window.onload = function() {
+            console.log('allRollerChainData:', typeof allRollerChainData !== 'undefined' ? allRollerChainData : 'undefined');
             populateModelSelect();
             checkSearchLimit();
+
+            // 수정: 인증 팝업 바깥 영역 클릭 시 닫기
+            const authBackdrop = document.getElementById('authModalBackdrop');
+            if (authBackdrop) {
+                authBackdrop.addEventListener('click', function(e) {
+                    if (e.target === this) closeAuthModal();
+                });
+            }
         };
+
+        function normalizeNumber(value) {
+            if (value === null || value === undefined || value === '') return '';
+            return String(value).replace(/\.0$/, '');
+        }
 
         function populateModelSelect() {
             const select = document.getElementById('searchModel');
-            if (!allSprocketData || !Array.isArray(allSprocketData)) return;
 
-            const models = [...new Set(allSprocketData.map(item => item.model))]
+            if (typeof allRollerChainData === 'undefined' || !Array.isArray(allRollerChainData)) {
+                console.log('체인 데이터 없음');
+                return;
+            }
+
+            const models = [...new Set(allRollerChainData.map(item => item.model))]
                 .sort((a, b) => {
-                    const numA = parseInt(String(a).replace(/\D/g, ''), 10);
-                    const numB = parseInt(String(b).replace(/\D/g, ''), 10);
-                    return numA - numB;
+                    const numA = parseFloat(String(a).replace(/[^\d.]/g, ''));
+                    const numB = parseFloat(String(b).replace(/[^\d.]/g, ''));
+                    const suffixA = String(a).includes('-') ? parseInt(String(a).split('-').pop(), 10) : 1;
+                    const suffixB = String(b).includes('-') ? parseInt(String(b).split('-').pop(), 10) : 1;
+                    if (numA !== numB) return numA - numB;
+                    return suffixA - suffixB;
                 });
 
-            models.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m;
-                opt.textContent = m;
-                select.appendChild(opt);
+            models.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model;
+                option.textContent = model;
+                select.appendChild(option);
             });
+        }
+
+        function includesLoose(source, query) {
+            if (!query) return true;
+            return String(source ?? '').includes(String(query));
+        }
+
+        // 수정: 데이터값이 문자열이어도 숫자로 변환해 피치 범위검색에 사용
+        function parseNumericValue(value) {
+            if (value === null || value === undefined || value === '') return NaN;
+            const cleaned = String(value).replace(/[^0-9.\-]/g, '');
+            return parseFloat(cleaned);
+        }
+
+        // 수정: 입력 피치 기준 ±오차범위(1~10%) 안에 들어오는지 확인
+        function isPitchWithinTolerance(dataPitch, searchPitch, tolerancePercent) {
+            const dataValue = parseNumericValue(dataPitch);
+            const searchValue = parseNumericValue(searchPitch);
+
+            if (Number.isNaN(dataValue) || Number.isNaN(searchValue)) return false;
+
+            const toleranceRate = Math.min(10, Math.max(1, parseNumericValue(tolerancePercent) || 10));
+            const minValue = searchValue * (1 - toleranceRate / 100);
+            const maxValue = searchValue * (1 + toleranceRate / 100);
+
+            return dataValue >= minValue && dataValue <= maxValue;
         }
 
         function performSearch() {
@@ -623,63 +952,329 @@
             }
 
             const model = document.getElementById('searchModel').value;
-            const nt = document.getElementById('searchNt').value;
-            const od = document.getElementById('searchOd').value;
-            const pcd = document.getElementById('searchPcd').value;
+            const pitch = document.getElementById('searchPitch').value;
+            const pitchTolerance = document.getElementById('pitchTolerance').value;
+            // 수정: 롤러경/링크핀경 검색 입력 제거
+            let results = allRollerChainData || [];
 
-            let results = allSprocketData;
             if (model) results = results.filter(d => d.model === model);
-            if (nt) results = results.filter(d => d.nt == nt);
-            if (od) results = results.filter(d => d.od == od);
-            if (pcd) results = results.filter(d => String(d.pitchCircle || d.pcd).includes(pcd));
 
-            displayResults(results);
+            // 수정: 피치 검색은 기존 포함검색이 아니라 입력값 기준 ±1~10% 오차범위 검색으로 변경
+            if (pitch) {
+                results = results.filter(d => isPitchWithinTolerance(d.pitch, pitch, pitchTolerance));
+            }
+            // 수정: 롤러경/링크핀경 필터 제거
+
+            displayResults(results, pitch, pitchTolerance);
 
             const currentCount = getSearchCount();
             setSearchCount(currentCount + 1);
             checkSearchLimit();
         }
 
-        function displayResults(results) {
-            const area = document.getElementById("resultArea");
+        // 수정: 실제 보유 중인 체인 도면 파일명 목록
+        const AVAILABLE_CHAIN_DRAWINGS = ['r25', 'r35', 'r40', 'r50', 'r60', 'r80', 'r100', 'r120', 'r140'];
 
-            if (!results || results.length === 0) {
-                area.innerHTML = "<p style='text-align:center; padding:20px;'>결과 없음</p>";
+        // 수정: 모델명(RS25, 25, R25 등)을 실제 파일명(r25.dwg / r25.pdf)으로 변환
+        function getChainDrawingFileName(modelValue) {
+            const raw = String(modelValue || '').toLowerCase();
+            const numberMatch = raw.match(/25|35|40|50|60|80|100|120|140/);
+            if (!numberMatch) return '';
+
+            const fileName = `r${numberMatch[0]}`;
+            return AVAILABLE_CHAIN_DRAWINGS.includes(fileName) ? fileName : '';
+        }
+
+        /* ===== 수정: DWG 인증 로직 - 스프라켓 파일과 동일한 인증코드 사용 ===== */
+        const DWG_AUTH_CODE = 'hkd8421';
+
+        const GOOGLE_FORM_URL  = 'https://docs.google.com/forms/d/e/1FAIpQLSeqElBNIHjkJhsIzNsH45j_cLnNm3lksRhlTtXKu_IfRLgFOg/formResponse';
+        const FORM_ENTRY_NAME  = 'entry.1293161912';
+        const FORM_ENTRY_EMAIL = 'entry.1030936526';
+
+        /* 수정: Google Form에 '다운로드 파일명' 질문을 추가한 뒤,
+           아래 entry 값을 해당 질문의 entry 번호로 교체하세요.
+           예: const FORM_ENTRY_FILE  = 'entry.352673039'; */
+        const FORM_ENTRY_FILE  = 'entry.352673039';
+
+        let _pendingDwgUrl = null;
+
+        /* 수정: 현재 다운로드 예정인 DWG 파일명 추출 */
+        function getPendingDwgFileName() {
+            if (!_pendingDwgUrl) return '';
+            return _pendingDwgUrl.split('/').pop() || _pendingDwgUrl;
+        }
+
+        /* 수정: 현재 다운로드 예정인 DWG 경로까지 같이 기록하고 싶을 때 사용 */
+        function getPendingDwgLogText() {
+            const fileName = getPendingDwgFileName();
+            return fileName ? `${fileName} | ${_pendingDwgUrl}` : '';
+        }
+
+        function requestDwgAuth(dwgUrl) {
+            if (!dwgUrl) {
+                alert('해당 형번의 DWG 도면파일이 준비되어 있지 않습니다.');
                 return;
             }
 
-            let html = `<table><thead><tr><th>형번</th><th>잇수</th><th>외경</th><th>PCD</th><th>도면</th></tr></thead><tbody>`;
-            results.forEach(item => {
-                const fileBase = `${item.model}_${item.nt}NT`;
+            _pendingDwgUrl = dwgUrl;
 
-                /* [이번 수정] PDF/DWG 다운로드 경로에 형번 폴더(item.model)를 반영 */
-                /* [이번 수정] 사용자 구조에 맞게 download > chain > pdf > 형번폴더 > 파일명 */
-                const pdfPath = `../../download/chain/pdf/${item.model}/${fileBase}.pdf`;
+            document.getElementById('authNameInput').value = '';
+            document.getElementById('authEmailInput').value = '';
+            document.getElementById('authCodeInput').value = '';
+            document.getElementById('authStep1ErrorMsg').textContent = '';
+            document.getElementById('authErrorMsg').textContent = '';
+            document.getElementById('authNameInput').classList.remove('error');
+            document.getElementById('authEmailInput').classList.remove('error');
+            document.getElementById('authCodeInput').classList.remove('error');
 
-                /* [이번 수정] 사용자 구조에 맞게 download > chain > dwg > 형번폴더 > 파일명 */
-                const dwgPath = `../../download/chain/dwg/${item.model}/${fileBase}.dwg`;
+            document.getElementById('authStep1').style.display = 'block';
+            document.getElementById('authStep2').style.display = 'none';
 
-                html += `<tr>
-                    <td>${item.model}</td>
-                    <td>${item.nt}T</td>
-                    <td>${item.od}</td>
-                    <td>${item.pitchCircle || item.pcd}</td>
-                    <td>
-                        <div class="file-group">
-                            <a href="${pdfPath}" class="file-link pdf-btn" target="_blank">PDF</a>
-                            <a href="${dwgPath}" class="file-link dwg-btn" download>DWG</a>
+            document.getElementById('authModalBackdrop').classList.add('active');
+            setTimeout(() => document.getElementById('authNameInput').focus(), 120);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModalBackdrop').classList.remove('active');
+            _pendingDwgUrl = null;
+        }
+
+        async function submitUserInfo() {
+            const nameInput  = document.getElementById('authNameInput');
+            const emailInput = document.getElementById('authEmailInput');
+            const errMsg     = document.getElementById('authStep1ErrorMsg');
+            const nextBtn    = document.getElementById('authStep1').querySelector('.auth-confirm-btn');
+            const name  = nameInput.value.trim();
+            const email = emailInput.value.trim();
+
+            if (!name) {
+                nameInput.classList.remove('error');
+                void nameInput.offsetWidth;
+                nameInput.classList.add('error');
+                errMsg.textContent = '이름을 입력해 주세요.';
+                nameInput.focus();
+                return;
+            }
+
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                emailInput.classList.remove('error');
+                void emailInput.offsetWidth;
+                emailInput.classList.add('error');
+                errMsg.textContent = '올바른 이메일 주소를 입력해 주세요.';
+                emailInput.focus();
+                return;
+            }
+
+            nameInput.classList.remove('error');
+            emailInput.classList.remove('error');
+            errMsg.textContent = '';
+
+            nextBtn.disabled = true;
+            nextBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 처리 중...';
+
+            try {
+                const formData = new FormData();
+                formData.append(FORM_ENTRY_NAME, name);
+                formData.append(FORM_ENTRY_EMAIL, email);
+                /* 수정: 다운로드할 DWG 파일명/경로를 Google Sheet에 기록 */
+                formData.append(FORM_ENTRY_FILE, getPendingDwgLogText());
+                await fetch(GOOGLE_FORM_URL, { method: 'POST', mode: 'no-cors', body: formData });
+            } catch (e) {
+                // 네트워크 오류가 있어도 인증코드 입력 단계로 진행
+            } finally {
+                nextBtn.disabled = false;
+                nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i> 다음';
+            }
+
+            document.getElementById('authStep1').style.display = 'none';
+            document.getElementById('authStep2').style.display = 'block';
+            setTimeout(() => document.getElementById('authCodeInput').focus(), 120);
+        }
+
+        async function confirmAuth() {
+            const input = document.getElementById('authCodeInput');
+            const errMsg = document.getElementById('authErrorMsg');
+            const confirmBtn = document.getElementById('authStep2').querySelector('.auth-confirm-btn');
+            const entered = input.value.trim();
+
+            if (entered !== DWG_AUTH_CODE) {
+                input.classList.remove('error');
+                void input.offsetWidth;
+                input.classList.add('error');
+                errMsg.textContent = '인증코드가 올바르지 않습니다.';
+                input.value = '';
+                input.focus();
+                return;
+            }
+
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 다운로드 중...';
+            errMsg.textContent = '';
+
+            try {
+                /* 수정 : fetch 방식 제거 → 로컬모드 + 서버모드 모두 대응 */
+
+                const fileName = _pendingDwgUrl.split('/').pop();
+
+                const link = document.createElement('a');
+
+                link.href = _pendingDwgUrl;
+
+                link.download = fileName;
+
+                /* 수정 : 새창 방지 */
+                link.target = '_self';
+
+                document.body.appendChild(link);
+
+                link.click();
+
+                document.body.removeChild(link);
+
+                closeAuthModal();
+            } catch (err) {
+                errMsg.textContent = err.message || '다운로드 중 오류가 발생했습니다.';
+                input.classList.remove('error');
+                void input.offsetWidth;
+                input.classList.add('error');
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<i class="fas fa-download"></i> 다운로드';
+            }
+        }
+        /* ===== /수정: DWG 인증 로직 ===== */
+
+        function displayResults(results, searchPitch = '', pitchTolerance = '10') {
+            const area = document.getElementById("resultArea");
+            const middleVisual = document.getElementById("middleVisualZone");
+
+            if (middleVisual) {
+                middleVisual.classList.toggle('is-hidden', !!results && results.length > 0);
+            }
+
+            if (!results || results.length === 0) {
+                area.innerHTML = "<p style='text-align:center; padding:20px;'>검색 결과 없음</p>";
+                return;
+            }
+
+            // 수정: 피치 오차범위 검색 조건을 결과 상단 안내문에 표시
+            const toleranceText = searchPitch
+                ? ` / 피치 ${searchPitch}mm 기준 ±${Math.min(10, Math.max(1, parseNumericValue(pitchTolerance) || 10))}% 범위`
+                : '';
+
+            let html = `
+                <div class="result-summary">
+                    아래 결과 영역만 스크롤됩니다. 한 화면에 5개씩 표시되며, 아래로 넘기면 다음 항목이 보입니다.<br>
+                    총 ${results.length}건${toleranceText}
+                </div>
+            `;
+
+            results.forEach((item, index) => {
+                // 수정: 체인 형번에서 r25, r35 같은 실제 도면 파일명을 생성
+                const drawingFileName = getChainDrawingFileName(item.model);
+
+                // 수정: 사용자가 알려준 실제 도면 저장 위치 기준 상대경로 연결
+                const pdfPath = drawingFileName ? `../../../download/chain/isoA_drive_roller_cahin/pdf/${drawingFileName}.pdf` : '';
+                const dwgPath = drawingFileName ? `../../../secure-download/dwg/r_iso_roller_chain/${drawingFileName}.dwg` : '';
+
+                // 수정: 3D 도면은 아직 준비 전이므로 실제 링크 대신 준비중 알림 처리
+                const dxfPath = '';
+
+                const openClass = index === 0 ? ' open' : '';
+                const iconClass = index === 0 ? 'fa-chevron-up' : 'fa-chevron-down';
+
+                html += `
+                    <div class="result-card${openClass}">
+                        <div class="result-top">
+                            <div class="result-model">${item.model}</div>
+
+                            <!-- 수정: 결과 상단에는 피치만 표시 -->
+                            <div class="result-spec">
+                                <div>피치</div>
+                                <strong>${normalizeNumber(item.pitch)}<span class="result-unit">mm</span></strong>
+                            </div>
+
+                            <!-- 수정: 결과 상단에서 롤러경/핀경 표시 제거 -->
+
+                            <button class="toggle-result-btn" type="button" onclick="toggleResultCard(this)" aria-label="상세 보기">
+                                <i class="fas ${iconClass}"></i>
+                            </button>
                         </div>
-                    </td>
-                </tr>`;
+
+                        <div class="result-detail">
+                            <div class="detail-grid">
+                                <div class="detail-row">
+                                    <span>ANSI No.</span>
+                                    <strong>${item.ansiNo || '-'}</strong>
+                                </div>
+                                <div class="detail-row">
+                                    <span>ISO No.</span>
+                                    <strong>${item.isoNo || '-'}</strong>
+                                </div>
+                                <div class="detail-row">
+                                    <span>내폭(W)</span>
+                                    <strong>${normalizeNumber(item.innerWidth)} mm</strong>
+                                </div>
+                                <div class="detail-row">
+                                    <span>플레이트 두께(t)</span>
+                                    <strong>${normalizeNumber(item.plateThickness)} mm</strong>
+                                </div>
+                                <div class="detail-row">
+                                    <span>플레이트 높이(H1)</span>
+                                    <strong>${normalizeNumber(item.plateHeightH1)} mm</strong>
+                                </div>
+                                <div class="detail-row">
+                                    <span>플레이트 높이(H2)</span>
+                                    <strong>${normalizeNumber(item.plateHeightH2)} mm</strong>
+                                </div>
+                            </div>
+
+                            <div class="result-buttons">
+                                <a href="${pdfPath}" class="pdf-btn" target="_blank">
+                                    <i class="far fa-file-alt"></i> PDF 도면
+                                </a>
+                                <!-- 수정: DWG 도면만 인증절차 후 다운로드 -->
+                                <a href="javascript:void(0)" class="dwg-btn" onclick="requestDwgAuth('${dwgPath}')">
+                                    <i class="fas fa-wrench"></i> DWG 도면
+                                </a>
+                                <!-- 수정: 3D 도면은 아직 준비 전 -->
+                                <a href="javascript:void(0)" class="dxf-btn" onclick="alert('3D 도면파일은 아직 준비되어 있지 않습니다.')">
+                                    <i class="fas fa-eye"></i> 3D 도면
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
-            html += `</tbody></table>`;
+
             area.innerHTML = html;
+        }
+
+        function toggleResultCard(btn) {
+            const card = btn.closest('.result-card');
+            if (!card) return;
+
+            card.classList.toggle('open');
+
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('fa-chevron-down', !card.classList.contains('open'));
+                icon.classList.toggle('fa-chevron-up', card.classList.contains('open'));
+            }
         }
 
         function clearFields() {
             document.getElementById('searchModel').selectedIndex = 0;
             document.querySelectorAll('input').forEach(i => i.value = '');
+            // 수정: 초기화 시 피치 오차범위 기본값을 10%로 복원
+            document.getElementById('pitchTolerance').value = '10';
             document.getElementById('resultArea').innerHTML = '<div class="placeholder-text"></div>';
+
+            const middleVisual = document.getElementById("middleVisualZone");
+            if (middleVisual) {
+                middleVisual.classList.remove('is-hidden');
+            }
         }
 
         function resetSearchLimit() {
