@@ -221,6 +221,14 @@
     color: rgba(120, 55, 35, 0.9);
 }
 
+        /* 수정: 모바일 다운로드 버튼 button 태그 기본 스타일 제거 */
+        button.download-btn,
+        button.rs-action-btn {
+            font-family: inherit;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
         .download-btn:hover {
             background: var(--accent-main);
             color: white;
@@ -889,12 +897,12 @@
                     <!-- 수정: 네비 버튼 아래 PDF/DWG 버튼 복원
                          PDF는 RS 선택 후 바로 다운로드, DWG는 RS 선택 후 인증 절차 진행 -->
                     <div class="download-buttons">
-                        <a href="javascript:void(0)"
+                        <button type="button"
                            class="download-btn pdf-download"
-                           onclick="event.stopPropagation(); openRsSelectModal('pdf', '${item.name}')">PDF</a>
-                        <a href="javascript:void(0)"
+                           onclick="event.stopPropagation(); openRsSelectModal('pdf', '${item.name}')">PDF</button>
+                        <button type="button"
                            class="download-btn dwg-download"
-                           onclick="event.stopPropagation(); openRsSelectModal('dwg', '${item.name}')">DWG</a>
+                           onclick="event.stopPropagation(); openRsSelectModal('dwg', '${item.name}')">DWG</button>
                     </div>
                 </div>
             `).join('');
@@ -979,15 +987,15 @@
 
                             <!-- 수정: 리스트 상세 카드 하단 다운로드 버튼 -->
                             <div class="rs-download-buttons">
-                                <a href="javascript:void(0)"
+                                <button type="button"
                                    class="rs-action-btn rs-pdf-btn"
-                                   onclick="downloadAttachmentFile('pdf', '${itemName}', '${sizeNumber}')">▣ PDF 도면</a>
-                                <a href="javascript:void(0)"
+                                   onclick="downloadAttachmentFile('pdf', '${itemName}', '${sizeNumber}')">▣ PDF 도면</button>
+                                <button type="button"
                                    class="rs-action-btn rs-dwg-btn"
-                                   onclick="requestDwgAuth('${itemName}', '${sizeNumber}')">🔧 2D 도면</a>
-                                <a href="javascript:void(0)"
+                                   onclick="requestDwgAuth('${itemName}', '${sizeNumber}')">🔧 2D 도면</button>
+                                <button type="button"
                                    class="rs-action-btn rs-3d-btn"
-                                   onclick="alert('3D 도면파일은 아직 준비되어 있지 않습니다.')">⊙ 3D 도면</a>
+                                   onclick="alert('3D 도면파일은 아직 준비되어 있지 않습니다.')">⊙ 3D 도면</button>
                             </div>
                         </div>
                     </div>
@@ -1028,13 +1036,10 @@
             const basePath = type === 'pdf' ? PDF_BASE_PATH : DWG_BASE_PATH;
             const url = basePath + fileName;
 
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = fileName;
-            link.target = '_self';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            /* 수정: 모바일 브라우저 호환
+               - 동적으로 a 태그를 만들어 click() 하는 방식은 일부 모바일에서 차단될 수 있음
+               - 사용자 클릭 이벤트 안에서 직접 location 이동으로 다운로드/열기 처리 */
+            window.location.href = url;
         }
 
         /* 수정: 네비 화면 PDF/DWG 버튼 클릭 시 RS 규격 선택 */
@@ -1131,13 +1136,9 @@
                 return;
             }
 
-            const link = document.createElement('a');
-            link.href = pendingDwgUrl;
-            link.download = pendingDwgFileName;
-            link.target = '_self';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            /* 수정: 모바일 브라우저 호환
+               - 인증 완료 후 직접 이동 방식으로 DWG 다운로드/열기 실행 */
+            window.location.href = pendingDwgUrl;
 
             closeAuthModal();
         }
@@ -1159,6 +1160,29 @@
 
         window.onload = function() {
             renderAttachmentNav();
+
+            /* 수정: 모바일 키보드 Enter 동작 보완 */
+            const authNameInput = document.getElementById('authNameInput');
+            const authEmailInput = document.getElementById('authEmailInput');
+            const authCodeInput = document.getElementById('authCodeInput');
+
+            if (authNameInput) {
+                authNameInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') document.getElementById('authEmailInput').focus();
+                });
+            }
+
+            if (authEmailInput) {
+                authEmailInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') submitUserInfo();
+                });
+            }
+
+            if (authCodeInput) {
+                authCodeInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') confirmAuth();
+                });
+            }
 
             document.getElementById('rsSelectModalBackdrop').addEventListener('click', function(e) {
                 if (e.target === this) closeRsSelectModal();
