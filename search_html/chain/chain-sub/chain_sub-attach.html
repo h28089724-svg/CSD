@@ -660,6 +660,109 @@
         }
 
 
+
+        /* =========================================================
+           수정: 모바일 다운로드 확인/안내 팝업
+           - 모바일 브라우저에서 다운로드 위치 확인창이 보이지 않는 경우가 있어
+             파일명과 진행 상태를 사용자에게 명확히 표시
+           ========================================================= */
+        .download-modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 320;
+            background: rgba(19, 50, 65, 0.50);
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+
+        .download-modal-backdrop.active {
+            display: flex;
+        }
+
+        .download-modal {
+            width: 360px;
+            max-width: 100%;
+            background: rgba(235, 248, 253, 0.98);
+            border: 1px solid rgba(62, 138, 174, 0.30);
+            border-radius: 22px;
+            padding: 22px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.28);
+            text-align: center;
+        }
+
+        .download-modal-title {
+            font-size: 1.08rem;
+            font-weight: 900;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .download-modal-file {
+            padding: 10px 12px;
+            margin: 12px 0;
+            border-radius: 13px;
+            background: rgba(62, 138, 174, 0.12);
+            border: 1px solid rgba(62, 138, 174, 0.22);
+            color: #0077ff;
+            font-size: 0.9rem;
+            font-weight: 900;
+            word-break: break-all;
+        }
+
+        .download-modal-sub {
+            color: var(--text-sub);
+            font-size: 0.82rem;
+            line-height: 1.55;
+            margin-bottom: 16px;
+        }
+
+        .download-modal-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .download-cancel-btn,
+        .download-start-btn {
+            height: 44px;
+            border-radius: 12px;
+            font-size: 0.92rem;
+            font-weight: 900;
+            cursor: pointer;
+            border: 1px solid rgba(62, 138, 174, 0.28);
+        }
+
+        .download-cancel-btn {
+            background: #ffffff;
+            color: var(--text-sub);
+        }
+
+        .download-start-btn {
+            border: none;
+            background: var(--accent-main);
+            color: #ffffff;
+            box-shadow: 0 8px 18px rgba(62, 138, 174, 0.22);
+        }
+
+        .download-done-message {
+            display: none;
+            margin-top: 14px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: rgba(140, 198, 63, 0.16);
+            border: 1px solid rgba(140, 198, 63, 0.32);
+            color: rgba(56, 104, 22, 0.95);
+            font-size: 0.82rem;
+            font-weight: 800;
+            line-height: 1.45;
+        }
+
+        .download-done-message.active {
+            display: block;
+        }
+
         @media (max-width: 560px) {
             .page {
                 padding: 28px 14px 34px;
@@ -813,6 +916,28 @@
             </div>
         </div>
 
+
+        <!-- 수정: 모바일 다운로드 확인/안내 팝업 -->
+        <div id="downloadModalBackdrop" class="download-modal-backdrop">
+            <div class="download-modal">
+                <div id="downloadModalTitle" class="download-modal-title">다운로드 확인</div>
+                <div id="downloadModalFile" class="download-modal-file">-</div>
+                <div id="downloadModalSub" class="download-modal-sub">
+                    다운로드를 시작하시려면 아래 버튼을 누르세요.<br>
+                    모바일에서는 저장 위치 선택창이 표시되지 않을 수 있으며,
+                    보통 <strong>다운로드</strong> 폴더에 저장됩니다.
+                </div>
+                <div class="download-modal-buttons">
+                    <button type="button" class="download-cancel-btn" onclick="closeDownloadModal()">취소</button>
+                    <button type="button" class="download-start-btn" onclick="startConfirmedDownload()">다운로드 시작</button>
+                </div>
+                <div id="downloadDoneMessage" class="download-done-message">
+                    다운로드 요청이 실행되었습니다.<br>
+                    알림창 또는 휴대폰의 <strong>다운로드</strong> 폴더를 확인해 주세요.
+                </div>
+            </div>
+        </div>
+
         <div class="bottom-area">
             <button class="home-btn" type="button" onclick="goHome()">🏠 홈으로</button>
 
@@ -877,6 +1002,11 @@
         let pendingDwgFileName = '';
         let pendingRsSelectType = '';
         let pendingRsSelectItemName = '';
+
+        /* 수정: 모바일 다운로드 확인 팝업용 임시 저장값 */
+        let pendingDownloadUrl = '';
+        let pendingDownloadFileName = '';
+        let pendingDownloadType = '';
 
         function renderAttachmentNav() {
             const grid = document.getElementById('attachmentNavGrid');
@@ -1036,10 +1166,8 @@
             const basePath = type === 'pdf' ? PDF_BASE_PATH : DWG_BASE_PATH;
             const url = basePath + fileName;
 
-            /* 수정: 모바일 브라우저 호환
-               - 동적으로 a 태그를 만들어 click() 하는 방식은 일부 모바일에서 차단될 수 있음
-               - 사용자 클릭 이벤트 안에서 직접 location 이동으로 다운로드/열기 처리 */
-            window.location.href = url;
+            /* 수정: 모바일에서 무반응처럼 보이지 않도록 다운로드 확인 팝업 표시 */
+            openDownloadModal(type, fileName, url);
         }
 
         /* 수정: 네비 화면 PDF/DWG 버튼 클릭 시 RS 규격 선택 */
@@ -1136,12 +1264,59 @@
                 return;
             }
 
-            /* 수정: 모바일 브라우저 호환
-               - 인증 완료 후 직접 이동 방식으로 DWG 다운로드/열기 실행 */
-            window.location.href = pendingDwgUrl;
-
+            /* 수정: 인증 완료 후 바로 이동하지 않고 다운로드 확인 팝업 표시 */
             closeAuthModal();
+            openDownloadModal('dwg', pendingDwgFileName, pendingDwgUrl);
         }
+
+
+        /* 수정: 다운로드 확인 팝업 열기 */
+        function openDownloadModal(type, fileName, url) {
+            pendingDownloadType = type;
+            pendingDownloadFileName = fileName;
+            pendingDownloadUrl = url;
+
+            const title = document.getElementById('downloadModalTitle');
+            const file = document.getElementById('downloadModalFile');
+            const sub = document.getElementById('downloadModalSub');
+            const done = document.getElementById('downloadDoneMessage');
+
+            title.textContent = type === 'pdf' ? 'PDF 다운로드 확인' : 'DWG 다운로드 확인';
+            file.textContent = fileName;
+            sub.innerHTML =
+                '다운로드를 시작하시려면 아래 버튼을 누르세요.<br>' +
+                '모바일에서는 저장 위치 선택창이 표시되지 않을 수 있으며,<br>' +
+                '보통 휴대폰의 <strong>다운로드</strong> 폴더에 저장됩니다.';
+            done.classList.remove('active');
+
+            document.getElementById('downloadModalBackdrop').classList.add('active');
+        }
+
+        /* 수정: 다운로드 확인 팝업 닫기 */
+        function closeDownloadModal() {
+            document.getElementById('downloadModalBackdrop').classList.remove('active');
+            pendingDownloadUrl = '';
+            pendingDownloadFileName = '';
+            pendingDownloadType = '';
+        }
+
+        /* 수정: 사용자가 확인 후 실제 다운로드 실행 */
+        function startConfirmedDownload() {
+            if (!pendingDownloadUrl) {
+                alert('다운로드할 파일 정보가 없습니다.');
+                return;
+            }
+
+            const done = document.getElementById('downloadDoneMessage');
+            done.classList.add('active');
+
+            /* 수정: 모바일 호환용 직접 이동
+               - 서버 설정에 따라 다운로드되거나 새 탭/뷰어로 열릴 수 있음 */
+            setTimeout(function() {
+                window.location.href = pendingDownloadUrl;
+            }, 250);
+        }
+
 
         function goHome() {
             window.location.href = '../chain_main.html';
@@ -1190,6 +1365,11 @@
 
             document.getElementById('authModalBackdrop').addEventListener('click', function(e) {
                 if (e.target === this) closeAuthModal();
+            });
+
+            /* 수정: 다운로드 안내 팝업 바깥 클릭 시 닫기 */
+            document.getElementById('downloadModalBackdrop').addEventListener('click', function(e) {
+                if (e.target === this) closeDownloadModal();
             });
         };
     </script>
