@@ -428,6 +428,106 @@
             color: #ffffff;
         }
 
+
+        /* 준비중 팝업 */
+        .ready-popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.28);
+            backdrop-filter: blur(3px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .ready-popup-overlay.show {
+            display: flex;
+        }
+
+        .ready-popup {
+            width: 240px;
+            padding: 22px 18px 20px;
+            border-radius: 24px;
+            background: rgba(248, 250, 255, 0.98);
+            border: 1px solid rgba(62, 138, 174, 0.20);
+            box-shadow: 0 18px 44px rgba(0, 0, 0, 0.18);
+        }
+
+        .ready-title {
+            font-size: 1.32rem;
+            font-weight: 900;
+            color: var(--accent-main);
+            text-align: center;
+            margin-bottom: 18px;
+            letter-spacing: -0.04em;
+        }
+
+        .progress-wrap {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .progress-bar {
+            width: 180px;
+            height: 14px;
+            border-radius: 999px;
+            background: rgba(180, 190, 220, 0.28);
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(62, 138, 174, 0.14);
+        }
+
+        .progress-runner {
+            width: 74px;
+            height: 100%;
+            border-radius: 999px;
+            position: absolute;
+            left: -74px;
+            top: 0;
+            background: linear-gradient(
+                90deg,
+                #ff4d4d,
+                #4b7dff,
+                #ff9a2f,
+                #ff4d4d
+            );
+            background-size: 240% 100%;
+            animation:
+                loadingMove 6s linear infinite,
+                gradientShift 3s linear infinite;
+        }
+
+        @keyframes loadingMove {
+            0% {
+                left: -74px;
+            }
+
+            100% {
+                left: 180px;
+            }
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 240% 50%;
+            }
+        }
+
+        .ready-text {
+            margin-top: 16px;
+            font-size: 0.82rem;
+            color: rgba(19, 50, 65, 0.72);
+            text-align: center;
+            letter-spacing: -0.02em;
+            line-height: 1.35;
+        }
+
         @media (max-width: 560px) {
             .page {
                 padding: 18px 12px;
@@ -548,7 +648,7 @@
                     <div class="sub-search-list" aria-label="동력전달용 2차 검색">
                         <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-iso-a.html')">ISO A 계열롤러체인</button>
                         <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-iso-b.html')">ISO-B 계열롤러체인</button>
-                        <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-double.html')">더블피치체인</button>
+                        <button class="sub-search-btn" type="button" onclick="showReadyPopup(this)">더블피치체인</button>
                         <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-hollow.html')">할로우핀체인</button>
                     </div>
                 </div>
@@ -566,10 +666,10 @@
                     </button>
                     <div class="sub-search-list" aria-label="컨베이어용 2차 검색">
                         <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-attach.html')">어태치먼트 체인 </button>
-                        <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-freeflow.html')">배속체인(조립라인용)</button>
-                        <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-center.html')">센터롤라/탑롤라/사이드롤라체인</button>
-                        <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-large-con.html')">대형컨베이어체인</button>
-                        <button class="sub-search-btn" type="button" onclick="selectAndGo(this, './chain-sub/chain_sub-small.html')">소형컨베이어체인</button>
+                        <button class="sub-search-btn" type="button" onclick="showReadyPopup(this)">배속체인(조립라인용)</button>
+                        <button class="sub-search-btn" type="button" onclick="showReadyPopup(this)">센터롤라/탑롤라/사이드롤라체인</button>
+                        <button class="sub-search-btn" type="button" onclick="showReadyPopup(this)">대형컨베이어체인</button>
+                        <button class="sub-search-btn" type="button" onclick="showReadyPopup(this)">소형컨베이어체인</button>
                     </div>
                 </div>
             </div>
@@ -598,6 +698,22 @@
                 <div class="bottom-brand-name">MYCAD</div>
                 <div class="bottom-sub">Speed &amp; Simple Data Search</div>
             </div>
+        </div>
+    </div>
+
+
+    <!-- 준비중 팝업 -->
+    <div id="readyPopup" class="ready-popup-overlay" onclick="closeReadyPopup(event)">
+        <div class="ready-popup" role="dialog" aria-modal="true" aria-labelledby="readyPopupTitle">
+            <div id="readyPopupTitle" class="ready-title">준비중입니다</div>
+
+            <div class="progress-wrap">
+                <div class="progress-bar">
+                    <div class="progress-runner"></div>
+                </div>
+            </div>
+
+            <div class="ready-text">현재 해당 컨텐츠를 준비중입니다!</div>
         </div>
     </div>
 
@@ -701,6 +817,43 @@
                 window.location.href = url;
             }, 150);
         }
+
+
+        function showReadyPopup(el) {
+            document.querySelectorAll('.mode-btn, .sub-search-btn, .chain-image-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            if (el) {
+                el.classList.add('active');
+            }
+
+            const popup = document.getElementById('readyPopup');
+
+            if (popup) {
+                popup.classList.add('show');
+            }
+        }
+
+        function hideReadyPopup() {
+            const popup = document.getElementById('readyPopup');
+
+            if (popup) {
+                popup.classList.remove('show');
+            }
+        }
+
+        function closeReadyPopup(event) {
+            if (event.target.id === 'readyPopup') {
+                hideReadyPopup();
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                hideReadyPopup();
+            }
+        });
 
         function goHome() {
             window.location.href = '../../index.html';

@@ -4,692 +4,1133 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>할로우핀체인 검색</title>
-    
-    <!-- [기존 유지] 루트 기준 파일 배치를 맞추기 위해 manifest 경로를 ./ 로 유지 -->
-    <link rel="manifest" href="../../manifest.json">
-    <meta name="theme-color" content="#f5f7fa">
-    
+
+    <link rel="manifest" href="../../../manifest.json">
+    <meta name="theme-color" content="#3e8aae">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <script>
-        var allSprocketData = [];
-
-        if ('serviceWorker' in navigator) {
-            /* [기존 유지] 루트 기준 파일 배치를 맞추기 위해 sw.js 경로를 ./ 로 유지 */
-            navigator.serviceWorker.register('../../sw.js')
-            .then(() => console.log('오프라인 모드 준비 완료'))
-            .catch(err => console.log('오프라인 모드 오류:', err));
-        }
-    </script>
-
-    <!-- [기존 유지] 루트 기준에서 data_chain 폴더를 직접 읽도록 경로 유지 -->
-    <script src="../../data_chain/data_rs25.js"></script>
-    <script src="../../data_chain/data_rs35.js"></script>
-    <script src="../../data_chain/data_rs40.js"></script>
-    <script src="../../data_chain/data_rs50.js"></script>
-    <script src="../../data_chain/data_rs60.js"></script>
-    <script src="../../data_chain/data_rs80.js"></script>
-    <script src="../../data_chain/data_rs100.js"></script>
-    <script src="../../data_chain/data_rs120.js"></script>
-    <script src="../../data_chain/data_rs140.js"></script>
-    <script src="../../data_chain/data_rs160.js"></script>
-    <script src="../../data_chain/data_rs180.js"></script>
-    <script src="../../data_chain/data_rs200.js"></script>
-    <script src="../../data_chain/data_rs240.js"></script>
 
     <style>
         :root {
-            /* [기존 유지] 체인 모드는 파란색 컨셉 유지 */
-            --primary-bg: #f5f7fa;
-            --card-bg: #f5f7fa;
-            --header-bg: #f5f7fa;
-            --accent-color: #2196f3;
-            --input-bg: #ffffff;
-            --text-main: #2c3e50;
-            --text-dim: #7f8c8d;
-            --border-color: #dcdfe6;
-            --btn-text: #ffffff;
+            --accent-main: rgb(62, 138, 174);
+            --accent-soft: rgba(62, 138, 174, 0.15);
+            --accent-border: rgba(62, 138, 174, 0.34);
+            --bg-top: #e8f5fb;
+            --bg-bottom: #d7ebf4;
+            --text-main: #133241;
+            --text-sub: rgba(19, 50, 65, 0.72);
+            --panel-bg: rgba(62, 138, 174, 0.08);
+            --panel-border: rgba(62, 138, 174, 0.22);
+            --input-bg: rgba(255, 255, 255, 0.58);
+            --btn-bg: rgba(62, 138, 174, 0.16);
+            --btn-border: rgba(62, 138, 174, 0.28);
+            --btn-hover-bg: var(--accent-main);
+            --btn-hover-text: #ffffff;
+            --home-btn-bg: rgba(62, 138, 174, 0.12);
+            --home-btn-border: rgba(62, 138, 174, 0.35);
         }
 
-        body { 
+        * { box-sizing: border-box; }
+
+        body {
             margin: 0;
-            padding: 0;
-            background-color: var(--primary-bg); 
-            color: var(--text-main); 
-            font-family: 'Pretendard', sans-serif; 
-            overflow-x: hidden;
-            transition: all 0.4s ease; 
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(62, 138, 174, 0.25), transparent 55%),
+                linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+            display: flex;
+            justify-content: center;
+            color: var(--text-main);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        .header {
-            display: grid;
-            grid-template-columns: 50px 1fr 68px;
-            align-items: center;
-            padding: 10px 18px 22px; 
-            background: var(--header-bg); 
-            border-bottom: 2px solid var(--accent-color);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            min-height: 92px;
-            box-sizing: border-box;
+        .page {
+            max-width: 800px;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 0 0 10px;
         }
 
-        .logo {
-            justify-self: center;
-            display: inline-flex;
+        .top-bar {
+            position: relative;
+            height: 86px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px 22px 10px 22px;
-            border-radius: 18px;
-            font-weight: 800;
-            font-size: 1.89rem;
-            line-height: 1.1;
-            color: #0d6fd1;
-            text-align: center;
-            letter-spacing: -0.02em;
-            background: linear-gradient(180deg, #d9ecff 0%, #c6e0fb 100%);
-            border: 1px solid #8cbbe8;
-            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.55), 0 3px 10px rgba(33, 150, 243, 0.12);
+            background: rgba(232, 245, 251, 0.74);
+            border-bottom: 1px solid rgba(62, 138, 174, 0.12);
         }
 
-        .logo-text {
-            display: inline-block;
+        .hamburger-btn {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 34px;
+            height: 34px;
+            border: 0;
+            background: transparent;
+            color: var(--text-main);
+            font-size: 1.55rem;
+            font-weight: 900;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .title-pill {
+            min-height: 44px;
+            padding: 7px 18px;
+            border-radius: 17px;
+            border: 1px solid var(--accent-border);
+            background: rgba(62, 138, 174, 0.08);
+            color: var(--accent-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.55rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            box-shadow: 0 8px 18px rgba(62, 138, 174, 0.10);
+            text-align: center;
         }
 
         .menu-btn {
-            font-size: 1.3rem;
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 18px;
+            border: 1px solid var(--accent-border);
+            background: rgba(62, 138, 174, 0.09);
+            color: var(--accent-main);
+            font-size: 0.70rem;
+            font-weight: 800;
             cursor: pointer;
             display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            min-height: 44px;
-        }
-
-        .header-right {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-        }
-
-        .header-mode-link {
-            width: 56px;
-            height: 56px;
-            display: inline-flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-radius: 16px;
-            text-decoration: none;
-            background: linear-gradient(180deg, #e8f3ff 0%, #d9ebff 100%);
-            border: 1px solid #9fc4ec;
-            box-shadow: 0 6px 14px rgba(33, 111, 209, 0.12);
-            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+            gap: 1px;
         }
 
-        .header-mode-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 18px rgba(33, 111, 209, 0.18);
-            background: linear-gradient(180deg, #eef6ff 0%, #deeeff 100%);
+        .menu-arrow {
+            font-size: 1.25rem;
+            line-height: 1;
+            margin-bottom: -3px;
         }
 
-        .header-mode-link img {
-            width: 36px;
-            height: 36px;
-            object-fit: contain;
-            display: block;
-        }
-
-        .side-menu {
-            position: fixed;
-            top: 0;
-            left: -280px;
-            width: 280px;
-            height: 100%;
-            background: #ffffff;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
-            transition: 0.3s ease;
-            z-index: 200;
-            padding-top: 50px;
-        }
-
-        .side-menu.active { left: 0; }
-
-        .side-menu .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 1.3rem;
-            cursor: pointer;
-        }
-
-        .side-menu ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .side-menu ul li {
-            padding: 12px 25px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-        }
-
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            z-index: 150;
-        }
-
-        .overlay.active { display: block; }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 30px 15px 170px;
-            min-height: calc(100vh - 92px);
+        .content {
+            flex: 1;
+            padding: 24px 16px 0;
             display: flex;
             flex-direction: column;
         }
 
-        .search-card { 
-            background: var(--card-bg); 
-            padding: 15px 20px;
-            border-radius: 12px; 
-            margin-bottom: 15px; 
-            border: 1px solid var(--border-color);
+        .search-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 22px 20px 18px;
+            box-shadow: 0 10px 30px rgba(62, 138, 174, 0.10);
+            backdrop-filter: blur(4px);
         }
 
-        .input-group { margin-bottom: 10px; }
+        .field { margin-bottom: 14px; }
 
-        .input-group label {
+        .field label {
             display: block;
-            margin-bottom: 5px;
-            color: var(--accent-color);
-            font-size: 0.8rem;
-            font-weight: bold;
+            margin: 0 0 7px;
+            font-size: 0.82rem;
+            font-weight: 900;
+            color: var(--accent-main);
+            letter-spacing: -0.02em;
         }
 
-        select, input { 
+        select {
             width: 100%;
-            padding: 10px;
-            border-radius: 8px; 
-            border: 1px solid var(--border-color); 
-            background: var(--input-bg); 
-            font-size: 0.95rem;
-            box-sizing: border-box;
-            outline: none; 
+            min-height: 42px;
+            padding: 0 13px;
+            border-radius: 12px;
+            border: 1px solid rgba(62, 138, 174, 0.18);
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 0.92rem;
+            font-weight: 650;
+            outline: none;
+            appearance: auto;
         }
 
-        .btn-row {
-            display: flex;
+        select:focus {
+            border-color: var(--accent-main);
+            box-shadow: 0 0 0 3px rgba(62, 138, 174, 0.13);
+        }
+
+        .button-row {
+            display: grid;
+            grid-template-columns: 1fr 1.8fr;
             gap: 10px;
-            margin-top: 5px;
-        }
-        
-        button { 
-            flex: 1; 
-            padding: 10px;
-            border-radius: 8px; 
-            font-size: 0.9rem;
-            cursor: pointer; 
-            border: 1px solid var(--accent-color); 
-            background: #fff;
+            margin-top: 12px;
         }
 
-        .search-btn {
-            background: transparent;
-            color: var(--accent-color);
-            font-weight: bold;
-            flex: 2;
+        .action-btn {
+            min-height: 44px;
+            border-radius: 10px;
+            border: 1px solid var(--btn-border);
+            background: var(--btn-bg);
+            color: rgba(19, 50, 65, 0.70);
+            font-size: 0.95rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .reset-btn {
-            border-color: #95a5a6;
-            color: #95a5a6;
+        .action-btn:hover {
+            background: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(62, 138, 174, 0.20);
         }
 
-        .result-area {
-            margin-top: 10px;
-            width: 100%;
-            overflow-x: hidden;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            table-layout: fixed;
-        }
-        
-        th:nth-child(1), td:nth-child(1) { width: 22%; }
-        th:nth-child(2), td:nth-child(2) { width: 14%; }
-        th:nth-child(3), td:nth-child(3) { width: 14%; }
-        th:nth-child(4), td:nth-child(4) { width: 20%; }
-        th:nth-child(5), td:nth-child(5) { width: 30%; }
-
-        th {
-            background: rgba(0,0,0,0.03);
-            padding: 8px 2px;
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-
-        td {
-            padding: 10px 2px;
-            border-bottom: 1px solid var(--border-color);
-            text-align: center;
-            font-size: 0.8rem;
-        }
-
-        .file-group {
+        .meta-row {
             display: flex;
-            gap: 4px;
-            justify-content: center;
+            justify-content: flex-end;
+            margin-top: 9px;
+            padding-right: 4px;
+            color: var(--text-sub);
+            font-size: 0.72rem;
         }
 
-        .file-link {
-            padding: 5px 0;
-            width: 40px;
-            border-radius: 4px;
-            font-size: 0.65rem;
-            font-weight: bold;
-            color: white;
-            text-decoration: none;
-            text-align: center;
-        }
-
-        .pdf-btn { background: #3498db; }
-        .dwg-btn { background: #e74c3c; }
-
-        .placeholder-text {
-            display: none;
-        }
-
-        .usage-info {
-            text-align: right;
-            margin-top: 8px;
-            font-size: 0.7rem;
-            color: var(--text-dim);
-        }
-
-        .middle-visual-zone {
+        .visual-zone {
             flex: 1;
             display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding: 8px 0 24px;
-            min-height: 180px;
-        }
-
-        .middle-chain-image {
-            display: block;
-            width: 252px;
-            max-width: 46%;
-            height: auto;
-            opacity: 0.15;
-            pointer-events: none;
-            user-select: none;
-            transform: translateY(-14px);
-        }
-
-
-        /* [이번 수정] 기존 CBN 하단 로고 배너를 제거하고, 공통 하단 영역(bottom-area)으로 통일 */
-        .bottom-area {
-            position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 0;
-            z-index: 140;
-            width: calc(100% - 24px);
-            max-width: 600px;
-            margin: 0;
-            padding: 12px 14px 12px;
-            text-align: center;
-            background: var(--primary-bg);
-            border: 1px solid #dce7ee;
-            border-radius: 20px 20px 0 0;
-            box-shadow: 0 -8px 24px rgba(28, 44, 64, 0.08);
-            box-sizing: border-box;
-        }
-
-        /* [이번 수정] 홈으로 버튼 스타일 - 클릭 시 chain_main.html로 이동 */
-        .home-btn {
-            padding: 10px 18px;
-            border-radius: 999px;
-            border: 1px solid rgba(33, 150, 243, 0.35);
-            background: rgba(33, 150, 243, 0.10);
-            cursor: pointer;
-            display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-            color: var(--accent-color);
-            font-size: 0.92rem;
-            font-weight: 700;
-            width: auto;
-            flex: none;
+            min-height: 300px;
+            padding: 18px 0 20px;
         }
 
-        .home-btn:hover {
-            background: var(--accent-color);
+        .chain-visual {
+            width: 330px;
+            max-width: 72%;
+            opacity: 0.68;
+            filter: drop-shadow(0 18px 22px rgba(62, 138, 174, 0.16));
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .result-panel {
+            display: none;
+            margin-top: 16px;
+            background: rgba(255, 255, 255, 0.24);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 14px;
+            box-shadow: 0 10px 30px rgba(62, 138, 174, 0.08);
+        }
+
+        .result-panel.show { display: block; }
+
+        .result-title {
+            color: var(--accent-main);
+            font-size: 0.92rem;
+            font-weight: 900;
+            margin: 0 0 10px;
+        }
+
+        .result-card {
+            border: 1px solid rgba(80, 170, 210, 0.28);
+            background: linear-gradient(180deg, #3f87ab 0%, #2d6d8d 100%);
+            border-radius: 22px;
+            padding: 0;
+            margin-bottom: 14px;
+            overflow: hidden;
+            box-shadow: 0 12px 28px rgba(32, 88, 118, 0.22);
+        }
+
+        .result-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px 12px;
+            background: linear-gradient(180deg, rgba(91,170,212,0.28), rgba(255,255,255,0.02));
+            border-bottom: 1px solid rgba(255,255,255,0.10);
+        }
+
+        .result-model {
+            font-size: 1.12rem;
+            font-weight: 950;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .result-pitch-wrap {
+            text-align: right;
+        }
+
+        .result-pitch-label {
+            color: rgba(255,255,255,0.78);
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .result-pitch-value {
+            color: #ffffff;
+            font-size: 1.05rem;
+            font-weight: 900;
+        }
+
+        .result-card:last-child { margin-bottom: 0; }
+
+        .result-model {
+            font-size: 1.02rem;
+            font-weight: 950;
+            color: var(--text-main);
+            margin-bottom: 9px;
+        }
+
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0;
+            font-size: 0.84rem;
+            color: #ffffff;
+            padding: 12px 18px 6px;
+        }
+
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 10px 0;
+        }
+
+        .spec-label {
+            color: rgba(255,255,255,0.82);
+            font-weight: 700;
+        }
+
+        .spec-value {
+            font-weight: 900;
             color: #ffffff;
         }
 
-        /* [이번 수정] MYCAD 브랜드 영역 - 클릭 시 index.html로 이동 */
-        .bottom-brand {
-            margin-top: 12px;
-            cursor: pointer;
+        .file-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 14px 18px 18px;
         }
+
+        .file-link {
+            min-height: 38px;
+            border-radius: 12px;
+            border: 0;
+            color: #ffffff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 900;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.16);
+        }
+
+        .file-link:nth-child(1) {
+            background: #1e7be6;
+        }
+
+        .file-link:nth-child(2) {
+            background: #d92727;
+        }
+
+        .file-link:nth-child(3) {
+            background: #b8eb2f;
+            color: #173000;
+        }
+
+        .empty-text, .error-text {
+            text-align: center;
+            color: var(--text-sub);
+            font-size: 0.88rem;
+            font-weight: 800;
+            padding: 16px 6px;
+            line-height: 1.5;
+        }
+
+        .error-text { color: #8a2c2c; }
+
+        .bottom-area {
+            margin-top: auto;
+            text-align: center;
+            padding: 12px 16px 0;
+        }
+
+        .bottom-inner {
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.35);
+            padding: 12px 10px 16px;
+        }
+
+        .home-btn {
+            padding: 9px 18px;
+            border-radius: 999px;
+            border: 1px solid var(--home-btn-border);
+            background: var(--home-btn-bg);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            color: var(--accent-main);
+            font-size: 0.92rem;
+            font-weight: 500;
+        }
+
+        .home-btn:hover {
+            background: var(--accent-main);
+            color: #ffffff;
+        }
+
+        .bottom-brand { margin-top: 12px; }
 
         .bottom-brand-name {
             font-weight: 800;
-            color: var(--accent-color);
+            color: var(--accent-main);
             font-size: 1.15rem;
             letter-spacing: -0.02em;
         }
 
         .bottom-sub {
             font-size: 0.8rem;
-            color: var(--text-dim);
+            color: var(--text-sub);
             margin-top: 4px;
         }
 
-        .bottom-nav {
-            display: none !important;
+
+        /* ===== DWG 인증 팝업: ISO-A 검색화면과 동일한 형태 ===== */
+        .auth-modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: 300;
+            align-items: center;
+            justify-content: center;
         }
 
+        .auth-modal-backdrop.active {
+            display: flex;
+        }
+
+        .auth-modal {
+            width: 320px;
+            max-width: calc(100vw - 32px);
+            background: rgba(232, 245, 251, 0.98);
+            border: 1px solid rgba(62, 138, 174, 0.28);
+            border-radius: 22px;
+            padding: 28px 24px 24px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(12px);
+            text-align: center;
+            animation: modalPop 0.22s ease;
+        }
+
+        @keyframes modalPop {
+            from {
+                transform: scale(0.88);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .auth-modal-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #c62828;
+        }
+
+        .auth-modal-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .auth-modal-sub {
+            font-size: 0.82rem;
+            color: var(--text-sub);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .auth-input {
+            width: 100%;
+            height: 48px;
+            border-radius: 13px;
+            border: 1px solid rgba(62, 138, 174, 0.28);
+            background: rgba(83, 83, 83, 0.9);
+            color: #fff;
+            font-size: 1.15rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.08em;
+            outline: none;
+            margin-bottom: 8px;
+            padding: 0 16px;
+            transition: border-color 0.2s;
+        }
+
+        .auth-input::placeholder {
+            font-size: 0.85rem;
+            color: rgba(180, 180, 180, 0.75);
+            letter-spacing: 0;
+        }
+
+        .auth-input:focus {
+            border-color: rgba(62, 138, 174, 0.65);
+            box-shadow: 0 0 0 3px rgba(62, 138, 174, 0.14);
+        }
+
+        .auth-input.error {
+            border-color: #e05555;
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-6px);
+            }
+
+            75% {
+                transform: translateX(6px);
+            }
+        }
+
+        .auth-error-msg {
+            font-size: 0.8rem;
+            color: #d94040;
+            min-height: 18px;
+            margin-bottom: 14px;
+            font-weight: 700;
+        }
+
+        .auth-btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .auth-cancel-btn,
+        .auth-confirm-btn {
+            height: 44px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.18s;
+            padding: 0 10px;
+        }
+
+        .auth-cancel-btn {
+            border: 1px solid #dcdfe6;
+            background: #ffffff;
+            color: #7f8c8d;
+        }
+
+        .auth-confirm-btn {
+            border: none;
+            background: linear-gradient(135deg, #c62828, #e53935);
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(198, 40, 40, 0.30);
+        }
+
+        .auth-confirm-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(198, 40, 40, 0.40);
+        }
+        /* ===== /DWG 인증 팝업 ===== */
+
+
+
+        .row-select-wrap {
+            margin-bottom: 16px;
+        }
+
+        .row-select-label {
+            display: block;
+            margin: 0 0 8px;
+            font-size: 0.82rem;
+            font-weight: 900;
+            color: var(--accent-main);
+            letter-spacing: -0.02em;
+        }
+
+        .row-btn-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .row-btn {
+            flex: 1;
+            min-height: 44px;
+            border-radius: 12px;
+            border: 2px solid rgba(27, 67, 88, 0.85);
+            background: rgba(62, 138, 174, 0.22);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
+        }
+
+        .row-btn:hover {
+            transform: translateY(-1px);
+            background: rgba(62, 138, 174, 0.30);
+        }
+
+        .row-btn.active {
+            background: linear-gradient(180deg, #ff8b42 0%, #e85a1f 100%);
+            border-color: #ffffff;
+            color: #ffffff;
+            box-shadow:
+                0 6px 18px rgba(232, 90, 31, 0.30),
+                inset 0 1px 0 rgba(255,255,255,0.35);
+        }
+
+        .row-btn.disabled {
+            background: rgba(120, 140, 150, 0.22);
+            border-color: rgba(90, 100, 110, 0.75);
+            color: rgba(70, 80, 90, 0.55);
+            cursor: not-allowed;
+            opacity: 0.72;
+            box-shadow: none;
+        }
+
+        .row-btn.disabled:hover {
+            transform: none;
+            background: rgba(120, 140, 150, 0.22);
+        }
+
+
         @media (max-width: 560px) {
-            .header {
-                grid-template-columns: 44px 1fr 58px;
-                padding: 8px 14px 18px;
-                min-height: 82px;
+            .top-bar { height: 86px; }
+
+            .title-pill {
+                font-size: 1.44rem;
+                max-width: calc(100% - 146px);
+                padding: 7px 16px;
             }
 
-            .logo {
-                font-size: 1.55rem;
-                padding: 8px 16px;
-                border-radius: 15px;
-            }
+            .content { padding: 24px 16px 0; }
 
-            .header-mode-link {
-                width: 46px;
-                height: 46px;
-                border-radius: 14px;
-            }
+            .search-panel { padding: 22px 20px 18px; }
 
-            .header-mode-link img {
-                width: 28px;
-                height: 28px;
-            }
+            .chain-visual { max-width: 74%; }
 
-            .container {
-                padding: 24px 12px 156px;
-                min-height: calc(100vh - 82px);
-            }
-
-            .middle-visual-zone {
-                padding: 4px 0 18px;
-                min-height: 140px;
-            }
-
-            .middle-chain-image {
-                width: 180px;
-                max-width: 56%;
-                transform: translateY(-10px);
-            }
-
-            /* [이번 수정] 모바일에서도 공통 하단 영역이 화면 폭에 맞게 표시되도록 조정 */
-            .bottom-area {
-                width: calc(100% - 20px);
-                padding: 12px 12px 10px;
-                border-radius: 18px 18px 0 0;
-            }
-
-            .home-btn {
-                padding: 9px 16px;
-                font-size: 0.88rem;
-            }
-
-            .bottom-brand-name {
-                font-size: 1.05rem;
-            }
-
-            .bottom-sub {
-                font-size: 0.76rem;
-            }
+            .spec-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+    <div class="page">
+        <header class="top-bar">
+            <button class="hamburger-btn" type="button" onclick="goBack()" aria-label="이전 메뉴">☰</button>
+            <div class="title-pill">할로우핀체인</div>
+            <button class="menu-btn" type="button" onclick="goBack()" aria-label="체인 메뉴">
+                <span class="menu-arrow">↩</span>
+                <span>메뉴</span>
+            </button>
+        </header>
 
-        <div id="mainLogo" class="logo">
-            <span class="logo-text">할로우핀체인</span>
-        </div>
+        <main class="content">
+            <section class="search-panel" aria-label="할로우핀체인 검색 조건">
+                <div class="field">
+                    <label for="modelSelect">형번 선택 (MODEL)</label>
+                    <select id="modelSelect">
+                        <option value="">형번을 선택하세요</option>
+                    </select>
+                </div>
 
-        <div class="header-right">
-            <a href="../sprocket/sprocket.html" class="header-mode-link" aria-label="스프라켓 검색 모드로 이동">
-                <img src="../../images/sprocket.png" alt="스프라켓 검색 이동">
-            </a>
+                <div class="row-select-wrap">
+                    <label class="row-select-label">열수 선택</label>
+                    <div class="row-btn-group">
+                        <button type="button" class="row-btn active" id="row1Btn" onclick="selectRow('1열')">1열</button>
+                        <button type="button" class="row-btn" id="row2Btn" onclick="selectRow('2열')">2열</button>
+                        <button type="button" class="row-btn disabled" id="row3Btn" disabled>3열</button>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="pitchSelect">피치 선택 (P)</label>
+                    <select id="pitchSelect">
+                        <option value="">피치를 선택하세요</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="pinInnerSelect">핀내경 선택</label>
+                    <select id="pinInnerSelect">
+                        <option value="">핀내경을 선택하세요</option>
+                    </select>
+                </div>
+
+                <div class="button-row">
+                    <button class="action-btn" type="button" onclick="resetSearch()">초기화</button>
+                    <button class="action-btn" type="button" onclick="searchData()">검색하기</button>
+                </div>
+
+                <div class="meta-row">
+                    <span id="remainText">남은 횟수: 10 / 10</span>
+                </div>
+            </section>
+
+            <section id="resultPanel" class="result-panel" aria-label="검색 결과">
+                <div class="result-title">검색 결과</div>
+                <div id="resultList"></div>
+            </section>
+
+            <section class="visual-zone" aria-hidden="true">
+                <img src="../../../images/chain.png" alt="" class="chain-visual" onerror="this.style.display='none'">
+            </section>
+        </main>
+
+        <footer class="bottom-area">
+            <div class="bottom-inner">
+                <button class="home-btn" onclick="goHome()">🏠 홈으로</button>
+                <div class="bottom-brand" aria-label="브랜드 정보">
+                    <div class="bottom-brand-name">MYCAD</div>
+                    <div class="bottom-sub">Speed &amp; Simple Data Search</div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+
+    <!-- DWG 도면 다운로드 전용 인증 팝업 -->
+    <div class="auth-modal-backdrop" id="authModalBackdrop">
+        <div class="auth-modal">
+            <div id="authStep1">
+                <div class="auth-modal-icon"><i class="fas fa-user"></i></div>
+                <div class="auth-modal-title">정보 입력</div>
+                <div class="auth-modal-sub">DWG 파일 다운로드를 위해<br>아래 정보를 입력해 주세요</div>
+                <input type="text" class="auth-input" id="authNameInput" placeholder="이름을 입력하세요" maxlength="30" onkeydown="if(event.key==='Enter') document.getElementById('authEmailInput').focus()" style="margin-bottom: 10px;">
+                <input type="email" class="auth-input" id="authEmailInput" placeholder="이메일을 입력하세요" maxlength="60" onkeydown="if(event.key==='Enter') submitUserInfo()">
+                <div class="auth-error-msg" id="authStep1ErrorMsg"></div>
+                <div class="auth-btn-row">
+                    <button class="auth-cancel-btn" onclick="closeAuthModal()">취소</button>
+                    <button class="auth-confirm-btn" onclick="submitUserInfo()"><i class="fas fa-arrow-right"></i> 다음</button>
+                </div>
+            </div>
+
+            <div id="authStep2" style="display:none;">
+                <div class="auth-modal-icon"><i class="fas fa-lock"></i></div>
+                <div class="auth-modal-title">인증코드 입력</div>
+                <div class="auth-modal-sub">담당자에게 받은<br>인증코드를 입력하세요</div>
+                <input type="password" class="auth-input" id="authCodeInput" placeholder="인증코드 입력" maxlength="20" onkeydown="if(event.key==='Enter') confirmAuth()">
+                <div class="auth-error-msg" id="authErrorMsg"></div>
+                <div class="auth-btn-row">
+                    <button class="auth-cancel-btn" onclick="closeAuthModal()">취소</button>
+                    <button class="auth-confirm-btn" onclick="confirmAuth()"><i class="fas fa-download"></i> 다운로드</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-    <div class="side-menu" id="sideMenu">
-        <div class="close-btn" onclick="toggleMenu()"><i class="fas fa-times"></i></div>
-        <ul>
-            <li onclick="goToSprocketMode()">스프라켓 검색 모드로 이동</li>
-            <li onclick="resetSearchLimit()">체인 검색 횟수 제한 해제</li>
-        </ul>
-    </div>
-
-    <div class="container">
-        <div id="searchSection" class="search-card">
-            <div class="input-group">
-                <label>형번 선택 (MODEL)</label>
-                <select id="searchModel"><option value="">형번을 선택하세요</option></select>
-            </div>
-            <div class="input-group">
-                <label>잇수 입력 (NT)</label>
-                <input type="number" id="searchNt" placeholder="잇수">
-            </div>
-            <div class="input-group">
-                <label>외경 입력 (OD)</label>
-                <input type="number" id="searchOd" placeholder="외경">
-            </div>
-            <div class="input-group">
-                <label>피치원 지름 (PCD)</label>
-                <input type="text" id="searchPcd" placeholder="PCD">
-            </div>
-            <div class="btn-row">
-                <button class="reset-btn" onclick="clearFields()">초기화</button>
-                <button class="search-btn" onclick="performSearch()">검색하기</button>
-            </div>
-            <div id="usageCounter" class="usage-info">남은 횟수: 확인 중...</div>
-        </div>
-
-        <div id="resultArea" class="result-area">
-            <div class="placeholder-text"></div>
-        </div>
-
-        <div class="middle-visual-zone" aria-hidden="true">
-            <img src="../../images/chain.png" alt="" class="middle-chain-image">
-        </div>
-    </div>
-    <!-- [이번 수정] 기존 CBN 하단 로고 배너를 제거하고, 홈 버튼 + MYCAD 브랜드 영역으로 교체 -->
-    <div class="bottom-area">
-        <!-- [이번 수정] 홈으로 버튼은 아래 goHome() 함수에서 체인 메인페이지로 이동 -->
-        <button class="home-btn" type="button" onclick="goHome()">🏠 홈으로</button>
-
-        <!-- [이번 수정] MYCAD 영역을 터치하면 아래 goIndex() 함수에서 CSD/index.html로 이동 -->
-        <div class="bottom-brand" aria-label="브랜드 정보" onclick="goIndex()" role="button" tabindex="0">
-            <div class="bottom-brand-name">MYCAD</div>
-            <div class="bottom-sub">Speed &amp; Simple Data Search</div>
-        </div>
-    </div>
-
-    <nav class="bottom-nav" aria-label="하단 메뉴"></nav>
+    <script src="../../../data/chain/hollow_pin_chain/hollow_pin_chain_data.js" onload="initPage()" onerror="showLoadError()"></script>
 
     <script>
-        function toggleMenu() {
-            document.getElementById('sideMenu').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
+        let hollowData = [];
+        let selectedRow = '1열';
+        let dataInitialized = false;
+
+        function getHollowData() {
+            if (window.hollowPinChainData && Array.isArray(window.hollowPinChainData)) {
+                return window.hollowPinChainData;
+            }
+
+            if (window.rawHollowPinChainData && Array.isArray(window.rawHollowPinChainData)) {
+                return window.rawHollowPinChainData;
+            }
+
+            if (window.allHollowPinChainData && Array.isArray(window.allHollowPinChainData)) {
+                return window.allHollowPinChainData;
+            }
+
+            return [];
         }
 
-        function goToSprocketMode() {
-            window.location.href = '../sprocket/sprocket.html';
+        function sortValues(values) {
+            return [...values].sort((a, b) => {
+                const na = Number(a);
+                const nb = Number(b);
+                if (Number.isFinite(na) && Number.isFinite(nb)) return na - nb;
+                return String(a).localeCompare(String(b), 'ko');
+            });
         }
 
-        /* [이번 수정] 하단 홈 버튼 이동 위치 지정
-           현재 요청 기준 홈 파일 위치: C:\CSD\search_html\chain\chain_main.html
-           서브페이지 위치가 chain/chain-sub 폴더이므로 ../chain_main.html 상대경로를 사용합니다. */
-        function goHome() {
+        function uniqueValues(key) {
+            return sortValues(new Set(
+                hollowData
+                    .map(item => item[key])
+                    .filter(value => value !== undefined && value !== null && value !== '')
+            ));
+        }
+
+        function fillSelect(id, values, placeholder, unit) {
+            const select = document.getElementById(id);
+            select.innerHTML = `<option value="">${placeholder}</option>` + values.map(value => {
+                const label = unit ? `${value}${unit}` : value;
+                return `<option value="${value}">${label}</option>`;
+            }).join('');
+        }
+
+        function initPage() {
+            if (dataInitialized) return;
+            dataInitialized = true;
+
+            hollowData = getHollowData();
+
+            if (!hollowData.length) {
+                showLoadError();
+                return;
+            }
+
+            fillSelect('modelSelect', uniqueValues('model'), '형번을 선택하세요', '');
+            fillSelect('pitchSelect', uniqueValues('pitch'), '피치를 선택하세요', 'mm');
+            fillSelect('pinInnerSelect', uniqueValues('pinInnerDiameter'), '핀내경을 선택하세요', 'mm');
+        }
+
+        function mm(value) {
+            if (value === undefined || value === null || value === '') return '-';
+            return `${value}mm`;
+        }
+
+        function getHollowPinFileBaseName(item) {
+            /*
+                형번 예: 40HP, 50HP, 60HP, 80HP
+                실제 파일명 예:
+                40 Hollow Pin.pdf
+                40 Hollow Pin.DWG
+
+                따라서 숫자 부분만 추출해서 "숫자 Hollow Pin" 형태로 변환합니다.
+            */
+            const model = String(item.model || '').trim();
+            const sizeNumber = model.replace(/[^0-9]/g, '');
+
+            if (!sizeNumber) return '';
+
+            return `${sizeNumber} Hollow Pin`;
+        }
+
+        function makeFileHref(item, type) {
+            const fileBaseName = getHollowPinFileBaseName(item);
+            if (!fileBaseName) return '';
+
+            /*
+                PDF 실제 저장 위치:
+                C:\CSD\download\chain\hollow_pin_chain\pdf
+
+                DWG 실제 저장 위치:
+                C:\CSD\secure-download\dwg\hollow_pin_chain
+
+                로컬 file:// 실행 환경에서 안정적으로 연결하기 위해 절대 file:/// 경로를 사용합니다.
+            */
+            if (type === 'pdf') {
+                return `file:///C:/CSD/download/chain/hollow_pin_chain/pdf/${encodeURIComponent(fileBaseName)}.pdf`;
+            }
+
+            if (type === 'dwg') {
+                return `file:///C:/CSD/secure-download/dwg/hollow_pin_chain/${encodeURIComponent(fileBaseName)}.DWG`;
+            }
+
+            if (type === 'dxf') {
+                return `file:///C:/CSD/secure-download/dxf/hollow_pin_chain/${encodeURIComponent(fileBaseName)}.dxf`;
+            }
+
+            return '';
+        }
+
+        function fileLink(item, type) {
+            const href = makeFileHref(item, type);
+            if (!href) return '';
+
+            const labelMap = {
+                pdf: '▣ PDF 도면',
+                dwg: '🔧 DWG 도면',
+                dxf: '◎ 3D 도면'
+            };
+
+            const fileBaseName = getHollowPinFileBaseName(item);
+            const extMap = {
+                pdf: 'pdf',
+                dwg: 'DWG',
+                dxf: 'dxf'
+            };
+
+            const fileName = `${fileBaseName}.${extMap[type] || type}`;
+
+            if (type === 'dwg') {
+                return `<button class="file-link" type="button" onclick="openAuthModal('${href}', '${fileName}')">${labelMap[type]}</button>`;
+            }
+
+            return `<a class="file-link" href="${href}" download="${fileName}" target="_blank" rel="noopener">${labelMap[type] || type.toUpperCase()}</a>`;
+        }
+
+
+        let pendingDownloadUrl = '';
+        let pendingDownloadFileName = '';
+
+        const DWG_AUTH_CODES = ['hkd8421', 'MYCAD2024'];
+
+        function openAuthModal(url, fileName) {
+            pendingDownloadUrl = url;
+            pendingDownloadFileName = fileName || '';
+
+            const modal = document.getElementById('authModalBackdrop');
+            const step1 = document.getElementById('authStep1');
+            const step2 = document.getElementById('authStep2');
+            const nameInput = document.getElementById('authNameInput');
+            const emailInput = document.getElementById('authEmailInput');
+            const codeInput = document.getElementById('authCodeInput');
+            const step1Error = document.getElementById('authStep1ErrorMsg');
+            const codeError = document.getElementById('authErrorMsg');
+
+            if (step1) step1.style.display = 'block';
+            if (step2) step2.style.display = 'none';
+            if (nameInput) nameInput.value = '';
+            if (emailInput) emailInput.value = '';
+            if (codeInput) codeInput.value = '';
+            if (step1Error) step1Error.textContent = '';
+            if (codeError) codeError.textContent = '';
+
+            if (modal) modal.classList.add('active');
+
+            setTimeout(() => {
+                if (nameInput) nameInput.focus();
+            }, 80);
+        }
+
+        function closeAuthModal() {
+            const modal = document.getElementById('authModalBackdrop');
+            const nameInput = document.getElementById('authNameInput');
+            const emailInput = document.getElementById('authEmailInput');
+            const codeInput = document.getElementById('authCodeInput');
+            const step1Error = document.getElementById('authStep1ErrorMsg');
+            const codeError = document.getElementById('authErrorMsg');
+
+            if (modal) modal.classList.remove('active');
+            if (nameInput) nameInput.value = '';
+            if (emailInput) emailInput.value = '';
+            if (codeInput) codeInput.value = '';
+            if (step1Error) step1Error.textContent = '';
+            if (codeError) codeError.textContent = '';
+
+            pendingDownloadUrl = '';
+            pendingDownloadFileName = '';
+        }
+
+        function submitUserInfo() {
+            const nameInput = document.getElementById('authNameInput');
+            const emailInput = document.getElementById('authEmailInput');
+            const errorMsg = document.getElementById('authStep1ErrorMsg');
+
+            const name = String(nameInput ? nameInput.value : '').trim();
+            const email = String(emailInput ? emailInput.value : '').trim();
+
+            if (!name) {
+                if (errorMsg) errorMsg.textContent = '이름을 입력하세요.';
+                if (nameInput) nameInput.focus();
+                return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                if (errorMsg) errorMsg.textContent = '올바른 이메일을 입력하세요.';
+                if (emailInput) emailInput.focus();
+                return;
+            }
+
+            if (errorMsg) errorMsg.textContent = '';
+
+            document.getElementById('authStep1').style.display = 'none';
+            document.getElementById('authStep2').style.display = 'block';
+
+            setTimeout(() => {
+                const codeInput = document.getElementById('authCodeInput');
+                if (codeInput) codeInput.focus();
+            }, 80);
+        }
+
+        function confirmAuth() {
+            const codeInput = document.getElementById('authCodeInput');
+            const errorMsg = document.getElementById('authErrorMsg');
+            const code = String(codeInput ? codeInput.value : '').trim();
+
+            if (!DWG_AUTH_CODES.includes(code)) {
+                if (errorMsg) errorMsg.textContent = '인증코드가 올바르지 않습니다.';
+                if (codeInput) {
+                    codeInput.classList.add('error');
+                    setTimeout(() => codeInput.classList.remove('error'), 350);
+                    codeInput.focus();
+                }
+                return;
+            }
+
+            if (pendingDownloadUrl) {
+                const link = document.createElement('a');
+                link.href = pendingDownloadUrl;
+                link.download = pendingDownloadFileName || '';
+                link.target = '_blank';
+                link.rel = 'noopener';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            closeAuthModal();
+        }
+
+        document.addEventListener('keydown', function(event) {
+            const modal = document.getElementById('authModalBackdrop');
+
+            if (event.key === 'Escape' && modal && modal.classList.contains('active')) {
+                closeAuthModal();
+            }
+        });
+
+
+
+        function selectRow(rowType) {
+            selectedRow = rowType;
+
+            const btn1 = document.getElementById('row1Btn');
+            const btn2 = document.getElementById('row2Btn');
+
+            btn1.classList.remove('active');
+            btn2.classList.remove('active');
+
+            if (rowType === '1열') {
+                btn1.classList.add('active');
+            } else {
+                btn2.classList.add('active');
+            }
+        }
+
+        function searchData() {
+            if (!hollowData.length) {
+                hollowData = getHollowData();
+            }
+
+            if (!hollowData.length) {
+                showLoadError();
+                return;
+            }
+
+            const model = document.getElementById('modelSelect').value;
+            const pitch = document.getElementById('pitchSelect').value;
+            const pinInner = document.getElementById('pinInnerSelect').value;
+
+            const results = hollowData.filter(item => {
+                const matchModel = !model || String(item.model) === model;
+                const matchPitch = !pitch || Number(item.pitch) === Number(pitch);
+                const matchPinInner = !pinInner || Number(item.pinInnerDiameter) === Number(pinInner);
+                return matchModel && matchPitch && matchPinInner;
+            });
+
+            renderResults(results);
+        }
+
+        function renderResults(results) {
+            const panel = document.getElementById('resultPanel');
+            const list = document.getElementById('resultList');
+
+            panel.classList.add('show');
+
+            if (!results.length) {
+                list.innerHTML = `<div class="empty-text">조건에 맞는 할로우핀체인이 없습니다.</div>`;
+                return;
+            }
+
+            list.innerHTML = results.map(item => `
+                <article class="result-card">
+                    <div class="result-head">
+                        <div class="result-model">${item.model}</div>
+                        <div class="result-pitch-wrap">
+                            <div class="result-pitch-label">피치</div>
+                            <div class="result-pitch-value">${mm(item.pitch)}</div>
+                        </div>
+                    </div>
+                    <div class="spec-grid">
+                        <div class="spec-item"><span class="spec-label">피치</span><span class="spec-value">${mm(item.pitch)}</span></div>
+                        <div class="spec-item"><span class="spec-label">부시경</span><span class="spec-value">${mm(item.bushDiameter)}</span></div>
+                        <div class="spec-item"><span class="spec-label">링크내폭</span><span class="spec-value">${mm(item.linkInnerWidth)}</span></div>
+                        <div class="spec-item"><span class="spec-label">링크두께</span><span class="spec-value">${mm(item.linkPlateThickness)}</span></div>
+                        <div class="spec-item"><span class="spec-label">핀외경</span><span class="spec-value">${mm(item.pinOuterDiameter)}</span></div>
+                        <div class="spec-item"><span class="spec-label">핀내경</span><span class="spec-value">${mm(item.pinInnerDiameter)}</span></div>
+                        <div class="spec-item"><span class="spec-label">핀길이 A</span><span class="spec-value">${mm(item.pinLengthA)}</span></div>
+                    </div>
+                    <div class="file-row">
+                        ${fileLink(item, 'pdf')}
+                        ${fileLink(item, 'dwg')}
+                        ${fileLink(item, 'dxf')}
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function showLoadError() {
+            const panel = document.getElementById('resultPanel');
+            const list = document.getElementById('resultList');
+            panel.classList.add('show');
+            list.innerHTML = `
+                <div class="error-text">
+                    데이터 파일을 읽어오지 못했습니다.<br>
+                    C:\\CSD\\data\\chain\\hollow_pin_chain\\hollow_pin_chain_data.js 위치와 파일명을 확인하세요.<br>
+                    현재 HTML 기준 연결 경로: ../../../data/chain/hollow_pin_chain/hollow_pin_chain_data.js
+                </div>
+            `;
+        }
+
+        function resetSearch() {
+            document.getElementById('modelSelect').value = '';
+            document.getElementById('pitchSelect').value = '';
+            document.getElementById('pinInnerSelect').value = '';
+            selectRow('1열');
+            document.getElementById('resultPanel').classList.remove('show');
+            document.getElementById('resultList').innerHTML = '';
+        }
+
+        function goBack() {
             window.location.href = '../chain_main.html';
         }
 
-        /* [이번 수정] MYCAD 클릭 시 최상위 index.html로 이동
-           현재 요청 기준 위치: C:\CSD\index.html
-           서브페이지 위치가 chain/chain-sub 폴더이므로 ../../../index.html 상대경로를 사용합니다. */
-        function goIndex() {
+        function goHome() {
             window.location.href = '../../../index.html';
         }
 
-        const MAX_DAILY_SEARCH = 10;
-        const SEARCH_COUNT_KEY = 'chain_search_count';
-        const SEARCH_DATE_KEY = 'chain_search_date';
-
-        function getTodayString() {
-            return new Date().toLocaleDateString('ko-KR');
-        }
-
-        function getSearchCount() {
-            const today = getTodayString();
-            const savedDate = localStorage.getItem(SEARCH_DATE_KEY);
-
-            if (savedDate !== today) {
-                localStorage.setItem(SEARCH_DATE_KEY, today);
-                localStorage.setItem(SEARCH_COUNT_KEY, '0');
-                return 0;
-            }
-
-            return parseInt(localStorage.getItem(SEARCH_COUNT_KEY) || '0', 10);
-        }
-
-        function setSearchCount(count) {
-            localStorage.setItem(SEARCH_DATE_KEY, getTodayString());
-            localStorage.setItem(SEARCH_COUNT_KEY, String(count));
-        }
-
-        function checkSearchLimit() {
-            const count = getSearchCount();
-            const remaining = Math.max(0, MAX_DAILY_SEARCH - count);
-            document.getElementById('usageCounter').textContent = `남은 횟수: ${remaining} / ${MAX_DAILY_SEARCH}`;
-            return count < MAX_DAILY_SEARCH;
-        }
-
-        window.onload = function() {
-            populateModelSelect();
-            checkSearchLimit();
-        };
-
-        function populateModelSelect() {
-            const select = document.getElementById('searchModel');
-            if (!allSprocketData || !Array.isArray(allSprocketData)) return;
-
-            const models = [...new Set(allSprocketData.map(item => item.model))]
-                .sort((a, b) => {
-                    const numA = parseInt(String(a).replace(/\D/g, ''), 10);
-                    const numB = parseInt(String(b).replace(/\D/g, ''), 10);
-                    return numA - numB;
-                });
-
-            models.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m;
-                opt.textContent = m;
-                select.appendChild(opt);
-            });
-        }
-
-        function performSearch() {
-            if (!checkSearchLimit()) {
-                alert("체인 검색의 일일 횟수를 초과했습니다.");
-                return;
-            }
-
-            const model = document.getElementById('searchModel').value;
-            const nt = document.getElementById('searchNt').value;
-            const od = document.getElementById('searchOd').value;
-            const pcd = document.getElementById('searchPcd').value;
-
-            let results = allSprocketData;
-            if (model) results = results.filter(d => d.model === model);
-            if (nt) results = results.filter(d => d.nt == nt);
-            if (od) results = results.filter(d => d.od == od);
-            if (pcd) results = results.filter(d => String(d.pitchCircle || d.pcd).includes(pcd));
-
-            displayResults(results);
-
-            const currentCount = getSearchCount();
-            setSearchCount(currentCount + 1);
-            checkSearchLimit();
-        }
-
-        function displayResults(results) {
-            const area = document.getElementById("resultArea");
-
-            if (!results || results.length === 0) {
-                area.innerHTML = "<p style='text-align:center; padding:20px;'>결과 없음</p>";
-                return;
-            }
-
-            let html = `<table><thead><tr><th>형번</th><th>잇수</th><th>외경</th><th>PCD</th><th>도면</th></tr></thead><tbody>`;
-            results.forEach(item => {
-                const fileBase = `${item.model}_${item.nt}NT`;
-
-                /* [이번 수정] PDF/DWG 다운로드 경로에 형번 폴더(item.model)를 반영 */
-                /* [이번 수정] 사용자 구조에 맞게 download > chain > pdf > 형번폴더 > 파일명 */
-                const pdfPath = `../../download/chain/pdf/${item.model}/${fileBase}.pdf`;
-
-                /* [이번 수정] 사용자 구조에 맞게 download > chain > dwg > 형번폴더 > 파일명 */
-                const dwgPath = `../../download/chain/dwg/${item.model}/${fileBase}.dwg`;
-
-                html += `<tr>
-                    <td>${item.model}</td>
-                    <td>${item.nt}T</td>
-                    <td>${item.od}</td>
-                    <td>${item.pitchCircle || item.pcd}</td>
-                    <td>
-                        <div class="file-group">
-                            <a href="${pdfPath}" class="file-link pdf-btn" target="_blank">PDF</a>
-                            <a href="${dwgPath}" class="file-link dwg-btn" download>DWG</a>
-                        </div>
-                    </td>
-                </tr>`;
-            });
-            html += `</tbody></table>`;
-            area.innerHTML = html;
-        }
-
-        function clearFields() {
-            document.getElementById('searchModel').selectedIndex = 0;
-            document.querySelectorAll('input').forEach(i => i.value = '');
-            document.getElementById('resultArea').innerHTML = '<div class="placeholder-text"></div>';
-        }
-
-        function resetSearchLimit() {
-            setSearchCount(0);
-            checkSearchLimit();
-            toggleMenu();
-        }
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                if (!dataInitialized) {
+                    initPage();
+                }
+            }, 80);
+        });
     </script>
 </body>
 </html>
