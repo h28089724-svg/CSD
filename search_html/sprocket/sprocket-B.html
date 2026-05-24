@@ -98,19 +98,26 @@
 
         body { min-height: 100vh; }
 
+        /* [수정] 검색 결과만 스크롤되도록 전체 앱 화면을 100vh 안에 고정 */
         .app-shell {
             width: 100%;
             max-width: 600px;
             margin: 0 auto;
+            height: 100vh;
             min-height: 100vh;
             position: relative;
-            padding-bottom: 112px;
+            padding-bottom: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         .header {
             height: 68px;
             display: grid;
-            grid-template-columns: 52px 1fr auto;
+            /* [수정] 조회가능횟수 배지를 검색 버튼 우측으로 이동했으므로,
+               상단 헤더 우측은 제목 중앙 정렬을 위한 동일 폭 여백으로 변경 */
+            grid-template-columns: 52px minmax(0, 1fr) 52px;
             align-items: center;
             gap: 10px;
             padding: 0 18px;
@@ -142,11 +149,18 @@
             color: var(--text-main);
         }
 
+        /* [수정] 상단 제목을 헤더 전체 기준 가운데에 오도록 절대 위치 중앙 정렬 */
+        /* [수정] 상단 제목 박스를 가운데 칸 안에서 중앙 정렬
+           - 이전 absolute 중앙 배치 방식은 메뉴 버튼/조회수 배지와 겹칠 수 있어 제거
+           - grid의 가운데 칸을 사용하되, 제목은 박스 형태로 중앙에 표시 */
         .brand-wrap {
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: center;
+            gap: 0;
             min-width: 0;
+            width: 100%;
+            text-align: center;
         }
 
         .brand-icon {
@@ -161,14 +175,36 @@
             flex-shrink: 0;
         }
 
-        .brand-text { min-width: 0; }
+        /* [수정] 제목과 부제목을 담는 중앙 박스
+           - 제목 글자가 박스 안에 들어가도록 배경/테두리/둥근 모서리 적용 */
+        .brand-text {
+            min-width: 0;
+            width: 100%;
+            max-width: 438px;
+            height: 51px;
+            padding: 5px 14px 4px;
+            border-radius: 14px;
+            border: 1px solid rgba(181, 150, 211, 0.46);
+            background: rgba(181, 150, 211, 0.16);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
 
         .brand-title {
-            font-size: 1.28rem;
+            font-size: 1.18rem;
             line-height: 1.05;
             font-weight: 800;
             color: #332d3a;
             letter-spacing: -0.03em;
+            /* [수정] 제목이 중앙 박스 안에서 한 줄로 안정적으로 보이도록 설정 */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
         }
 
         .brand-sub {
@@ -176,6 +212,37 @@
             font-size: 0.74rem;
             letter-spacing: 0.12em;
             color: var(--text-dim);
+            /* [수정] 부제목도 제목 박스 안에서 넘치지 않도록 한 줄 처리 */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        /* [수정] 기존 상단 우측 조회가능횟수 배지가 있던 자리에 이전화면 화살표 버튼 배치 */
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: 1px solid rgba(181, 150, 211, 0.32);
+            background: rgba(255, 255, 255, 0.42);
+            color: #332d3a;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.05rem;
+            transition: all 0.2s ease;
+            justify-self: end;
+            padding: 0;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18);
+        }
+
+        /* [수정] 이전화면 버튼 hover 상태 */
+        .back-btn:hover {
+            background: rgba(181, 150, 211, 0.24);
+            color: #000000;
+            transform: translateY(-1px);
         }
 
         .usage-badge {
@@ -192,6 +259,8 @@
             font-weight: 700;
             font-size: 0.96rem;
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+            /* [수정] 조회가능횟수 표시를 검색하기 버튼 우측에 배치하기 위한 기본 배지 스타일 */
+            justify-self: end;
         }
 
         .overlay {
@@ -251,7 +320,15 @@
 
         .side-menu ul li:hover { background: rgba(255,255,255,0.04); }
 
-        .content { padding: 22px 16px 24px; }
+        /* [수정] 상단 검색 조건 박스는 고정하고, 아래 결과 영역만 내부 스크롤되도록 content를 세로 flex 구조로 변경 */
+        .content {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 22px 16px 92px;
+            overflow: hidden;
+        }
 
         .search-panel {
             position: relative;
@@ -263,6 +340,8 @@
                 inset 0 1px 0 rgba(255,255,255,0.04);
             padding: 18px 16px 18px;
             overflow: hidden;
+            /* [수정] 검색 결과가 길어져도 검색 조건 박스가 위로 밀려 올라가지 않도록 고정 영역으로 유지 */
+            flex-shrink: 0;
         }
 
         .search-panel::before {
@@ -359,11 +438,21 @@
                 0 10px 26px rgba(181, 150, 211, 0.18);
         }
 
+        /* [수정] 조회가능횟수 배지를 검색하기 버튼 우측에 배치하기 위해 버튼 행을 3칸 구조로 변경 */
         .btn-row {
             display: grid;
-            grid-template-columns: 102px 1fr;
+            grid-template-columns: 102px 150px 74px;
             gap: 12px;
             margin-top: 4px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* [수정] 검색하기 버튼 우측으로 이동한 조회가능횟수 배지의 높이를 버튼과 맞춤 */
+        .btn-row .usage-badge {
+            height: 50px;
+            min-width: 74px;
+            padding: 0 10px;
         }
 
         button {
@@ -392,19 +481,27 @@
             color: var(--text-main);
         }
 
+        /* [수정] 검색하기 버튼 기본 상태: 흰색 배경 + 빨간색 테두리/글자 */
         .search-btn {
-            background: var(--btn-main-bg);
-            color: #ffffff;
-            box-shadow: var(--btn-main-shadow);
+            background: #ffffff;
+            color: #d93025;
+            border: 1px solid rgba(217, 48, 37, 0.42);
+            box-shadow: 0 8px 20px rgba(217, 48, 37, 0.12);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
         }
 
-        .search-btn:hover {
+        /* [수정] 검색하기 버튼 선택 상태: 마우스 hover, 키보드 focus, 클릭 active 시 빨간색으로 변경 */
+        .search-btn:hover,
+        .search-btn:focus,
+        .search-btn:active {
             transform: translateY(-1px);
-            box-shadow: 0 14px 30px rgba(86, 86, 201, 0.42);
+            background: #d93025;
+            color: #ffffff;
+            border-color: #d93025;
+            box-shadow: 0 14px 30px rgba(217, 48, 37, 0.42);
         }
 
         .hero-empty {
@@ -471,9 +568,18 @@
             border-color: rgba(111, 126, 255, 0.32);
         }
 
-        .result-area { margin-top: 18px; }
+        /* [수정] 검색 결과 영역은 남은 높이만 사용하고, 내부 목록만 스크롤되도록 설정 */
+        .result-area {
+            margin-top: 18px;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
 
+        /* [수정] 결과 제목/안내/페이지 표시 영역은 그대로 두고, 실제 결과 카드 목록만 스크롤되도록 높이 구조 설정 */
         .result-list-wrap {
+            height: 100%;
+            min-height: 0;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -540,8 +646,11 @@
             text-align: center;
         }
 
+        /* [수정] 고정 높이(560px)를 제거하고 남은 공간만 차지하게 하여, 페이지 전체가 아닌 결과 카드 영역만 스크롤 */
         .result-scroll-box {
-            height: 560px;
+            flex: 1;
+            height: auto;
+            min-height: 0;
             overflow-y: auto;
             overflow-x: hidden;
             scroll-snap-type: y mandatory;
@@ -582,18 +691,20 @@
             flex: 0 0 auto;
         }
 
+        /* [수정] 검색결과 리스트 한 줄의 상하폭을 약 20% 줄이기 위해 세로 padding을 16px → 10px로 축소 */
         .result-summary {
             display: grid;
             grid-template-columns: 74px 1fr 34px;
             gap: 14px;
             align-items: center;
-            padding: 16px 16px;
+            padding: 10px 16px;
             cursor: pointer;
         }
 
+        /* [수정] 리스트 높이 축소에 맞춰 형번 배지 높이를 32px → 28px로 축소 */
         .model-pill {
             min-width: 60px;
-            height: 32px;
+            height: 28px;
             padding: 0 12px;
             border-radius: 10px;
             background: rgba(181, 150, 211, 0.10);
@@ -615,8 +726,9 @@
 
         .summary-col { min-width: 0; }
 
+        /* [수정] 검색 결과 리스트의 항목명(잇수, 외경, PCD) 글자색을 검정색으로 변경 */
         .summary-label {
-            color: var(--text-dim);
+            color: #000000;
             font-size: 0.76rem;
             margin-bottom: 5px;
             letter-spacing: 0.01em;
@@ -630,32 +742,50 @@
             word-break: break-word;
         }
 
+        /* [수정] 검색 결과 리스트 값 색상 구분: 잇수=빨강, 외경=밝은 파랑, PCD=밝은 오렌지 */
+        .summary-grid .summary-col:nth-child(1) .summary-value {
+            color: #d93025;
+        }
+
+        .summary-grid .summary-col:nth-child(2) .summary-value,
+        .summary-grid .summary-col:nth-child(2) .summary-unit {
+            color: #ffffff;
+        }
+
+        .summary-grid .summary-col:nth-child(3) .summary-value {
+            color: #e2fa8d;
+        }
+
         .summary-unit {
             font-size: 0.72rem;
             color: var(--text-dim);
             margin-left: 2px;
         }
 
-        .toggle-btn {
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.06);
-            background: rgba(255,255,255,0.03);
-            color: var(--text-sub);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-        }
+        /* [수정] 검색결과 리스트 화살표 버튼 기본 상태 */
+.toggle-btn {
+    /* [수정] 리스트 높이 축소에 맞춰 화살표 버튼 크기를 34px → 30px로 축소 */
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: #f2f2f2;
+    color: #000000;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
 
-        .result-card-item.open .toggle-btn {
-            transform: rotate(180deg);
-            color: #ffffff;
-        }
-
+/* [수정] 검색결과 리스트가 펼쳐졌을 때 화살표 버튼 상태 */
+.result-card-item.open .toggle-btn {
+    transform: rotate(180deg);
+    background: #d93025;
+    color: #ffffff;
+    border-color: #d93025;
+}
         .result-detail {
             display: none;
             border-top: 1px solid var(--card-inner-border);
@@ -825,20 +955,37 @@
 
         @media (max-width: 520px) {
             .header {
-                grid-template-columns: 44px 1fr auto;
-                padding: 0 14px;
+                /* [수정] 모바일에서도 상단 우측 조회가능횟수 배지 제거 후 균형 여백만 유지 */
+                grid-template-columns: 44px minmax(0, 1fr) 44px;
+                gap: 6px;
+                padding: 0 10px;
             }
 
-            .brand-title { font-size: 1.12rem; }
-            .brand-sub { font-size: 0.68rem; }
+            /* [수정] 모바일에서는 좌측 메뉴/우측 조회수 사이 남은 공간 안에 제목 박스가 들어가도록 조정 */
+            .brand-wrap {
+                width: 100%;
+            }
+
+            .brand-text {
+                height: 42px;
+                max-width: 100%;
+                padding: 4px 8px;
+                border-radius: 12px;
+            }
+
+            .brand-title { font-size: 0.98rem; }
+            .brand-sub { font-size: 0.62rem; letter-spacing: 0.08em; }
 
             .usage-badge {
                 min-width: 68px;
-                padding: 0 12px;
+                padding: 0 10px;
                 font-size: 0.9rem;
             }
 
-            .content { padding: 18px 14px 20px; }
+            /* [수정] 모바일에서도 상단 검색 영역은 고정하고 결과 카드 목록만 스크롤되도록 하단 바 여백 확보 */
+            .content {
+                padding: 18px 14px 88px;
+            }
 
             .search-panel {
                 border-radius: 20px;
@@ -850,21 +997,40 @@
                 gap: 10px;
             }
 
-            .btn-row { grid-template-columns: 96px 1fr; }
+            /* [수정] 모바일에서도 조회가능횟수 배지를 검색하기 버튼 우측에 배치 */
+            .btn-row {
+                grid-template-columns: 96px 140px 68px;
+                justify-content: center;
+                align-items: center;
+            }
+
+            /* [수정] 모바일 조회가능횟수 배지도 버튼 높이에 맞춤 */
+            .btn-row .usage-badge {
+                height: 50px;
+                min-width: 68px;
+                padding: 0 8px;
+                font-size: 0.86rem;
+            }
 
             .hero-empty { padding-top: 68px; }
 
-            .result-scroll-box { height: 62vh; }
+            /* [수정] 모바일에서도 고정 vh 높이를 사용하지 않고 flex 남은 공간만 스크롤 */
+            .result-scroll-box {
+                height: auto;
+                min-height: 0;
+            }
 
+            /* [수정] 모바일에서도 검색결과 리스트 상하폭을 줄이기 위해 세로 padding을 14px → 10px로 축소 */
             .result-summary {
                 grid-template-columns: 62px 1fr 30px;
                 gap: 10px;
-                padding: 14px 12px;
+                padding: 10px 12px;
             }
 
+            /* [수정] 모바일 형번 배지 높이도 30px → 27px로 축소 */
             .model-pill {
                 min-width: 54px;
-                height: 30px;
+                height: 27px;
                 padding: 0 10px;
                 font-size: 0.9rem;
             }
@@ -904,6 +1070,83 @@
                 padding: 0 14px;
                 font-size: 0.96rem;
             }
+        }
+
+        /* [수정] 검색값 없이 검색하기 버튼을 눌렀을 때 표시할 안내 팝업 */
+        .search-alert-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.42);
+            z-index: 280;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+
+        /* [수정] 안내 팝업 표시 상태 */
+        .search-alert-backdrop.active {
+            display: flex;
+        }
+
+        /* [수정] 검색항목 입력 안내 팝업 박스 */
+        .search-alert-box {
+            width: 280px;
+            max-width: calc(100vw - 36px);
+            padding: 24px 20px 20px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(217, 48, 37, 0.22);
+            box-shadow: 0 22px 56px rgba(0, 0, 0, 0.28);
+            text-align: center;
+            animation: searchAlertPop 0.18s ease-out;
+        }
+
+        @keyframes searchAlertPop {
+            from { transform: translateY(8px) scale(0.96); opacity: 0; }
+            to   { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .search-alert-icon {
+            width: 44px;
+            height: 44px;
+            margin: 0 auto 12px;
+            border-radius: 50%;
+            background: rgba(217, 48, 37, 0.10);
+            color: #d93025;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+        }
+
+        .search-alert-title {
+            font-size: 1.02rem;
+            font-weight: 900;
+            color: #332d3a;
+            margin-bottom: 8px;
+        }
+
+        .search-alert-text {
+            font-size: 0.86rem;
+            color: var(--text-sub);
+            line-height: 1.45;
+            margin-bottom: 16px;
+        }
+
+        .search-alert-ok {
+            width: 100%;
+            height: 42px;
+            border-radius: 13px;
+            background: #d93025;
+            color: #ffffff;
+            font-weight: 900;
+            box-shadow: 0 8px 20px rgba(217, 48, 37, 0.26);
+        }
+
+        .search-alert-ok:hover {
+            background: #c5221f;
+            transform: translateY(-1px);
         }
 
         /* ===== DWG 인증 팝업 ===== */
@@ -1050,7 +1293,19 @@
 
         @media (max-width: 380px) {
             .dual-row { grid-template-columns: 1fr; }
-            .btn-row { grid-template-columns: 1fr; }
+            /* [수정] 작은 모바일 화면에서도 조회가능횟수 배지를 검색하기 버튼 우측에 유지 */
+            .btn-row {
+                grid-template-columns: 82px 120px 60px;
+                gap: 8px;
+                justify-content: center;
+            }
+
+            /* [수정] 작은 화면에서는 조회가능횟수 배지를 더 작게 표시 */
+            .btn-row .usage-badge {
+                min-width: 60px;
+                padding: 0 6px;
+                font-size: 0.8rem;
+            }
 
             .summary-grid {
                 grid-template-columns: 1fr;
@@ -1099,6 +1354,16 @@
     </style>
 </head>
 <body>
+    <!-- [수정] 검색값 없이 검색 시 표시되는 안내 팝업 -->
+    <div class="search-alert-backdrop" id="searchInputAlert" onclick="closeSearchInputPopup(event)">
+        <div class="search-alert-box" role="alertdialog" aria-modal="true" aria-labelledby="searchInputAlertTitle">
+            <div class="search-alert-icon"><i class="fas fa-circle-exclamation"></i></div>
+            <div class="search-alert-title" id="searchInputAlertTitle">검색항목을 입력하세요</div>
+            <div class="search-alert-text">형번, 잇수, 피치원 지름 중<br>하나 이상 입력한 뒤 검색해 주세요.</div>
+            <button type="button" class="search-alert-ok" onclick="hideSearchInputPopup()">확인</button>
+        </div>
+    </div>
+
     <!-- DWG 인증 팝업 -->
     <div class="auth-modal-backdrop" id="authModalBackdrop">
         <div class="auth-modal">
@@ -1166,16 +1431,18 @@
             </div>
 
             <div class="brand-wrap">
-                <div class="brand-icon">
-                    <i class="fas fa-gear"></i>
-                </div>
+                <!-- [수정] 제목 앞의 기어 아이콘 제거 -->
                 <div class="brand-text">
+                    <!-- [수정] 상단 제목 문구 변경: 동력전달용 RS체인 스프라켓 → 동력전달용 체인스프라켓 -->
                     <div class="brand-title">BS규격 체인 스프라켓</div>
                     <div class="brand-sub">ISO B 계열 (BS 규격 기반)</div>
                 </div>
             </div>
 
-            <div id="usageBadge" class="usage-badge">--/--</div>
+            <!-- [수정] 기존 상단 우측 조회가능횟수 자리에는 이전화면으로 돌아가는 화살표 버튼 배치 -->
+            <button type="button" class="back-btn" onclick="goBackPage()" aria-label="이전 화면으로 돌아가기">
+                <i class="fas fa-arrow-left"></i>
+            </button>
         </header>
 
         <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
@@ -1192,8 +1459,7 @@
 
         <main class="content">
             <section class="search-panel">
-                <div class="panel-title">검색 조건</div>
-
+                <!-- [수정] 검색 조건 제목 제거 -->
                 <div class="form-grid">
                     <div class="input-group">
                         <label for="searchModel">형번 (MODEL)</label>
@@ -1213,15 +1479,11 @@
                             <input type="number" id="searchNt" placeholder="예 : 10">
                         </div>
 
+                        <!-- [수정] 외경(OD) 검색 항목 제거 후, 해당 위치에 피치원 지름(PCD) 항목 배치 -->
                         <div class="input-group">
-                            <label for="searchOd">외경 (OD)</label>
-                            <input type="number" id="searchOd" placeholder="예 : 24">
+                            <label for="searchPcd">피치원 지름 (PCD)</label>
+                            <input type="text" id="searchPcd" placeholder="예 : 20.55">
                         </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="searchPcd">피치원 지름 (PCD)</label>
-                        <input type="text" id="searchPcd" placeholder="예 : 20.55">
                     </div>
 
                     <div class="btn-row">
@@ -1233,6 +1495,9 @@
                             <i class="fas fa-magnifying-glass"></i>
                             검색하기
                         </button>
+
+                        <!-- [수정] 상단 우측에 있던 조회가능횟수 표시를 검색하기 버튼 우측으로 이동 -->
+                        <div id="usageBadge" class="usage-badge">--/--</div>
                     </div>
                 </div>
             </section>
@@ -1245,7 +1510,7 @@
                 </div>
                 <div class="hero-empty-text">조건을 입력하고 검색하세요</div>
                 <div class="hero-empty-sub">총 <strong id="totalDataCount">0</strong>개의 스프라켓 데이터</div>
-                <div id="modelChipList" class="model-chip-list"></div>
+                <!-- [수정] RS25 ~ RS140 형번 바로가기 버튼 영역 제거 -->
             </section>
         </main>
 
@@ -1264,16 +1529,18 @@
 
         /* [복구] 형번 선택 목록용 데이터 */
         const MODEL_OPTIONS = [
-            { value: 'RS08B',  label: 'RS08B',  pathKey: 'RS08B'  },
-            { value: 'RS10B',  label: 'RS10B',  pathKey: 'RS10B'  },
-            { value: 'RS12B',  label: 'RS12B',  pathKey: 'RS12B'  },
-            { value: 'RS16B',  label: 'RS16B',  pathKey: 'RS16B'  },
-            { value: 'RS20B',  label: 'RS20B',  pathKey: 'RS20B'  },
-            { value: 'RS24B',  label: 'RS24B',  pathKey: 'RS24B'  },
+            /* [수정] sprocket-B 형번 선택 목록 적용
+               - UI/UX는 sprocket-A(8).html 기준으로 적용
+               - 형번 데이터는 기존 sprocket-B.html의 ISO B 형번을 그대로 사용 */
+            { value: 'RS08B', label: 'RS08B', pathKey: 'RS08B' },
+            { value: 'RS10B', label: 'RS10B', pathKey: 'RS10B' },
+            { value: 'RS12B', label: 'RS12B', pathKey: 'RS12B' },
+            { value: 'RS16B', label: 'RS16B', pathKey: 'RS16B' },
+            { value: 'RS20B', label: 'RS20B', pathKey: 'RS20B' },
+            { value: 'RS24B', label: 'RS24B', pathKey: 'RS24B' },
             { value: 'RS28B', label: 'RS28B', pathKey: 'RS28B' },
             { value: 'RS32B', label: 'RS32B', pathKey: 'RS32B' },
             { value: 'RS40B', label: 'RS40B', pathKey: 'RS40B' }
-
         ];
 
         const MODEL_PATH_KEY_MAP = MODEL_OPTIONS.reduce((acc, item) => {
@@ -1282,16 +1549,18 @@
         }, {});
 
         const MODEL_DATA_PATHS = {
-            '08B':  '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_08B.js',
-            '10B':  '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_10B.js',
-            '12B':  '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_12B.js',
-            '16B':  '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_16B.js',
-            '20B':  '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_20B.js',
-            '24B':  '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_24B.js',
-            '28B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_28B.js',
-            '32B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_32B.js',
-            '40B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_40B.js'
-
+            /* [수정] sprocket-B 데이터 파일 경로 적용
+               - select value인 RS08B, RS10B ... 와 동일한 키로 맞춤
+               - 기존 sprocket-B.html의 ISO B 데이터 경로를 유지 */
+            'RS08B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_08B.js',
+            'RS10B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_10B.js',
+            'RS12B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_12B.js',
+            'RS16B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_16B.js',
+            'RS20B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_20B.js',
+            'RS24B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_24B.js',
+            'RS28B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_28B.js',
+            'RS32B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_32B.js',
+            'RS40B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_40B.js'
         };
 
         const loadedModels = new Set();
@@ -1305,6 +1574,15 @@
 
         function goToChainMode() {
             window.location.href = '../chain/chain.html';
+        }
+
+        /* [수정] 상단 우측 화살표 버튼 클릭 시 이전 화면으로 이동 */
+        function goBackPage() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = './sprocket_main.html';
+            }
         }
 
         function getTodayString() {
@@ -1348,7 +1626,8 @@
             const select = document.getElementById('searchModel');
             if (!select) return;
 
-            select.innerHTML = '<option value="">형번을 선택하시오</option>';
+            // [수정] 초기화 후 첫 형번(RS25)이 자동 선택되지 않도록 빈 옵션을 명확히 선택 상태로 설정
+            select.innerHTML = '<option value="" selected>형번을 선택하시오</option>';
 
             MODEL_OPTIONS.forEach(item => {
                 const opt = document.createElement('option');
@@ -1357,7 +1636,12 @@
                 select.appendChild(opt);
             });
 
-            renderModelChips(MODEL_OPTIONS);
+            // [수정] 목록 생성 직후에도 선택값을 빈 값으로 고정하여 자동 검색을 방지
+            select.value = '';
+            select.selectedIndex = 0;
+
+            // [수정] 중간 아래 형번 바로가기 버튼(RS25 ~ RS140) 제거: 칩 버튼 렌더링 호출 중단
+            // renderModelChips(MODEL_OPTIONS);
         }
 
         function renderModelChips(modelOptions) {
@@ -1393,6 +1677,71 @@
             defaultState.setAttribute('aria-hidden', show ? 'false' : 'true');
         }
 
+        /* [수정] ISO B 형번에서 실제 데이터 파일 경로가 폴더 규칙에 따라 달라질 수 있어
+           한 가지 경로만 시도하지 않고 가능한 경로를 순서대로 자동 확인합니다.
+           기존 오류:
+           - RS28B 선택 시 RS28B/data_28B.js, 28B/data_28B.js, RS08B/data_28B.js만 시도함
+           보정 내용:
+           - 실제 자료가 공통 폴더 08B 안에 들어있는 경우까지 추가 확인
+           - data_28B.js / data_RS28B.js / data_28b.js 같이 파일명 대소문자·RS 포함 가능성도 함께 확인 */
+        function getModelCode(modelValue) {
+            return String(modelValue || '').replace(/^RS/i, '');
+        }
+
+        /* [수정] sprocket-B 데이터 파일 후보 경로 생성 함수 보강
+           - 핵심 추가: .../08B/data_28B.js 경로를 반드시 후보에 포함
+           - 서버/로컬의 폴더명 또는 파일명 규칙이 조금 달라도 로드될 수 있도록 후보를 넓힘 */
+        function getModelDataPathCandidates(modelValue) {
+            const modelCode = getModelCode(modelValue);       // RS28B -> 28B
+            const modelCodeLower = modelCode.toLowerCase();   // 28B -> 28b
+            const modelValueLower = String(modelValue || '').toLowerCase();
+
+            const basePaths = [
+                '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket',
+                '../../data/sprocket/isoB_drive_rollerchain_s/1-bs-rollerchain_sprocket',
+                '../../data/sprocket/isoB_drive_rollerchain_s/1-b-rollerchain_sprocket'
+            ];
+
+            const candidates = [];
+
+            if (modelValue && modelCode) {
+                basePaths.forEach(basePath => {
+                    const folders = [
+                        modelValue,       // RS28B
+                        modelCode,        // 28B
+                        'RS08B',          // 기존 sprocket-B.html에 있던 공통 폴더 후보
+                        '08B',            // [수정] 실제 공통 폴더가 08B일 경우를 추가 확인
+                        modelValueLower,  // rs28b
+                        modelCodeLower,   // 28b
+                        'rs08b',
+                        '08b'
+                    ];
+
+                    const fileNames = [
+                        `data_${modelCode}.js`,        // data_28B.js
+                        `data_${modelValue}.js`,       // data_RS28B.js
+                        `data_${modelCodeLower}.js`,   // data_28b.js
+                        `data_${modelValueLower}.js`   // data_rs28b.js
+                    ];
+
+                    folders.forEach(folder => {
+                        fileNames.forEach(fileName => {
+                            candidates.push(`${basePath}/${folder}/${fileName}`);
+                        });
+                    });
+                });
+            }
+
+            if (MODEL_DATA_PATHS[modelValue]) {
+                candidates.push(MODEL_DATA_PATHS[modelValue]);
+            }
+
+            return [...new Set(candidates)];
+        }
+
+        /* [수정] 데이터 로드 실패 문제 해결
+           기존에는 MODEL_DATA_PATHS의 단일 경로만 불러와서 실제 폴더명이 다르면 바로 실패했습니다.
+           이제 후보 경로를 순서대로 시도하고, 성공한 경로가 있으면 정상 로드합니다. */
         function loadModelScript(modelValue) {
             return new Promise((resolve, reject) => {
                 if (!modelValue) {
@@ -1405,28 +1754,42 @@
                     return;
                 }
 
-                const scriptPath = MODEL_DATA_PATHS[modelValue];
+                const scriptPaths = getModelDataPathCandidates(modelValue);
 
-                if (!scriptPath) {
+                if (!scriptPaths.length) {
                     reject(new Error(`데이터 경로가 정의되지 않았습니다: ${modelValue}`));
                     return;
                 }
 
-                const script = document.createElement('script');
-                script.src = scriptPath;
-                script.async = true;
+                let pathIndex = 0;
 
-                script.onload = function () {
-                    loadedModels.add(modelValue);
-                    updateTotalCount();
-                    resolve();
-                };
+                function tryLoadNextPath() {
+                    const scriptPath = scriptPaths[pathIndex];
+                    const script = document.createElement('script');
+                    script.src = scriptPath;
+                    script.async = true;
 
-                script.onerror = function () {
-                    reject(new Error(`데이터 파일을 불러올 수 없습니다: ${scriptPath}`));
-                };
+                    script.onload = function () {
+                        loadedModels.add(modelValue);
+                        updateTotalCount();
+                        resolve();
+                    };
 
-                document.head.appendChild(script);
+                    script.onerror = function () {
+                        script.remove();
+                        pathIndex += 1;
+
+                        if (pathIndex < scriptPaths.length) {
+                            tryLoadNextPath();
+                        } else {
+                            reject(new Error(`데이터 파일을 불러올 수 없습니다: ${scriptPaths.join(' , ')}`));
+                        }
+                    };
+
+                    document.head.appendChild(script);
+                }
+
+                tryLoadNextPath();
             });
         }
 
@@ -1444,18 +1807,44 @@
             area.innerHTML = `<div class="loading-message">${message}</div>`;
         }
 
+        /* [수정] 검색항목 미입력 안내 팝업 표시 */
+        function showSearchInputPopup() {
+            const popup = document.getElementById('searchInputAlert');
+            if (popup) popup.classList.add('active');
+        }
+
+        /* [수정] 검색항목 미입력 안내 팝업 닫기 */
+        function hideSearchInputPopup() {
+            const popup = document.getElementById('searchInputAlert');
+            if (popup) popup.classList.remove('active');
+        }
+
+        /* [수정] 안내 팝업 바깥 영역 클릭 시 닫기 */
+        function closeSearchInputPopup(event) {
+            if (event.target && event.target.id === 'searchInputAlert') {
+                hideSearchInputPopup();
+            }
+        }
+
         async function performSearch() {
+            const model = document.getElementById('searchModel').value.trim();
+            const nt = document.getElementById('searchNt').value.trim();
+            // [수정] 외경(OD) 검색 항목 제거에 따라 OD 입력값 참조 제거
+            const pcd = document.getElementById('searchPcd').value.trim();
+
+            // [수정] 검색항목이 하나도 없을 때는 검색 실행/전체 데이터 로드/검색횟수 차감을 모두 중단
+            if (!model && !nt && !pcd) {
+                showSearchInputPopup();
+                showDefaultState(true);
+                return;
+            }
+
             if (!checkSearchLimit()) {
                 const area = document.getElementById('resultArea');
                 area.innerHTML = `<div class="limit-message">검색가능 횟수를 초과했습니다.</div>`;
                 showDefaultState(false);
                 return;
             }
-
-            const model = document.getElementById('searchModel').value.trim();
-            const nt = document.getElementById('searchNt').value.trim();
-            const od = document.getElementById('searchOd').value.trim();
-            const pcd = document.getElementById('searchPcd').value.trim();
 
             try {
                 if (model) {
@@ -1475,14 +1864,17 @@
             let results = allSprocketData;
 
             if (model) {
-                results = results.filter(d => d.model === model);
+                const modelCode = getModelCode(model);
+                /* [수정] 데이터 내부 model 값이 RS10B 또는 10B 중 어떤 형식이어도 검색되도록 보정 */
+                results = results.filter(d => {
+                    const dataModel = String(d.model || '');
+                    return dataModel === model || dataModel === modelCode || `RS${dataModel}` === model;
+                });
             }
             if (nt) {
                 results = results.filter(d => String(d.nt) == nt);
             }
-            if (od) {
-                results = results.filter(d => String(d.od) == od);
-            }
+            // [수정] 외경(OD) 검색 항목 제거에 따라 OD 필터링 제거
             if (pcd) {
                 results = results.filter(d => String(d.pitchCircle || d.pcd || '').includes(pcd));
             }
@@ -1500,20 +1892,28 @@
             return MODEL_PATH_KEY_MAP[modelValue] || String(modelValue).replace('#', '');
         }
 
-        /* [핵심 수정]
-           실제 파일명 규칙 반영
-           PDF: 25-10nt.pdf
-           DWG: 25-10nt.dwg
-           미리보기: 25-10nt.jpg / 25-10nt.png
+        /* [수정] sprocket-B 다운로드 링크 생성 전용 함수
+           주의:
+           - UI/UX는 sprocket-A(8).html 기준을 사용
+           - 다운로드 경로는 기존 sprocket-B.html의 ISO B 경로를 유지
+           - pathKey는 RS08B, RS10B 같은 B 형번 폴더/파일명 규칙에 사용
+           - PDF 파일명 규칙 예: RS08B-10nt.pdf
+           - 2D DWG 파일명 규칙 예: RS08B-10nt.dwg
+           - 3D 파일명 규칙 예: RS08B-10nt.step 또는 RS08B-10nt.stp
         */
         function getFilePaths(item) {
-            const pathKey = getPathKeyFromModel(item.model);   // "#25" -> "25"
-            const ntValue = `${item.nt}nt`;                    // "10nt"
-            const baseName = `${pathKey}-${ntValue}`;          // "25-10nt"
+            const pathKey = getPathKeyFromModel(item.model);   // RS08B -> RS08B
+            const ntValue = `${item.nt}nt`;                    // 10nt
+            const baseName = `${pathKey}-${ntValue}`;          // RS08B-10nt
 
             return {
+                /* [수정] sprocket-B PDF 도면 경로 적용 */
                 pdf: `../../download/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/pdf/${pathKey}/${baseName}.pdf`,
+
+                /* [수정] sprocket-B 2D DWG 보안 다운로드 경로 적용 */
                 dwg: `../../secure-download/dwg/1r_iso_roller_chain_s/${pathKey}/${baseName}.dwg`,
+
+                /* [수정] sprocket-B 3D 도면 STEP/STP 경로 적용 */
                 previewStep: `../../download/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/3d/${pathKey}/${baseName}.step`,
                 previewStp: `../../download/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/3d/${pathKey}/${baseName}.stp`
             };
@@ -1644,14 +2044,9 @@
                         <div class="result-title-left">검색 결과</div>
                         <div class="result-count-badge">${totalCount}건</div>
                     </div>
-
-                    <div class="result-guide">
-                        아래 결과 영역만 스크롤됩니다. 한 화면에 5개씩 표시되며, 아래로 넘기면 다음 5개가 보입니다.
-                    </div>
-
-                    <div class="result-progress" id="resultProgress">
-                        1 / ${totalPages} 페이지
-                    </div>
+                    
+                    <!-- [수정] 페이지 표시 문구 제거
+                         기존 표시: "1 / ${totalPages} 페이지" 형태의 상단 페이지 진행 표시를 숨김 -->
 
                     <div class="result-scroll-box" id="resultScrollBox">
                         <div class="result-pages-container" id="resultPagesContainer"></div>
@@ -1707,6 +2102,7 @@
             const progressEl = document.getElementById('resultProgress');
             const statusEl = document.getElementById('pageStatus');
 
+            // [수정] 상단 페이지 표시(resultProgress) 영역은 제거했으므로, 요소가 있을 때만 갱신
             if (progressEl) {
                 progressEl.textContent = `${currentPage} / ${totalPages} 페이지`;
             }
@@ -1717,12 +2113,16 @@
         }
 
         function clearFields() {
-            document.getElementById('searchModel').value = '';
+            const modelSelect = document.getElementById('searchModel');
+            modelSelect.value = '';
+            // [수정] 초기화 시 형번 선택 목록을 첫 번째 빈 옵션으로 되돌려 RS25 자동 검색을 방지
+            modelSelect.selectedIndex = 0;
             document.getElementById('searchNt').value = '';
-            document.getElementById('searchOd').value = '';
+            // [수정] 외경(OD) 검색 항목 제거에 따라 초기화 대상에서 제외
             document.getElementById('searchPcd').value = '';
             document.getElementById('resultArea').innerHTML = '';
             currentSearchResults = [];
+            hideSearchInputPopup();
             showDefaultState(true);
         }
 
@@ -1739,7 +2139,24 @@
         const FORM_ENTRY_NAME  = 'entry.1293161912';
         const FORM_ENTRY_EMAIL = 'entry.1030936526';
 
+        /* 수정: Google Form에 '다운로드 파일명' 질문을 추가한 뒤,
+           아래 entry 값을 해당 질문의 entry 번호로 교체하세요.
+           예: const FORM_ENTRY_FILE  = 'entry.352673039'; */
+        const FORM_ENTRY_FILE  = 'entry.352673039';
+
         let _pendingDwgUrl = null;
+
+        /* 수정: 현재 다운로드 예정인 DWG 파일명 추출 */
+        function getPendingDwgFileName() {
+            if (!_pendingDwgUrl) return '';
+            return _pendingDwgUrl.split('/').pop() || _pendingDwgUrl;
+        }
+
+        /* 수정: 현재 다운로드 예정인 DWG 경로까지 같이 기록하고 싶을 때 사용 */
+        function getPendingDwgLogText() {
+            const fileName = getPendingDwgFileName();
+            return fileName ? `${fileName} | ${_pendingDwgUrl}` : '';
+        }
 
         function requestDwgAuth(dwgUrl) {
             _pendingDwgUrl = dwgUrl;
@@ -1801,6 +2218,8 @@
                 const formData = new FormData();
                 formData.append(FORM_ENTRY_NAME,  name);
                 formData.append(FORM_ENTRY_EMAIL, email);
+                /* 수정: 다운로드할 DWG 파일명/경로를 Google Sheet에 기록 */
+                formData.append(FORM_ENTRY_FILE, getPendingDwgLogText());
                 await fetch(GOOGLE_FORM_URL, { method: 'POST', mode: 'no-cors', body: formData });
             } catch (e) {
                 // 네트워크 오류여도 다음 단계 진행
@@ -1835,21 +2254,25 @@
             errMsg.textContent = '';
 
             try {
-                const response = await fetch(_pendingDwgUrl);
-                if (!response.ok) throw new Error(`파일을 찾을 수 없습니다. (${response.status})`);
+                /* 수정 : fetch 방식 제거 → 로컬모드 + 서버모드 모두 대응 */
 
-                const blob = await response.blob();
-                const blobUrl = URL.createObjectURL(blob);
                 const fileName = _pendingDwgUrl.split('/').pop();
 
                 const link = document.createElement('a');
-                link.href = blobUrl;
+
+                link.href = _pendingDwgUrl;
+
                 link.download = fileName;
+
+                /* 수정 : 새창 방지 */
+                link.target = '_self';
+
                 document.body.appendChild(link);
+
                 link.click();
+
                 document.body.removeChild(link);
 
-                setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
                 closeAuthModal();
 
             } catch (err) {
@@ -1874,6 +2297,13 @@
             // 팝업 바깥 클릭 시 닫기
             document.getElementById('authModalBackdrop').addEventListener('click', function(e) {
                 if (e.target === this) closeAuthModal();
+            });
+
+            // [수정] 검색항목 미입력 안내 팝업도 ESC 키로 닫기
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    hideSearchInputPopup();
+                }
             });
         };
     </script>
