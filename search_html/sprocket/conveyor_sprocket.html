@@ -7,7 +7,7 @@
     <!-- [유지] 모바일 반응형 기본 설정 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>스프라켓 검색</title>
+    <title>소형컨베이어용 체인스프라켓 검색</title>
 
     <!-- [유지] PWA 관련 설정 -->
     <link rel="manifest" href="../../manifest.json">
@@ -27,6 +27,9 @@
             .catch(err => console.log('오프라인 모드 오류:', err));
         }
     </script>
+
+    <!-- [추가] 소형컨베이어용 더블피치 체인스프라켓 데이터 -->
+    <script src="../../data/sprocket/cinveyor_chain_s/double_pitch_chain_sprocket/double_pitch_chain_sprocket.js"></script>
 
     <style>
         :root {
@@ -219,29 +222,38 @@
             max-width: 100%;
         }
 
-        /* [수정] 기존 상단 우측 조회가능횟수 배지가 있던 자리에 이전화면 화살표 버튼 배치 */
+        /* [수정] 우측 상단 이전메뉴 버튼에 C:\CSD\images\ar.png 이미지를 사용
+           - 이 HTML 파일 위치가 C:\CSD\search_html\sprocket\sprocket-A.html 기준일 때
+             이미지 상대경로는 ../../images/ar.png 입니다. */
         .back-btn {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border-radius: 12px;
             border: 1px solid rgba(181, 150, 211, 0.32);
-            background: rgba(255, 255, 255, 0.42);
-            color: #332d3a;
+            background: rgba(255, 255, 255, 0.48);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 1.05rem;
             transition: all 0.2s ease;
             justify-self: end;
             padding: 0;
+            overflow: hidden;
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18);
         }
 
-        /* [수정] 이전화면 버튼 hover 상태 */
+        /* [수정] 이전메뉴 버튼 안의 ar.png 이미지 크기 조정 */
+        .back-btn img {
+            width: 34px;
+            height: 28px;
+            object-fit: contain;
+            display: block;
+            pointer-events: none;
+        }
+
+        /* [수정] 이전메뉴 이미지 버튼 hover 상태 */
         .back-btn:hover {
             background: rgba(181, 150, 211, 0.24);
-            color: #000000;
             transform: translateY(-1px);
         }
 
@@ -392,6 +404,30 @@
             font-size: 0.95rem;
             font-weight: 800;
             letter-spacing: 0.01em;
+        }
+
+        /* [수정] 형번 선택 박스 바로 위에 라벨과 안내문구를 좌우로 배치 */
+        .model-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        /* [수정] 형번 선택 박스 우측 상단 안내문구 스타일 */
+        .search-required-note {
+            color: #d93025;
+            font-size: 0.72rem;
+            font-weight: 900;
+            line-height: 1.2;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        /* [수정] 안내문구를 넣은 라벨은 기존 label의 아래 여백과 충돌하지 않도록 조정 */
+        .model-label-row label {
+            margin-bottom: 0;
         }
 
         .field-wrap { position: relative; }
@@ -780,6 +816,7 @@
 }
 
 /* [수정] 검색결과 리스트가 펼쳐졌을 때 화살표 버튼 상태 */
+/*카드 내용 편집 */
 .result-card-item.open .toggle-btn {
     transform: rotate(180deg);
     background: #d93025;
@@ -790,7 +827,8 @@
             display: none;
             border-top: 1px solid var(--card-inner-border);
             padding: 14px 16px 16px;
-            background: rgba(6, 10, 24, 0.36);
+            /* [수정] 검색결과 우측 화살표 클릭 후 펼쳐지는 상세정보 카드 배경색 변경 */
+            background: #272727;
         }
 
         .result-card-item.open .result-detail { display: block; }
@@ -980,6 +1018,12 @@
                 min-width: 68px;
                 padding: 0 10px;
                 font-size: 0.9rem;
+            }
+
+            /* [수정] 모바일에서 형번 선택 박스 우측 상단 안내문구 크기 조정 */
+            .search-required-note {
+                font-size: 0.66rem;
+                letter-spacing: -0.02em;
             }
 
             /* [수정] 모바일에서도 상단 검색 영역은 고정하고 결과 카드 목록만 스크롤되도록 하단 바 여백 확보 */
@@ -1359,7 +1403,7 @@
         <div class="search-alert-box" role="alertdialog" aria-modal="true" aria-labelledby="searchInputAlertTitle">
             <div class="search-alert-icon"><i class="fas fa-circle-exclamation"></i></div>
             <div class="search-alert-title" id="searchInputAlertTitle">검색항목을 입력하세요</div>
-            <div class="search-alert-text">형번, 잇수, 피치원 지름 중<br>하나 이상 입력한 뒤 검색해 주세요.</div>
+            <div class="search-alert-text">형번, 잇수, 피치원 중<br>하나 이상 선택 또는 입력한 뒤 검색해 주세요.</div>
             <button type="button" class="search-alert-ok" onclick="hideSearchInputPopup()">확인</button>
         </div>
     </div>
@@ -1434,14 +1478,14 @@
                 <!-- [수정] 제목 앞의 기어 아이콘 제거 -->
                 <div class="brand-text">
                     <!-- [수정] 상단 제목 문구 변경: 동력전달용 RS체인 스프라켓 → 동력전달용 체인스프라켓 -->
-                    <div class="brand-title">BS규격 체인 스프라켓</div>
-                    <div class="brand-sub">ISO B 계열 (BS 규격 기반)</div>
+                    <div class="brand-title">소형컨베이어용 체인스프라켓</div>
+                    <div class="brand-sub">더블피치체인용 스프라켓 / 프리플로우체인용 스프라켓</div>
                 </div>
             </div>
 
-            <!-- [수정] 기존 상단 우측 조회가능횟수 자리에는 이전화면으로 돌아가는 화살표 버튼 배치 -->
-            <button type="button" class="back-btn" onclick="goBackPage()" aria-label="이전 화면으로 돌아가기">
-                <i class="fas fa-arrow-left"></i>
+            <!-- [수정] 우측 상단 이전메뉴 버튼: C:\CSD\images\ar.png 이미지를 사용 -->
+            <button type="button" class="back-btn" onclick="goBackPage()" aria-label="이전 메뉴로 이동">
+                <img src="../../images/ar.png" alt="이전 메뉴">
             </button>
         </header>
 
@@ -1462,7 +1506,11 @@
                 <!-- [수정] 검색 조건 제목 제거 -->
                 <div class="form-grid">
                     <div class="input-group">
-                        <label for="searchModel">형번 (MODEL)</label>
+                        <!-- [수정] 형번 선택 둥근 사각박스 바로 위 오른쪽에 검색조건 안내문구 추가 -->
+                        <div class="model-label-row">
+                            <label for="searchModel">형번 (MODEL)</label>
+                            <div class="search-required-note">* 검색항목중 최소 1개 이상의 값을 입력</div>
+                        </div>
                         <div class="field-wrap">
                             <select id="searchModel">
                                 <option value="">전체 형번</option>
@@ -1476,7 +1524,14 @@
                     <div class="dual-row">
                         <div class="input-group">
                             <label for="searchNt">잇수 (NT)</label>
-                            <input type="number" id="searchNt" placeholder="예 : 10">
+                            <div class="field-wrap">
+                                <select id="searchNt">
+                                    <option value="">잇수를 선택하시오</option>
+                                </select>
+                                <span class="select-arrow">
+                                    <i class="fas fa-chevron-down"></i>
+                                </span>
+                            </div>
                         </div>
 
                         <!-- [수정] 외경(OD) 검색 항목 제거 후, 해당 위치에 피치원 지름(PCD) 항목 배치 -->
@@ -1527,40 +1582,68 @@
         const SEARCH_COUNT_KEY = 'sprocket_search_count';
         const SEARCH_DATE_KEY = 'sprocket_search_date';
 
-        /* [복구] 형번 선택 목록용 데이터 */
-        const MODEL_OPTIONS = [
-            /* [수정] sprocket-B 형번 선택 목록 적용
-               - UI/UX는 sprocket-A(8).html 기준으로 적용
-               - 형번 데이터는 기존 sprocket-B.html의 ISO B 형번을 그대로 사용 */
-            { value: 'RS08B', label: 'RS08B', pathKey: 'RS08B' },
-            { value: 'RS10B', label: 'RS10B', pathKey: 'RS10B' },
-            { value: 'RS12B', label: 'RS12B', pathKey: 'RS12B' },
-            { value: 'RS16B', label: 'RS16B', pathKey: 'RS16B' },
-            { value: 'RS20B', label: 'RS20B', pathKey: 'RS20B' },
-            { value: 'RS24B', label: 'RS24B', pathKey: 'RS24B' },
-            { value: 'RS28B', label: 'RS28B', pathKey: 'RS28B' },
-            { value: 'RS32B', label: 'RS32B', pathKey: 'RS32B' },
-            { value: 'RS40B', label: 'RS40B', pathKey: 'RS40B' }
-        ];
+        /* [수정] 형번 선택 목록은 double_pitch_chain_sprocket.js의 실제 데이터에서 자동 생성
+           - 형번 선택박스: RF2040R, RF2050R처럼 체인 형번만 표시
+           - 잇수 선택박스: 선택한 형번에 해당하는 10T~16T 목록만 표시 */
+        let MODEL_OPTIONS = [];
 
-        const MODEL_PATH_KEY_MAP = MODEL_OPTIONS.reduce((acc, item) => {
-            acc[item.value] = item.pathKey;
-            return acc;
-        }, {});
+        function buildModelOptionsFromData() {
+            if (!Array.isArray(allSprocketData)) {
+                MODEL_OPTIONS = [];
+                return;
+            }
 
+            const seen = new Set();
+
+            MODEL_OPTIONS = allSprocketData
+                .filter(item => item && (item.chain || item.model))
+                .map(item => {
+                    const chainValue = String(item.chain || String(item.model).split('-')[0]).trim();
+                    return {
+                        value: chainValue,
+                        label: chainValue,
+                        pathKey: chainValue.replace('#', '')
+                    };
+                })
+                .filter(item => {
+                    if (!item.value || seen.has(item.value)) return false;
+                    seen.add(item.value);
+                    return true;
+                });
+        }
+
+        function getChainValue(item) {
+            return String(item.chain || String(item.model || '').split('-')[0]).trim();
+        }
+
+        function populateNtSelect(chainValue) {
+            const ntSelect = document.getElementById('searchNt');
+            if (!ntSelect) return;
+
+            const selectedChain = String(chainValue || '').trim();
+            const nts = Array.from(new Set(
+                (Array.isArray(allSprocketData) ? allSprocketData : [])
+                    .filter(item => !selectedChain || getChainValue(item) === selectedChain)
+                    .map(item => item.nt)
+                    .filter(value => value !== undefined && value !== null && value !== '')
+            )).sort((a, b) => Number(a) - Number(b));
+
+            ntSelect.innerHTML = '<option value="" selected>잇수를 선택하시오</option>';
+
+            nts.forEach(nt => {
+                const opt = document.createElement('option');
+                opt.value = String(nt);
+                opt.textContent = `${nt}T`;
+                ntSelect.appendChild(opt);
+            });
+
+            ntSelect.value = '';
+            ntSelect.selectedIndex = 0;
+        }
+
+        const MODEL_PATH_KEY_MAP = {};
         const MODEL_DATA_PATHS = {
-            /* [수정] sprocket-B 데이터 파일 경로 적용
-               - select value인 RS08B, RS10B ... 와 동일한 키로 맞춤
-               - 기존 sprocket-B.html의 ISO B 데이터 경로를 유지 */
-            'RS08B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_08B.js',
-            'RS10B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_10B.js',
-            'RS12B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_12B.js',
-            'RS16B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_16B.js',
-            'RS20B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_20B.js',
-            'RS24B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_24B.js',
-            'RS28B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_28B.js',
-            'RS32B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_32B.js',
-            'RS40B': '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/RS08B/data_40B.js'
+            '__DOUBLE_PITCH__': '../../data/sprocket/cinveyor_chain_s/double_pitch_chain_sprocket/double_pitch_chain_sprocket.js'
         };
 
         const loadedModels = new Set();
@@ -1576,7 +1659,7 @@
             window.location.href = '../chain/chain.html';
         }
 
-        /* [수정] 상단 우측 화살표 버튼 클릭 시 이전 화면으로 이동 */
+        /* [수정] 우측 상단 ar.png 이미지 버튼 클릭 시 이전 메뉴로 이동 */
         function goBackPage() {
             if (window.history.length > 1) {
                 window.history.back();
@@ -1626,7 +1709,8 @@
             const select = document.getElementById('searchModel');
             if (!select) return;
 
-            // [수정] 초기화 후 첫 형번(RS25)이 자동 선택되지 않도록 빈 옵션을 명확히 선택 상태로 설정
+            buildModelOptionsFromData();
+
             select.innerHTML = '<option value="" selected>형번을 선택하시오</option>';
 
             MODEL_OPTIONS.forEach(item => {
@@ -1636,12 +1720,14 @@
                 select.appendChild(opt);
             });
 
-            // [수정] 목록 생성 직후에도 선택값을 빈 값으로 고정하여 자동 검색을 방지
             select.value = '';
             select.selectedIndex = 0;
 
-            // [수정] 중간 아래 형번 바로가기 버튼(RS25 ~ RS140) 제거: 칩 버튼 렌더링 호출 중단
-            // renderModelChips(MODEL_OPTIONS);
+            select.onchange = function () {
+                populateNtSelect(this.value);
+            };
+
+            populateNtSelect('');
         }
 
         function renderModelChips(modelOptions) {
@@ -1677,129 +1763,47 @@
             defaultState.setAttribute('aria-hidden', show ? 'false' : 'true');
         }
 
-        /* [수정] ISO B 형번에서 실제 데이터 파일 경로가 폴더 규칙에 따라 달라질 수 있어
-           한 가지 경로만 시도하지 않고 가능한 경로를 순서대로 자동 확인합니다.
-           기존 오류:
-           - RS28B 선택 시 RS28B/data_28B.js, 28B/data_28B.js, RS08B/data_28B.js만 시도함
-           보정 내용:
-           - 실제 자료가 공통 폴더 08B 안에 들어있는 경우까지 추가 확인
-           - data_28B.js / data_RS28B.js / data_28b.js 같이 파일명 대소문자·RS 포함 가능성도 함께 확인 */
-        function getModelCode(modelValue) {
-            return String(modelValue || '').replace(/^RS/i, '');
-        }
-
-        /* [수정] sprocket-B 데이터 파일 후보 경로 생성 함수 보강
-           - 핵심 추가: .../08B/data_28B.js 경로를 반드시 후보에 포함
-           - 서버/로컬의 폴더명 또는 파일명 규칙이 조금 달라도 로드될 수 있도록 후보를 넓힘 */
-        function getModelDataPathCandidates(modelValue) {
-            const modelCode = getModelCode(modelValue);       // RS28B -> 28B
-            const modelCodeLower = modelCode.toLowerCase();   // 28B -> 28b
-            const modelValueLower = String(modelValue || '').toLowerCase();
-
-            const basePaths = [
-                '../../data/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket',
-                '../../data/sprocket/isoB_drive_rollerchain_s/1-bs-rollerchain_sprocket',
-                '../../data/sprocket/isoB_drive_rollerchain_s/1-b-rollerchain_sprocket'
-            ];
-
-            const candidates = [];
-
-            if (modelValue && modelCode) {
-                basePaths.forEach(basePath => {
-                    const folders = [
-                        modelValue,       // RS28B
-                        modelCode,        // 28B
-                        'RS08B',          // 기존 sprocket-B.html에 있던 공통 폴더 후보
-                        '08B',            // [수정] 실제 공통 폴더가 08B일 경우를 추가 확인
-                        modelValueLower,  // rs28b
-                        modelCodeLower,   // 28b
-                        'rs08b',
-                        '08b'
-                    ];
-
-                    const fileNames = [
-                        `data_${modelCode}.js`,        // data_28B.js
-                        `data_${modelValue}.js`,       // data_RS28B.js
-                        `data_${modelCodeLower}.js`,   // data_28b.js
-                        `data_${modelValueLower}.js`   // data_rs28b.js
-                    ];
-
-                    folders.forEach(folder => {
-                        fileNames.forEach(fileName => {
-                            candidates.push(`${basePath}/${folder}/${fileName}`);
-                        });
-                    });
-                });
-            }
-
-            if (MODEL_DATA_PATHS[modelValue]) {
-                candidates.push(MODEL_DATA_PATHS[modelValue]);
-            }
-
-            return [...new Set(candidates)];
-        }
-
-        /* [수정] 데이터 로드 실패 문제 해결
-           기존에는 MODEL_DATA_PATHS의 단일 경로만 불러와서 실제 폴더명이 다르면 바로 실패했습니다.
-           이제 후보 경로를 순서대로 시도하고, 성공한 경로가 있으면 정상 로드합니다. */
         function loadModelScript(modelValue) {
             return new Promise((resolve, reject) => {
-                if (!modelValue) {
+                if (Array.isArray(allSprocketData) && allSprocketData.length > 0) {
+                    buildModelOptionsFromData();
+                    updateTotalCount();
                     resolve();
                     return;
                 }
 
-                if (loadedModels.has(modelValue)) {
-                    resolve();
-                    return;
-                }
+                const scriptPath = MODEL_DATA_PATHS['__DOUBLE_PITCH__'];
+                const alreadyLoaded = document.querySelector(`script[src="${scriptPath}"]`);
 
-                const scriptPaths = getModelDataPathCandidates(modelValue);
-
-                if (!scriptPaths.length) {
-                    reject(new Error(`데이터 경로가 정의되지 않았습니다: ${modelValue}`));
-                    return;
-                }
-
-                let pathIndex = 0;
-
-                function tryLoadNextPath() {
-                    const scriptPath = scriptPaths[pathIndex];
-                    const script = document.createElement('script');
-                    script.src = scriptPath;
-                    script.async = true;
-
-                    script.onload = function () {
-                        loadedModels.add(modelValue);
+                if (alreadyLoaded) {
+                    setTimeout(() => {
+                        buildModelOptionsFromData();
                         updateTotalCount();
                         resolve();
-                    };
-
-                    script.onerror = function () {
-                        script.remove();
-                        pathIndex += 1;
-
-                        if (pathIndex < scriptPaths.length) {
-                            tryLoadNextPath();
-                        } else {
-                            reject(new Error(`데이터 파일을 불러올 수 없습니다: ${scriptPaths.join(' , ')}`));
-                        }
-                    };
-
-                    document.head.appendChild(script);
+                    }, 0);
+                    return;
                 }
 
-                tryLoadNextPath();
+                const script = document.createElement('script');
+                script.src = scriptPath;
+                script.async = true;
+
+                script.onload = function () {
+                    buildModelOptionsFromData();
+                    updateTotalCount();
+                    resolve();
+                };
+
+                script.onerror = function () {
+                    reject(new Error(`데이터 파일을 불러올 수 없습니다: ${scriptPath}`));
+                };
+
+                document.head.appendChild(script);
             });
         }
 
         async function loadAllModelScripts() {
-            const modelValues = MODEL_OPTIONS.map(item => item.value);
-            for (const modelValue of modelValues) {
-                if (!loadedModels.has(modelValue)) {
-                    await loadModelScript(modelValue);
-                }
-            }
+            await loadModelScript('__DOUBLE_PITCH__');
         }
 
         function showLoadingMessage(message) {
@@ -1864,12 +1868,7 @@
             let results = allSprocketData;
 
             if (model) {
-                const modelCode = getModelCode(model);
-                /* [수정] 데이터 내부 model 값이 RS10B 또는 10B 중 어떤 형식이어도 검색되도록 보정 */
-                results = results.filter(d => {
-                    const dataModel = String(d.model || '');
-                    return dataModel === model || dataModel === modelCode || `RS${dataModel}` === model;
-                });
+                results = results.filter(d => getChainValue(d) === model);
             }
             if (nt) {
                 results = results.filter(d => String(d.nt) == nt);
@@ -1889,33 +1888,31 @@
         }
 
         function getPathKeyFromModel(modelValue) {
-            return MODEL_PATH_KEY_MAP[modelValue] || String(modelValue).replace('#', '');
+            const found = MODEL_OPTIONS.find(item => item.value === modelValue);
+            return found ? found.pathKey : String(modelValue).replace('#', '');
         }
 
-        /* [수정] sprocket-B 다운로드 링크 생성 전용 함수
-           주의:
-           - UI/UX는 sprocket-A(8).html 기준을 사용
-           - 다운로드 경로는 기존 sprocket-B.html의 ISO B 경로를 유지
-           - pathKey는 RS08B, RS10B 같은 B 형번 폴더/파일명 규칙에 사용
-           - PDF 파일명 규칙 예: RS08B-10nt.pdf
-           - 2D DWG 파일명 규칙 예: RS08B-10nt.dwg
-           - 3D 파일명 규칙 예: RS08B-10nt.step 또는 RS08B-10nt.stp
+        /* [수정] 소형컨베이어용 더블피치 체인스프라켓 다운로드 경로
+           HTML 위치: C:\CSD\search_html\sprocket\conveyor_sprocket.html
+
+           PDF:
+           C:\CSD\download\sprocket\cinveyor_chain_s\double_pitch_chain_sprocket\PDF
+
+           DWG:
+           C:\CSD\secure-download\dwg\double_pitch_chain_sprocket
+
+           3D:
+           C:\CSD\download\sprocket\cinveyor_chain_s\double_pitch_chain_sprocket\3D
+           - STEP 우선, 없으면 STP 시도
         */
         function getFilePaths(item) {
-            const pathKey = getPathKeyFromModel(item.model);   // RS08B -> RS08B
-            const ntValue = `${item.nt}nt`;                    // 10nt
-            const baseName = `${pathKey}-${ntValue}`;          // RS08B-10nt
+            const baseName = String(item.model || '').replace('#', '');
 
             return {
-                /* [수정] sprocket-B PDF 도면 경로 적용 */
-                pdf: `../../download/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/pdf/${pathKey}/${baseName}.pdf`,
-
-                /* [수정] sprocket-B 2D DWG 보안 다운로드 경로 적용 */
-                dwg: `../../secure-download/dwg/1r_iso_roller_chain_s/${pathKey}/${baseName}.dwg`,
-
-                /* [수정] sprocket-B 3D 도면 STEP/STP 경로 적용 */
-                previewStep: `../../download/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/3d/${pathKey}/${baseName}.step`,
-                previewStp: `../../download/sprocket/isoB_drive_rollerchain_s/1-rs-rollerchain_sprocket/3d/${pathKey}/${baseName}.stp`
+                pdf: `../../download/sprocket/cinveyor_chain_s/double_pitch_chain_sprocket/PDF/${baseName}.pdf`,
+                dwg: `../../secure-download/dwg/double_pitch_chain_sprocket/${baseName}.dwg`,
+                previewStep: `../../download/sprocket/cinveyor_chain_s/double_pitch_chain_sprocket/3D/${baseName}.step`,
+                previewStp: `../../download/sprocket/cinveyor_chain_s/double_pitch_chain_sprocket/3D/${baseName}.stp`
             };
         }
 
@@ -2008,7 +2005,7 @@
                         </div>
 
                         <div class="detail-actions">
-                            <a href="${filePaths.pdf}" class="detail-file-btn pdf" target="_blank">
+                            <a href="${filePaths.pdf}" class="detail-file-btn pdf" download>
                                 <i class="far fa-file-alt"></i> PDF 도면
                             </a>
 
@@ -2021,7 +2018,7 @@
                             <a href="javascript:void(0)"
                                class="detail-file-btn dxf"
                                onclick="open3dDownload('${filePaths.previewStep}', '${filePaths.previewStp}')">
-                                <i class="fas fa-eye"></i> 3D 도면
+                                <i class="fas fa-cube"></i> 3D 도면
                             </a>
                         </div>
                     </div>
@@ -2117,7 +2114,7 @@
             modelSelect.value = '';
             // [수정] 초기화 시 형번 선택 목록을 첫 번째 빈 옵션으로 되돌려 RS25 자동 검색을 방지
             modelSelect.selectedIndex = 0;
-            document.getElementById('searchNt').value = '';
+            populateNtSelect('');
             // [수정] 외경(OD) 검색 항목 제거에 따라 초기화 대상에서 제외
             document.getElementById('searchPcd').value = '';
             document.getElementById('resultArea').innerHTML = '';
@@ -2288,7 +2285,13 @@
         /* ===== /DWG 인증 로직 ===== */
 
         /* [핵심] 페이지 로드시 형번 목록 채움 */
-        window.onload = function() {
+        window.onload = async function() {
+            try {
+                await loadAllModelScripts();
+            } catch (error) {
+                console.log(error.message);
+            }
+
             populateModelSelect();
             updateTotalCount();
             updateUsageUI();

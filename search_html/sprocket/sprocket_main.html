@@ -390,20 +390,8 @@ body {
                 </div>
             </div>
 
-            <!-- 동력전달용 체인 스프라켓(미업로드) sprocket-B.html로 이동 -->
-
-            <div class="mode-btn" onclick="selectAndGo(this, './sprocket-B.html')">
-                <div class="image-wrap">
-                    <img src="../../images/sprocket.png" class="mode-image" alt="동력전달용 스프라켓">
-                </div>
-                <div>
-                    <div class="mode-title">BS규격 체인 스프라켓  </div>
-                    <div class="mode-desc">  ISO B 계열 (BS 규격 기반)  </div>
-                </div>
-            </div>
-
-            <!-- 컨베이어용 -->
-            <div class="mode-btn" onclick="showReadyPopup(this)">
+            <!-- 컨베이어용: conveyor_sprocket.html로 이동 -->
+            <div class="mode-btn" onclick="selectAndGo(this, './conveyor_sprocket.html')">
                 <div class="image-wrap">
                     <img src="../../images/cv_sprocket.png" class="mode-image cv-image" alt="컨베이어용 스프라켓">
                 </div>
@@ -448,57 +436,8 @@ function goHome() {
     window.location.href = '../../index.html';
 }
 
-function showReadyPopup(el) {
-    document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-
-    if (el) {
-        el.classList.add('active');
-    }
-
-    const popup = document.getElementById('readyPopup');
-    if (popup) {
-        popup.classList.add('show');
-    }
-}
-
-function hideReadyPopup() {
-    const popup = document.getElementById('readyPopup');
-    if (popup) {
-        popup.classList.remove('show');
-    }
-}
-
-function closeReadyPopup(event) {
-    if (event.target && event.target.id === 'readyPopup') {
-        hideReadyPopup();
-    }
-}
-
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        hideReadyPopup();
-    }
-});
 
 </script>
-
-
-<!-- 준비중 팝업 -->
-<div id="readyPopup" class="ready-popup-overlay" onclick="closeReadyPopup(event)">
-    <div class="ready-popup" role="dialog" aria-modal="true" aria-labelledby="readyPopupTitle">
-        <button class="ready-close" type="button" onclick="hideReadyPopup()" aria-label="닫기">×</button>
-
-        <div id="readyPopupTitle" class="ready-title">준비중입니다</div>
-
-        <div class="progress-bar" aria-hidden="true">
-            <div class="progress-runner"></div>
-        </div>
-
-        <div class="ready-text">현재 해당 컨텐츠를 준비중입니다!</div>
-    </div>
-</div>
 
 </body>
 </html>
