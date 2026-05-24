@@ -101,6 +101,28 @@
 
         body { min-height: 100vh; }
 
+        /* [추가] sprocket_main.html과 동일한 중앙 배경 스프라켓 이미지 */
+        .middle-image-zone {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page-bg-image {
+            width: 260px;
+            opacity: 0.1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+        }
+
+
         /* [수정] 검색 결과만 스크롤되도록 전체 앱 화면을 100vh 안에 고정 */
         .app-shell {
             width: 100%;
@@ -431,6 +453,47 @@
         }
 
         .field-wrap { position: relative; }
+
+        /* [추가] 피치원 ±5 범위 안내문: 더 진하게 표시하고 부드럽게 깜박이도록 설정 */
+        .pcd-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .pcd-label-row label {
+            margin-bottom: 0;
+        }
+
+        .pcd-tolerance-note {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: rgba(217, 48, 37, 0.12);
+            border: 1px solid rgba(217, 48, 37, 0.38);
+            color: #d93025;
+            font-size: 0.78rem;
+            font-weight: 950;
+            line-height: 1.2;
+            white-space: nowrap;
+            animation: pcdToleranceBlink 1.15s ease-in-out infinite;
+        }
+
+        @keyframes pcdToleranceBlink {
+            0%, 100% {
+                opacity: 1;
+                box-shadow: 0 0 0 rgba(217, 48, 37, 0);
+            }
+            50% {
+                opacity: 0.45;
+                box-shadow: 0 0 10px rgba(217, 48, 37, 0.35);
+            }
+        }
+
 
         select, input {
             width: 100%;
@@ -1026,6 +1089,12 @@
                 letter-spacing: -0.02em;
             }
 
+            .pcd-tolerance-note {
+                font-size: 0.72rem;
+                padding: 3px 7px;
+            }
+
+
             /* [수정] 모바일에서도 상단 검색 영역은 고정하고 결과 카드 목록만 스크롤되도록 하단 바 여백 확보 */
             .content {
                 padding: 18px 14px 88px;
@@ -1469,6 +1538,9 @@
     </div>
 
     <div class="app-shell">
+        <div class="middle-image-zone" aria-hidden="true">
+            <img src="../../images/sprocket.png" class="page-bg-image" alt="스프라켓 배경 이미지">
+        </div>
         <header class="header">
             <div class="menu-btn" onclick="toggleMenu()" aria-label="메뉴 열기">
                 <i class="fas fa-bars"></i>
@@ -1536,8 +1608,11 @@
 
                         <!-- [수정] 외경(OD) 검색 항목 제거 후, 해당 위치에 피치원 지름(PCD) 항목 배치 -->
                         <div class="input-group">
-                            <label for="searchPcd">피치원 지름 (PCD)</label>
-                            <input type="text" id="searchPcd" placeholder="예 : 20.55">
+                            <div class="pcd-label-row">
+                                <label for="searchPcd">피치원 지름 (PCD)</label>
+                                <span class="pcd-tolerance-note">±5 범위 검색</span>
+                            </div>
+                            <input type="text" id="searchPcd" placeholder="예 : 100">
                         </div>
                     </div>
 
@@ -1875,7 +1950,17 @@
             }
             // [수정] 외경(OD) 검색 항목 제거에 따라 OD 필터링 제거
             if (pcd) {
-                results = results.filter(d => String(d.pitchCircle || d.pcd || '').includes(pcd));
+                const pcdInput = parseFloat(pcd);
+                if (!Number.isNaN(pcdInput)) {
+                    // [수정] 피치원 지름(PCD)은 입력값 기준 상하 5mm 범위까지 검색
+                    // 예: 100 입력 시 95 ~ 105 사이의 PCD 결과 표시
+                    results = results.filter(d => {
+                        const itemPcd = parseFloat(d.pitchCircle || d.pcd || 0);
+                        return !Number.isNaN(itemPcd) && Math.abs(itemPcd - pcdInput) <= 5;
+                    });
+                } else {
+                    results = results.filter(d => String(d.pitchCircle || d.pcd || '').includes(pcd));
+                }
             }
 
             currentSearchResults = results;

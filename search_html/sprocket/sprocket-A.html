@@ -98,6 +98,28 @@
 
         body { min-height: 100vh; }
 
+        /* [추가] sprocket_main.html과 동일한 중앙 배경 스프라켓 이미지 */
+        .middle-image-zone {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page-bg-image {
+            width: 260px;
+            opacity: 0.1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+        }
+
+
         /* [수정] 검색 결과만 스크롤되도록 전체 앱 화면을 100vh 안에 고정 */
         .app-shell {
             width: 100%;
@@ -1466,6 +1488,9 @@
     </div>
 
     <div class="app-shell">
+        <div class="middle-image-zone" aria-hidden="true">
+            <img src="../../images/sprocket.png" class="page-bg-image" alt="스프라켓 배경 이미지">
+        </div>
         <header class="header">
             <div class="menu-btn" onclick="toggleMenu()" aria-label="메뉴 열기">
                 <i class="fas fa-bars"></i>
