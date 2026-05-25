@@ -2328,6 +2328,110 @@
            ========================================================= */
 
 
+
+        /* =========================================================
+           [재십팔수정-모바일네비버튼축소/3열배치] 2026-05-25 추가 요청 반영
+           - PC 화면은 그대로 유지
+           - 모바일에서 네비 버튼이 2열로만 보이고 크게 느껴지는 문제 수정
+           - 모바일 네비 버튼을 3열로 배치
+           - 버튼 크기, 이미지 크기, 버튼 아래 여백, 제목 글자 크기를 함께 축소
+           ========================================================= */
+
+        @media (max-width: 560px) {
+            /* [재십팔수정-모바일네비전체폭]
+               모바일에서 네비 영역 좌우 여백을 줄여 3열 배치 공간을 확보합니다. */
+            .attachment-nav-wrap {
+                max-width: 430px !important;
+                padding-left: 4px !important;
+                padding-right: 4px !important;
+                margin-bottom: 34px !important;
+            }
+
+            /* [재십팔수정-모바일네비3열]
+               기존 모바일 2열 배치를 3열로 변경합니다. */
+            .attachment-nav-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 10px !important;
+            }
+
+            /* [재십팔수정-모바일네비버튼축소]
+               모바일에서 네비 버튼 자체 크기를 줄입니다.
+               기존 모바일 width 72~85% 계열보다 작게 보이도록 68%로 고정합니다. */
+            .attachment-nav-btn {
+                width: 68% !important;
+                padding: 8px 8px 26px !important;
+                border-radius: 15px !important;
+                border-width: 1.5px !important;
+            }
+
+            /* [재십팔수정-모바일네비이미지축소]
+               버튼이 작아진 만큼 내부 이미지도 약간 줄여 과밀하게 보이지 않도록 합니다. */
+            .attachment-nav-btn img {
+                width: 138% !important;
+                max-height: 108% !important;
+            }
+
+            /* [재십팔수정-모바일네비라벨축소]
+               버튼 아래 품명 글자 크기를 줄여 3열에서도 겹치지 않도록 합니다. */
+            .attachment-nav-label {
+                left: 4px !important;
+                right: 4px !important;
+                bottom: 8px !important;
+                font-size: clamp(0.62rem, 2.25vw, 0.86rem) !important;
+                font-weight: 600 !important;
+                letter-spacing: -0.05em !important;
+            }
+
+            /* [재십팔수정-모바일항목간격]
+               버튼과 아래 PDF/DWG 버튼 사이 간격도 줄입니다. */
+            .attachment-item {
+                gap: 5px !important;
+            }
+
+            /* [재십팔수정-모바일네비하단다운버튼]
+               네비 버튼 아래의 PDF/DWG 작은 버튼도 3열 배치에 맞춰 축소합니다. */
+            .download-buttons {
+                gap: 4px !important;
+            }
+
+            .download-btn {
+                padding: 2px 4px !important;
+                font-size: 0.52rem !important;
+                border-radius: 5px !important;
+                line-height: 1.1 !important;
+            }
+        }
+
+        /* [재십팔수정-초소형모바일네비]
+           380px 이하에서도 3열은 유지하되, 더 작게 보정합니다. */
+        @media (max-width: 380px) {
+            .attachment-nav-grid {
+                gap: 8px !important;
+            }
+
+            .attachment-nav-btn {
+                width: 64% !important;
+                padding: 7px 7px 23px !important;
+                border-radius: 13px !important;
+            }
+
+            .attachment-nav-btn img {
+                width: 132% !important;
+                max-height: 104% !important;
+            }
+
+            .attachment-nav-label {
+                bottom: 7px !important;
+                font-size: clamp(0.55rem, 2.1vw, 0.75rem) !important;
+            }
+
+            .download-btn {
+                padding: 2px 3px !important;
+                font-size: 0.48rem !important;
+            }
+        }
+
+
     </style>
 </head>
 <body>
