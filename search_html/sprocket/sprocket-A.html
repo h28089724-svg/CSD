@@ -1414,6 +1414,303 @@
 
             .detail-file-btn i { font-size: 0.68rem; }
         }
+
+        /* =========================================================
+           [수정] 2026-05-25 요청 반영: PDF 표시번호 1~14 간격/높이 조정
+           - 1번 제목 글자만 2번 부제목보다 약 10% 크게 조정
+           - 그 외 글자 크기는 변경하지 않고, 높이/여백/패딩만 조정
+           ========================================================= */
+
+        /* [재수정-1번/2번] 제목 글자를 더 크게 보이도록 하고,
+           둥근 사각형도 함께 키워서 두 줄이 박스 중앙에 안정적으로 위치하도록 조정 */
+        .brand-text {
+            height: 46px;                 /* [재수정-1번] 제목 박스 높이를 다시 늘려 큰 제목이 자연스럽게 들어가도록 조정 */
+            padding: 4px 12px;            /* [재수정-1번/2번] 박스 내부 상하 여백 보정 */
+            justify-content: center;      /* [유지] 글자 묶음을 배경 박스 중앙으로 정렬 */
+            gap: 2px;                     /* [재수정-1번/2번] 제목/부제목 줄 간격 미세 조정 */
+        }
+
+        /* [재수정-1번] 메인 제목은 이전보다 더 크게 표시 */
+        .brand-title {
+            font-size: 1.12rem;
+            line-height: 1.02;
+        }
+
+        /* [수정-1번/2번] 2번 글자 크기는 유지하고 위치만 중앙 정렬되도록 여백 제거 */
+        .brand-sub {
+            margin-top: 0;
+            line-height: 1.05;
+        }
+
+        /* [재수정-3번] 원래 바탕의 큰 스프라켓 이미지는 다시 표시 */
+        .middle-image-zone {
+            display: flex !important;
+        }
+
+        .page-bg-image {
+            display: block !important;
+            width: 260px;                 /* [유지] 원래 중앙 배경 이미지 크기 복원 */
+            opacity: 0.1;                 /* [유지] 원래 은은한 배경 이미지 투명도 복원 */
+        }
+
+        /* [재수정-3번] 배경 이미지 아래에 있던 아이콘/문구 영역만 제거 */
+        .hero-empty {
+            display: none !important;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* [수정-5번] 상단 헤더/아이콘 박스의 상하 높이를 줄여 제목 영역을 압축 */
+        .header {
+            height: 54px;                 /* [재수정-1번] 더 커진 제목 박스가 자연스럽게 들어가도록 헤더 높이 재조정 */
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .menu-btn,
+        .back-btn {
+            width: 38px;                  /* [재수정-1번] 커진 제목 박스와 균형이 맞도록 아이콘 버튼도 소폭 확대 */
+            height: 38px;
+        }
+
+        .back-btn img {
+            width: 31px;                  /* [재수정-1번] 버튼 크기에 맞춰 화살표 이미지 보정 */
+            height: 25px;
+        }
+
+        /* [수정-5번/6번/7번/8번] 검색 패널 위아래 여백과 내부 행 간격을 줄임 */
+        .content {
+            padding-top: 13px;            /* 기존 22px 대비 약 40% 축소 */
+            padding-left: 16px;
+            padding-right: 16px;
+            padding-bottom: 82px;
+        }
+
+        .search-panel {
+            padding: 11px 16px;           /* 기존 18px 대비 약 40% 축소 */
+        }
+
+        .form-grid {
+            gap: 8px;                     /* 기존 14px 대비 약 40% 축소 */
+        }
+
+        .dual-row {
+            gap: 6px;                     /* [수정-4번/12번] 기존 12px 대비 50% 축소 */
+        }
+
+        .model-label-row {
+            margin-bottom: 5px;           /* [수정-6번] 기존 8px 대비 약 40% 축소 */
+        }
+
+        .input-group label {
+            margin-bottom: 4px;           /* [수정-4번/9번/12번] 기존 8px 대비 50% 축소 */
+        }
+
+        /* [수정-5번] 형번/잇수/피치원지름 입력창의 상하높이를 기존 48px에서 약 30% 축소 */
+        select,
+        input {
+            height: 34px;
+            line-height: 34px;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        /* [수정-5번/10번/11번] 초기화, 검색하기 버튼의 상하높이를 기존 50px에서 30% 축소 */
+        button {
+            height: 35px;
+        }
+
+        /* [수정-4번] 입력창과 버튼 행 사이 간격을 50% 축소 */
+        .btn-row {
+            margin-top: 2px;
+            gap: 8px;                     /* [수정-5번] 버튼 사이 폭도 높이 축소에 맞춰 완화 */
+            align-items: center;
+        }
+
+        /* [수정-5번/11번] 조회가능횟수 박스의 상하높이를 버튼과 동일하게 30% 축소 */
+        .btn-row .usage-badge {
+            height: 35px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* [수정-13번] 검색 결과 영역 시작 간격을 기존 18px에서 약 40% 축소 */
+        .result-area {
+            margin-top: 11px;
+        }
+
+        .result-list-wrap {
+            gap: 7px;                     /* [수정-13번] 검색 결과 제목/안내/목록 사이 간격 40% 축소 */
+        }
+
+        .result-title-row {
+            gap: 7px;                     /* [수정-13번] 결과 제목 행 내부 간격 40% 축소 */
+            margin-bottom: 1px;
+        }
+
+        .result-title-left {
+            gap: 6px;                     /* [수정-13번] 결과 제목 아이콘과 글자 사이 간격 40% 축소 */
+        }
+
+        .result-guide,
+        .result-progress {
+            padding-top: 6px;             /* [수정-13번] 결과 안내 박스 상하폭 40% 축소 */
+            padding-bottom: 6px;
+        }
+
+        .result-pages-container {
+            gap: 8px;                     /* [수정-4번/12번] 결과 페이지 간격 50% 축소 */
+        }
+
+        .result-page {
+            gap: 7px;                     /* [수정-13번] 결과 카드 간격 40% 축소 */
+        }
+
+        /* [수정-14번] 검색 결과 카드 한 줄의 상하폭을 기존 10px에서 약 30% 축소 */
+        .result-summary {
+            padding-top: 7px;
+            padding-bottom: 7px;
+        }
+
+        /* [수정-14번] 결과 카드 안 형번 배지/화살표 박스 높이를 약 30% 축소 */
+        .model-pill {
+            height: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-btn {
+            width: 21px;
+            height: 21px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .summary-label {
+            margin-bottom: 3px;           /* [수정-14번] 카드 내부 라벨과 값 사이 간격 축소 */
+        }
+
+        .summary-grid {
+            gap: 8px;                     /* [수정-14번] 카드 내부 항목 간격 축소 */
+        }
+
+        .page-status {
+            padding-top: 5px;             /* [수정-13번] 페이지 표시 영역 상하폭 축소 */
+            padding-bottom: 1px;
+        }
+
+        /* [수정-5번] 상세 펼침 영역 및 다운로드 버튼의 상하폭 축소 */
+        .result-detail {
+            padding-top: 10px;
+            padding-bottom: 11px;
+        }
+
+        .detail-item {
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        .detail-actions {
+            margin-top: 10px;
+            gap: 6px;
+        }
+
+        .detail-file-btn {
+            height: 25px;                 /* 기존 36px 대비 약 30% 축소 */
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* [수정-5번] 하단 고정 바의 상하폭을 축소하되 글자 크기는 유지 */
+        .bottom-bar {
+            padding-top: 8px;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+        }
+
+        .bottom-home {
+            height: 29px;                 /* 기존 42px 대비 약 30% 축소 */
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 520px) {
+            /* [재수정-1번] 모바일에서도 메인 제목을 더 크게 표시 */
+            .brand-title {
+                font-size: 0.98rem;
+            }
+
+            /* [재수정-1번/2번] 모바일 제목 박스도 더 큰 제목이 자연스럽게 들어가도록 재조정 */
+            .brand-text {
+                height: 40px;
+                padding: 4px 8px;
+                justify-content: center;
+                gap: 1px;
+            }
+
+            /* [수정-5번~8번] 모바일 검색 영역도 동일 비율로 상하폭 축소 */
+            .content {
+                padding-top: 11px;
+                padding-left: 14px;
+                padding-right: 14px;
+                padding-bottom: 78px;
+            }
+
+            .search-panel {
+                padding: 10px 14px;
+            }
+
+            .dual-row {
+                gap: 5px;
+            }
+
+            .btn-row {
+                gap: 7px;
+            }
+
+            .btn-row .usage-badge {
+                height: 35px;
+            }
+
+            /* [수정-14번] 모바일 결과 카드 상하폭 축소 */
+            .result-summary {
+                padding-top: 7px;
+                padding-bottom: 7px;
+            }
+
+            .model-pill {
+                height: 19px;
+            }
+
+            .toggle-btn {
+                width: 21px;
+                height: 21px;
+            }
+
+            .detail-item {
+                padding-top: 8px;
+                padding-bottom: 8px;
+            }
+
+            .detail-file-btn {
+                height: 24px;
+            }
+
+            .bottom-home {
+                height: 28px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            /* [수정-5번] 작은 모바일에서도 입력/버튼/결과 카드 상하폭 축소값 유지 */
+            .btn-row {
+                gap: 5px;
+            }
+
+            .detail-file-btn {
+                height: 23px;
+            }
+        }
+
     </style>
 </head>
 <body>
