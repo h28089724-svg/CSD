@@ -2487,6 +2487,169 @@
         }
 
 
+
+        /* =========================================================
+           [재이십수정-모바일네비버튼10퍼센트확대/이미지최대화] 2026-05-25 추가 요청 반영
+           - PC 화면은 그대로 유지
+           - 모바일에서 네비 버튼 크기를 직전 수정값 대비 약 10% 확대
+           - 버튼 안 이미지는 버튼 내부에서 최대한 크게 보이도록 확대
+           - 3열 배치는 유지
+           ========================================================= */
+
+        @media (max-width: 560px) {
+            /* [재이십수정-모바일네비버튼확대]
+               직전 모바일 버튼 width 68% 기준에서 약 10% 키운 75%로 변경합니다. */
+            .attachment-nav-btn {
+                width: 75% !important;
+                padding: 7px 7px 25px !important;
+                border-radius: 16px !important;
+            }
+
+            /* [재이십수정-모바일네비이미지최대화]
+               버튼 안 이미지를 최대한 크게 표시합니다.
+               버튼 아래 라벨 영역은 유지하면서 이미지가 버튼 안을 더 많이 채우도록 확대합니다. */
+            .attachment-nav-btn img {
+                width: 168% !important;
+                max-height: 132% !important;
+                object-fit: contain !important;
+            }
+
+            /* [재이십수정-모바일네비라벨위치보정]
+               이미지가 커진 만큼 라벨은 버튼 하단에 안정적으로 고정합니다. */
+            .attachment-nav-label {
+                bottom: 7px !important;
+                left: 3px !important;
+                right: 3px !important;
+                font-size: clamp(0.62rem, 2.25vw, 0.86rem) !important;
+            }
+        }
+
+        /* [재이십수정-초소형모바일네비확대]
+           380px 이하에서도 버튼을 직전보다 약간 키우고 이미지를 크게 유지합니다. */
+        @media (max-width: 380px) {
+            .attachment-nav-btn {
+                width: 70% !important;
+                padding: 6px 6px 22px !important;
+                border-radius: 14px !important;
+            }
+
+            .attachment-nav-btn img {
+                width: 158% !important;
+                max-height: 126% !important;
+                object-fit: contain !important;
+            }
+
+            .attachment-nav-label {
+                bottom: 6px !important;
+                font-size: clamp(0.55rem, 2.1vw, 0.75rem) !important;
+            }
+        }
+
+
+
+        /* =========================================================
+           [재이십일수정-모바일네비버튼85퍼센트확대/화면안맞춤] 2026-05-25 추가 요청 반영
+           - PC 화면은 그대로 유지
+           - 모바일 네비 버튼을 85%까지 확대
+           - 3열 배치를 유지하면서 화면 안에 최대한 들어가도록 좌우 여백/간격을 축소
+           - 버튼 안 이미지는 더 크게 보이도록 확대
+           ========================================================= */
+
+        @media (max-width: 560px) {
+            /* [재이십일수정-모바일네비영역최대활용]
+               3열 버튼이 85% 크기로 들어갈 수 있도록 네비 영역 좌우 여백과 칸 간격을 줄입니다. */
+            .attachment-nav-wrap {
+                max-width: 100% !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                margin-bottom: 32px !important;
+            }
+
+            .attachment-nav-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 6px !important;
+                justify-items: center !important;
+            }
+
+            /* [재이십일수정-모바일네비버튼85]
+               모바일 네비 버튼 크기를 85%로 확대합니다. */
+            .attachment-nav-btn {
+                width: 85% !important;
+                padding: 5px 5px 23px !important;
+                border-radius: 15px !important;
+                border-width: 1.4px !important;
+            }
+
+            /* [재이십일수정-모바일네비이미지최대확대]
+               버튼 안 이미지가 최대한 크게 보이도록 확대합니다. */
+            .attachment-nav-btn img {
+                width: 185% !important;
+                max-height: 142% !important;
+                object-fit: contain !important;
+            }
+
+            /* [재이십일수정-모바일라벨공간보정]
+               버튼이 커진 상태에서도 라벨이 잘리지 않도록 하단 위치와 크기를 조정합니다. */
+            .attachment-nav-label {
+                left: 2px !important;
+                right: 2px !important;
+                bottom: 6px !important;
+                font-size: clamp(0.58rem, 2.15vw, 0.82rem) !important;
+                line-height: 1 !important;
+                letter-spacing: -0.06em !important;
+            }
+
+            /* [재이십일수정-모바일PDFDWG버튼화면안맞춤]
+               네비 버튼 아래 PDF/DWG 버튼도 3열 안에서 넘치지 않도록 폭과 간격을 줄입니다. */
+            .attachment-item {
+                gap: 4px !important;
+            }
+
+            .download-buttons {
+                gap: 3px !important;
+                max-width: 100% !important;
+            }
+
+            .download-btn {
+                padding: 2px 3px !important;
+                font-size: 0.50rem !important;
+                border-radius: 5px !important;
+                line-height: 1.05 !important;
+                white-space: nowrap !important;
+            }
+        }
+
+        /* [재이십일수정-초소형모바일85보정]
+           380px 이하에서는 화면 넘침을 막기 위해 버튼은 82%로 살짝 낮추고,
+           이미지는 크게 유지합니다. */
+        @media (max-width: 380px) {
+            .attachment-nav-grid {
+                gap: 4px !important;
+            }
+
+            .attachment-nav-btn {
+                width: 82% !important;
+                padding: 4px 4px 21px !important;
+                border-radius: 13px !important;
+            }
+
+            .attachment-nav-btn img {
+                width: 178% !important;
+                max-height: 136% !important;
+            }
+
+            .attachment-nav-label {
+                bottom: 5px !important;
+                font-size: clamp(0.50rem, 2vw, 0.70rem) !important;
+            }
+
+            .download-btn {
+                padding: 2px 2px !important;
+                font-size: 0.45rem !important;
+            }
+        }
+
+
     </style>
 </head>
 <body>
