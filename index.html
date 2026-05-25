@@ -7,8 +7,17 @@
 
     <link rel="manifest" href="./manifest.json">
 
+    <!-- [앱아이콘-추가] 모바일 홈화면/PWA 설치 아이콘 연결
+         - Android/Chrome: manifest.json의 icons 항목 사용
+         - iPhone/Safari: apple-touch-icon 항목 사용
+         - favicon: 브라우저 탭/바로가기 보조 아이콘 -->
+    <link rel="apple-touch-icon" href="./images/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="./images/icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="./images/icons/icon-512.png">
+
     <!-- [수정] 테마 색상 -->
-    <meta name="theme-color" content="#91a6bf">
+    <!-- [앱아이콘-수정] 아이콘 밝은 파랑 톤에 맞춘 모바일 상단 테마 색상 -->
+    <meta name="theme-color" content="#0d9cff">
 
     <style>
         :root {
