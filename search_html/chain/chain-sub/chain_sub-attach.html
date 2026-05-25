@@ -2306,6 +2306,17 @@
            ========================================================= */
 
 
+
+        /* =========================================================
+           [재십육수정-PDF열기방식복구] 2026-05-25 추가 요청 반영
+           - v18의 단순 상대경로 직접 href 방식은 PC 로컬 테스트에서 경로가 맞지 않을 수 있어 제거
+           - PC 로컬(file://)에서는 기존 C:/CSD file:/// 경로 사용
+           - 모바일/GitHub Pages(http/https)에서는 ../../download/... 상대경로 사용
+           - PDF 클릭 시 확인 팝업 없이 window.location.href로 현재 화면에서 바로 PDF 열기
+           - window.open() 미사용: 모바일 팝업 차단 메시지 방지
+           ========================================================= */
+
+
     </style>
 </head>
 <body>
@@ -2728,23 +2739,32 @@
             return `${sizeNumber}-${itemName}.${ext}`;
         }
 
-        /* PDF/DWG 실제 연결 경로 생성
-           상대경로 혼선을 줄이기 위해 C:/CSD 기준 file:/// 절대경로로 연결합니다.
+        /* [재십육수정-PDF경로-PC/모바일동시지원]
+           PDF 경로는 실행 환경에 따라 다르게 생성합니다.
+           - PC에서 로컬 HTML(file://)로 테스트할 때: 기존처럼 C:/CSD 기준 file:/// 절대경로 사용
+           - GitHub Pages/모바일(http/https)에서 실행할 때: 스프라켓 파일처럼 ../../download/... 상대경로 사용
 
-           예:
-           PDF => file:///C:/CSD/download/chain/conveyor_chain/atachment_chain/pdf/1LAA1/PDF/35-1LAA1.pdf
-           DWG => file:///C:/CSD/secure-download/dwg/atatchment_chain/1LAA1/DWG/35-1LAA1.dwg
-        */
+           이렇게 해야 PC에서 기존처럼 바로 열리고,
+           모바일 GitHub Pages에서도 file:/// 경로 때문에 막히는 문제가 줄어듭니다. */
         function buildAttachmentFileUrl(type, itemName, fileName) {
             const safeItemName = encodeURIComponent(itemName);
             const safeFileName = encodeURIComponent(fileName);
+            const isLocalFile = window.location.protocol === 'file:';
 
             if (type === 'pdf') {
-                return `file:///C:/CSD/download/chain/conveyor_chain/atachment_chain/pdf/${safeItemName}/PDF/${safeFileName}`;
+                if (isLocalFile) {
+                    return `file:///C:/CSD/download/chain/conveyor_chain/atachment_chain/pdf/${safeItemName}/PDF/${safeFileName}`;
+                }
+
+                return `../../download/chain/conveyor_chain/atachment_chain/pdf/${safeItemName}/PDF/${safeFileName}`;
             }
 
             if (type === 'dwg') {
-                return `file:///C:/CSD/secure-download/dwg/atatchment_chain/${safeItemName}/DWG/${safeFileName}`;
+                if (isLocalFile) {
+                    return `file:///C:/CSD/secure-download/dwg/atatchment_chain/${safeItemName}/DWG/${safeFileName}`;
+                }
+
+                return `../../secure-download/dwg/atatchment_chain/${safeItemName}/DWG/${safeFileName}`;
             }
 
             return '';
@@ -2755,7 +2775,16 @@
             const fileName = buildAttachmentFileName(sizeNumber, itemName, ext);
             const url = buildAttachmentFileUrl(type, itemName, fileName);
 
-            /* 수정: 모바일에서 무반응처럼 보이지 않도록 다운로드 확인 팝업 표시 */
+            if (type === 'pdf') {
+                /* [재십육수정-PDF즉시현재화면열기]
+                   PDF는 확인 팝업/다운로드 버튼을 거치지 않고 바로 현재 화면에서 엽니다.
+                   window.open()을 쓰지 않으므로 모바일 팝업 차단 메시지가 나오지 않습니다.
+                   PC 로컬에서는 file:/// 경로, 모바일/GitHub Pages에서는 ../../download 상대경로가 사용됩니다. */
+                window.location.href = url;
+                return;
+            }
+
+            /* [유지] DWG는 인증/확인 절차가 필요하므로 기존 팝업 흐름을 유지합니다. */
             openDownloadModal(type, fileName, url);
         }
 
