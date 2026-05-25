@@ -2317,6 +2317,17 @@
            ========================================================= */
 
 
+
+        /* =========================================================
+           [재십칠수정-모바일404경로보정] 2026-05-25 추가 요청 반영
+           - 모바일/GitHub Pages에서 PDF 클릭 시 404가 뜨는 문제 수정
+           - 이 HTML은 ../../../images/... 경로를 사용하므로 download 경로도 같은 깊이로 맞춤
+           - PDF: ../../download/... → ../../../download/... 로 변경
+           - DWG 웹 경로도 동일하게 ../../../secure-download/... 로 보정
+           - PC 로컬 file:///C:/CSD/... 경로는 그대로 유지
+           ========================================================= */
+
+
     </style>
 </head>
 <body>
@@ -2756,7 +2767,7 @@
                     return `file:///C:/CSD/download/chain/conveyor_chain/atachment_chain/pdf/${safeItemName}/PDF/${safeFileName}`;
                 }
 
-                return `../../download/chain/conveyor_chain/atachment_chain/pdf/${safeItemName}/PDF/${safeFileName}`;
+                return `../../../download/chain/conveyor_chain/atachment_chain/pdf/${safeItemName}/PDF/${safeFileName}`;
             }
 
             if (type === 'dwg') {
@@ -2764,7 +2775,7 @@
                     return `file:///C:/CSD/secure-download/dwg/atatchment_chain/${safeItemName}/DWG/${safeFileName}`;
                 }
 
-                return `../../secure-download/dwg/atatchment_chain/${safeItemName}/DWG/${safeFileName}`;
+                return `../../../secure-download/dwg/atatchment_chain/${safeItemName}/DWG/${safeFileName}`;
             }
 
             return '';
