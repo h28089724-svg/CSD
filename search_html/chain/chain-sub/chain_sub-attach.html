@@ -2013,8 +2013,7 @@
            ========================================================= */
 
         /* [재십이수정-상세항목구성]
-           기존 6개 항목 중 피치원 / 롤러경 / 내폭은 삭제하고,
-           핀경 → 리벳핀경, 플레이트 두께 → 링크두께, 전체 폭 → 체인폭으로 변경했습니다. */
+           기존 6개 상세 항목을 리벳핀경 / 링크두께 / 체인폭 3개 항목으로 정리했습니다. */
         .rs-detail-grid {
             grid-template-columns: 1fr 1fr !important;
             gap: 12px 18px !important;
@@ -2198,6 +2197,101 @@
                 max-width: 64px !important;
                 min-width: 64px !important;
                 font-size: 0.81rem !important;
+            }
+        }
+
+
+
+        /* =========================================================
+           [재십사수정-모바일/데스크탑최종강제반영] 2026-05-25 확인용 최종 보정
+           - Git 업로드 후 모바일에서 마지막 변경이 안 보이는 상황을 방지하기 위한 최종 우선순위 CSS
+           - 상세 항목은 HTML에서 리벳핀경 / 링크두께 / 체인폭 3개만 생성
+           - 버튼 이름은 HTML에서 PDF / 2D / 3D로 확정
+           - 데스크탑/모바일 모두 같은 규칙이 적용되도록 가장 아래에 배치
+           ========================================================= */
+
+        /* [재십사수정-mm최종]
+           상세 카드 안의 mm 단위는 모든 화면에서 값 글자의 50% 크기,
+           font-weight 300으로 최종 고정합니다. */
+        .rs-result-detail .rs-detail-row strong .rs-detail-unit,
+        .rs-result-card.open .rs-detail-row strong .rs-detail-unit {
+            font-size: 50% !important;
+            font-weight: 300 !important;
+            color: #ffffff !important;
+            opacity: 0.95 !important;
+            margin-left: 2px !important;
+        }
+
+        /* [재십사수정-버튼최종정렬]
+           PDF / 2D / 3D 버튼 묶음은 모든 화면에서 오른쪽 정렬로 최종 고정합니다. */
+        .rs-result-detail .rs-download-buttons,
+        .rs-result-card.open .rs-download-buttons {
+            display: flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+            width: 100% !important;
+            gap: 12px !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        /* [재십사수정-버튼글자최종]
+           버튼 글자는 직전 1.4배 수정값의 85% 수준으로 최종 고정합니다. */
+        .rs-result-detail .rs-download-buttons .rs-action-btn,
+        .rs-result-card.open .rs-download-buttons .rs-action-btn {
+            font-size: 1.06rem !important;
+            font-weight: 600 !important;
+            flex: 0 0 80px !important;
+            width: 80px !important;
+            min-width: 80px !important;
+            max-width: 80px !important;
+            text-align: center !important;
+            white-space: nowrap !important;
+        }
+
+        /* [재십사수정-모바일최종]
+           모바일에서도 위의 최종 규칙을 다시 한 번 지정합니다. */
+        @media (max-width: 560px) {
+            .rs-result-detail .rs-download-buttons,
+            .rs-result-card.open .rs-download-buttons {
+                justify-content: flex-end !important;
+                gap: 10px !important;
+            }
+
+            .rs-result-detail .rs-download-buttons .rs-action-btn,
+            .rs-result-card.open .rs-download-buttons .rs-action-btn {
+                font-size: 0.94rem !important;
+                flex: 0 0 76px !important;
+                width: 76px !important;
+                min-width: 76px !important;
+                max-width: 76px !important;
+            }
+
+            .rs-result-detail .rs-detail-row strong .rs-detail-unit,
+            .rs-result-card.open .rs-detail-row strong .rs-detail-unit {
+                font-size: 50% !important;
+                font-weight: 300 !important;
+            }
+        }
+
+        /* [재십사수정-초소형모바일최종]
+           380px 이하에서도 버튼명과 오른쪽 정렬이 유지되도록 최종 고정합니다. */
+        @media (max-width: 380px) {
+            .rs-result-detail .rs-download-buttons,
+            .rs-result-card.open .rs-download-buttons {
+                justify-content: flex-end !important;
+                gap: 8px !important;
+            }
+
+            .rs-result-detail .rs-download-buttons .rs-action-btn,
+            .rs-result-card.open .rs-download-buttons .rs-action-btn {
+                font-size: 0.81rem !important;
+                flex: 0 0 64px !important;
+                width: 64px !important;
+                min-width: 64px !important;
+                max-width: 64px !important;
             }
         }
 
