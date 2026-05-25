@@ -2296,6 +2296,16 @@
         }
 
 
+
+        /* =========================================================
+           [재십오수정-PDF다운로드팝업차단관련] 2026-05-25 추가 요청 반영
+           - 모바일 GitHub Pages 실행 시 PDF 버튼에서 팝업 차단 경고가 뜨는 문제 수정
+           - JavaScript의 window.open 직접 호출을 제거
+           - startConfirmedDownload() 안의 PDF 분기에서 a 태그 click 방식으로 변경
+           - DWG 다운로드 로직은 기존 방식 유지
+           ========================================================= */
+
+
     </style>
 </head>
 <body>
@@ -2906,14 +2916,20 @@
             const done = document.getElementById('downloadDoneMessage');
 
             if (pendingDownloadType === 'pdf') {
-                const pdfWindow = window.open(pendingDownloadUrl, '_blank', 'noopener,noreferrer');
+                /* [재십오수정-PDF모바일팝업차단방지]
+                   기존 window.open 방식은 모바일 브라우저/GitHub Pages 환경에서
+                   팝업 차단 메시지가 발생할 수 있어 사용하지 않습니다.
+                   스프라켓 페이지처럼 a 태그를 생성해 사용자의 확인 버튼 클릭 흐름 안에서
+                   PDF 링크를 실행하도록 변경했습니다. */
+                const link = document.createElement('a');
+                link.href = pendingDownloadUrl;
+                link.target = '_blank';
+                link.rel = 'noopener';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
 
-                if (!pdfWindow) {
-                    alert('팝업이 차단되었습니다. 브라우저에서 팝업 허용 후 다시 시도해 주세요.');
-                    return;
-                }
-
-                done.innerHTML = 'PDF 파일을 새 창에서 열었습니다.';
+                done.innerHTML = 'PDF 파일을 열었습니다.';
                 done.classList.add('active');
                 return;
             }
