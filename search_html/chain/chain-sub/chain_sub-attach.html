@@ -2098,6 +2098,110 @@
         }
 
 
+
+        /* =========================================================
+           [재십삼수정-모바일강제적용] 2026-05-25 추가 요청 반영
+           - 모바일 화면에서 상세 항목/단위/다운로드 버튼 변경이 적용되지 않는 문제 보정
+           - 실제 HTML 구조인 .rs-download-buttons 기준으로 다시 강제 적용
+           - 모바일에서도 PDF / 2D / 3D 버튼을 오른쪽 정렬
+           ========================================================= */
+
+        /* [재십삼수정-모바일상세항목배치]
+           모바일에서 펼쳐진 상세 카드 항목이 이전 스타일 영향을 받지 않도록
+           실제 표시되는 상세 카드 내부 그리드를 다시 지정합니다. */
+        @media (max-width: 560px) {
+            .rs-result-card.open .rs-detail-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px 14px !important;
+            }
+
+            .rs-result-card.open .rs-detail-row span {
+                font-size: 1.20rem !important;
+                font-weight: 400 !important;
+            }
+
+            .rs-result-card.open .rs-detail-row strong {
+                font-size: 1.29rem !important;
+                font-weight: 500 !important;
+            }
+
+            /* [재십삼수정-모바일mm단위]
+               모바일에서도 mm 단위가 값 글자 크기의 50%로 보이도록 강제 적용합니다. */
+            .rs-result-card.open .rs-detail-row strong .rs-detail-unit {
+                font-size: 50% !important;
+                font-weight: 300 !important;
+                color: #ffffff !important;
+                margin-left: 2px !important;
+            }
+
+            /* [재십삼수정-모바일버튼오른쪽정렬]
+               실제 버튼 부모 클래스는 .rs-download-buttons이므로,
+               모바일에서 이 클래스를 직접 오른쪽 정렬합니다. */
+            .rs-result-card.open .rs-download-buttons {
+                display: flex !important;
+                justify-content: flex-end !important;
+                align-items: center !important;
+                width: 100% !important;
+                gap: 10px !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+            /* [재십삼수정-모바일버튼크기]
+               모바일 다운로드 버튼 글자는 0.94rem으로 줄이고,
+               버튼명은 HTML에서 PDF / 2D / 3D로 적용되어 있습니다. */
+            .rs-result-card.open .rs-download-buttons .rs-action-btn {
+                flex: 0 0 76px !important;
+                width: 76px !important;
+                max-width: 76px !important;
+                min-width: 76px !important;
+                font-size: 0.94rem !important;
+                font-weight: 600 !important;
+                text-align: center !important;
+                white-space: nowrap !important;
+            }
+        }
+
+        /* [재십삼수정-초소형모바일강제적용]
+           380px 이하에서도 같은 변경사항이 적용되도록 별도로 다시 지정합니다. */
+        @media (max-width: 380px) {
+            .rs-result-card.open .rs-detail-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 9px 12px !important;
+            }
+
+            .rs-result-card.open .rs-detail-row span {
+                font-size: 1.08rem !important;
+                font-weight: 400 !important;
+            }
+
+            .rs-result-card.open .rs-detail-row strong {
+                font-size: 1.18rem !important;
+                font-weight: 500 !important;
+            }
+
+            .rs-result-card.open .rs-detail-row strong .rs-detail-unit {
+                font-size: 50% !important;
+                font-weight: 300 !important;
+            }
+
+            .rs-result-card.open .rs-download-buttons {
+                justify-content: flex-end !important;
+                gap: 8px !important;
+            }
+
+            .rs-result-card.open .rs-download-buttons .rs-action-btn {
+                flex: 0 0 64px !important;
+                width: 64px !important;
+                max-width: 64px !important;
+                min-width: 64px !important;
+                font-size: 0.81rem !important;
+            }
+        }
+
+
     </style>
 </head>
 <body>
