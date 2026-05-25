@@ -870,6 +870,279 @@
         }
         /* ===== /수정: DWG 인증 팝업 ===== */
 
+    
+        /* =========================================================
+           [간격조정] 2026-05-25 요청 반영: 검색영역/결과영역 상하 간격 축소
+           - 상단 헤더(.header), 제목(.logo), 좌우 버튼은 그대로 유지
+           - 글자 크기는 변경하지 않고 padding, margin, gap, height 계열만 조정
+           - 아래 CSS는 기존 값을 덮어쓰는 최종 조정 블록입니다.
+           ========================================================= */
+
+        /* [간격조정-1] 헤더 아래에서 검색 카드가 시작되기 전까지의 위쪽 여백 축소
+           기존 .container padding-top 30px → 18px로 조정 */
+        .container {
+            padding-top: 18px;
+            padding-bottom: 148px;
+        }
+
+        /* [간격조정-2] 검색 조건 카드 내부 위/아래 여백 축소
+           기존 .search-card padding 18px 20px → 12px 16px로 조정 */
+        .search-card {
+            padding: 12px 16px;
+            margin-bottom: 10px;
+        }
+
+        /* [간격조정-3] 각 입력 그룹 사이의 세로 간격 축소
+           형번 선택, 피치 입력, 피치 오차범위 입력 사이의 하단 간격을 줄임 */
+        .input-group {
+            margin-bottom: 6px;
+        }
+
+        /* [간격조정-4] 라벨과 입력창/선택창 사이 간격 축소
+           글자 크기는 유지하고 margin-bottom만 줄임 */
+        .input-group label {
+            margin-bottom: 3px;
+        }
+
+        /* [간격조정-5] 형번 선택창, 피치 입력창, 오차범위 입력창의 상하폭 축소
+           font-size는 그대로 두고 padding 상하값만 줄임 */
+        select,
+        input {
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        /* [간격조정-6] 초기화/검색하기 버튼 줄의 위쪽 간격과 버튼 사이 간격 축소 */
+        .btn-row {
+            gap: 8px;
+            margin-top: 2px;
+        }
+
+        /* [간격조정-7] 초기화/검색하기 버튼의 상하폭 축소
+           글자 크기는 그대로 두고 padding만 축소 */
+        button {
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        /* [간격조정-8] 남은 검색 횟수 안내문과 버튼 줄 사이 간격 축소 */
+        .usage-info {
+            margin-top: 5px;
+        }
+
+        /* [간격조정-9] 검색 카드 아래에서 결과 영역이 시작되기 전까지의 간격 축소 */
+        .result-area {
+            margin-top: 6px;
+        }
+
+        /* [간격조정-10] 결과 요약 박스의 상하 간격 및 내부 상하폭 축소 */
+        .result-summary {
+            margin-top: 4px;
+            margin-bottom: 9px;
+            padding-top: 7px;
+            padding-bottom: 7px;
+        }
+
+        /* [간격조정-11] 결과 카드와 카드 사이의 세로 간격 축소 */
+        .result-card {
+            margin-bottom: 9px;
+        }
+
+        /* [간격조정-12] 결과 카드 상단 행의 상하폭 축소
+           형번/피치/펼침버튼이 들어가는 줄의 padding만 줄임 */
+        .result-top {
+            gap: 7px;
+            padding-top: 11px;
+            padding-bottom: 11px;
+        }
+
+        /* [간격조정-13] 결과 카드 오른쪽 펼침 버튼의 상하높이 축소 */
+        .toggle-result-btn {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* [간격조정-14] 결과 카드 펼침 상세 영역의 내부 상하 여백 축소 */
+        .result-detail {
+            padding-top: 11px;
+            padding-bottom: 9px;
+        }
+
+        /* [간격조정-15] 상세 정보 그리드의 행/열 간격 축소 */
+        .detail-grid {
+            gap: 8px 14px;
+        }
+
+        /* [간격조정-16] 상세 정보 각 줄의 하단 여백 축소 */
+        .detail-row {
+            padding-bottom: 5px;
+        }
+
+        /* [간격조정-17] PDF/DWG/3D 버튼 영역의 상하폭과 버튼 사이 간격 축소 */
+        .result-buttons {
+            gap: 6px;
+            padding-top: 10px;
+            padding-bottom: 11px;
+        }
+
+        /* [간격조정-18] PDF/DWG/3D 다운로드 버튼 자체의 상하폭 축소 */
+        .result-buttons a {
+            padding-top: 7px;
+            padding-bottom: 7px;
+        }
+
+        /* [간격조정-19] 중앙 체인 배경 이미지 영역의 상하 여백 축소
+           상단 헤더는 그대로 두고, 검색 조건 아래 빈 영역만 줄임 */
+        .middle-visual-zone {
+            padding-top: 11px;
+            padding-bottom: 22px;
+            min-height: 190px;
+        }
+
+        /* [간격조정-20] 검색 결과가 표시된 후 중앙 배경 영역의 상하 여백 축소 */
+        .middle-visual-zone.search-active {
+            padding-top: 6px;
+            padding-bottom: 12px;
+            min-height: 105px;
+        }
+
+        /* [간격조정-21] 하단 고정 영역의 상하폭 축소 */
+        .bottom-area {
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        /* [간격조정-22] 하단 HOME 버튼의 상하폭 축소 */
+        .home-btn {
+            padding-top: 7px;
+            padding-bottom: 7px;
+        }
+
+        /* [간격조정-23] 하단 브랜드 문구와 HOME 버튼 사이 간격 축소 */
+        .bottom-brand {
+            margin-top: 8px;
+        }
+
+        /* [간격조정-24] 하단 보조 문구 위쪽 간격 축소 */
+        .bottom-sub {
+            margin-top: 3px;
+        }
+
+        @media (max-width: 560px) {
+            /* [모바일 간격조정-1] 모바일에서도 상단 헤더는 기존 설정을 유지하고,
+               검색 카드 시작 위치만 위로 당김 */
+            .container {
+                padding-top: 16px;
+                padding-bottom: 138px;
+            }
+
+            /* [모바일 간격조정-2] 모바일 검색 카드 내부 상하 여백 축소 */
+            .search-card {
+                padding: 11px 14px;
+                margin-bottom: 9px;
+            }
+
+            /* [모바일 간격조정-3] 모바일 입력 그룹 사이 세로 간격 축소 */
+            .input-group {
+                margin-bottom: 6px;
+            }
+
+            /* [모바일 간격조정-4] 모바일 라벨과 입력창 사이 간격 축소 */
+            .input-group label {
+                margin-bottom: 3px;
+            }
+
+            /* [모바일 간격조정-5] 모바일 입력창/선택창 상하폭 축소 */
+            select,
+            input {
+                padding-top: 8px;
+                padding-bottom: 8px;
+            }
+
+            /* [모바일 간격조정-6] 모바일 버튼 줄 간격 축소 */
+            .btn-row {
+                gap: 7px;
+                margin-top: 2px;
+            }
+
+            /* [모바일 간격조정-7] 모바일 버튼 상하폭 축소 */
+            button {
+                padding-top: 8px;
+                padding-bottom: 8px;
+            }
+
+            /* [모바일 간격조정-8] 모바일 결과 카드 상단 행 상하폭 축소 */
+            .result-top {
+                padding-top: 10px;
+                padding-bottom: 10px;
+                gap: 7px;
+            }
+
+            /* [모바일 간격조정-9] 모바일 펼침 버튼 크기 축소 */
+            .toggle-result-btn {
+                width: 28px;
+                height: 28px;
+            }
+
+            /* [모바일 간격조정-10] 모바일 상세 영역 내부 간격 축소 */
+            .result-detail {
+                padding-top: 10px;
+                padding-bottom: 8px;
+            }
+
+            .detail-grid {
+                gap: 8px 12px;
+            }
+
+            .detail-row {
+                padding-bottom: 5px;
+            }
+
+            /* [모바일 간격조정-11] 모바일 다운로드 버튼 영역 상하폭 축소 */
+            .result-buttons {
+                gap: 6px;
+                padding-top: 9px;
+                padding-bottom: 10px;
+            }
+
+            .result-buttons a {
+                padding-top: 7px;
+                padding-bottom: 7px;
+            }
+
+            /* [모바일 간격조정-12] 모바일 중앙 체인 배경 영역 상하폭 축소 */
+            .middle-visual-zone {
+                padding-top: 9px;
+                padding-bottom: 18px;
+                min-height: 165px;
+            }
+
+            .middle-visual-zone.search-active {
+                padding-top: 5px;
+                padding-bottom: 10px;
+                min-height: 92px;
+            }
+
+            /* [모바일 간격조정-13] 모바일 하단 고정 영역 상하폭 축소 */
+            .bottom-area {
+                padding-top: 8px;
+                padding-bottom: 7px;
+            }
+
+            .home-btn {
+                padding-top: 7px;
+                padding-bottom: 7px;
+            }
+
+            .bottom-brand {
+                margin-top: 8px;
+            }
+
+            .bottom-sub {
+                margin-top: 3px;
+            }
+        }
+
     </style>
 </head>
 <body>
