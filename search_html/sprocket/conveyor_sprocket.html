@@ -935,6 +935,14 @@
             margin-top: 14px;
         }
 
+        /* =========================================================
+           [수정-다운로드버튼앞아이콘만삭제] 2026-05-25 재수정
+           - 검색 리스트 우측 펼침 화살표는 그대로 유지
+           - 펼쳐지는 세부항목 카드 안의 PDF / DWG / 3D 다운로드 버튼 앞
+             FontAwesome 표시 아이콘만 제거
+           - 이전처럼 전체 <i> 태그를 삭제하지 않고 detail-file-btn 내부만 수정
+           ========================================================= */
+
         /* 다운로드버튼관련 */
         .detail-file-btn {
             height: 36px;
@@ -2864,21 +2872,15 @@
                         </div>
 
                         <div class="detail-actions">
-                            <a href="${filePaths.pdf}" class="detail-file-btn pdf" download>
-                                <i class="far fa-file-alt"></i> PDF 도면
-                            </a>
+                            <a href="${filePaths.pdf}" class="detail-file-btn pdf" download>PDF 도면</a>
 
                             <a href="javascript:void(0)"
                                class="detail-file-btn dwg"
-                               onclick="requestDwgAuth('${filePaths.dwg}')">
-                                <i class="fas fa-wrench"></i> 2D 도면
-                            </a>
+                               onclick="requestDwgAuth('${filePaths.dwg}')">2D 도면</a>
 
                             <a href="javascript:void(0)"
                                class="detail-file-btn dxf"
-                               onclick="open3dDownload('${filePaths.previewStep}', '${filePaths.previewStp}')">
-                                <i class="fas fa-cube"></i> 3D 도면
-                            </a>
+                               onclick="open3dDownload('${filePaths.previewStep}', '${filePaths.previewStp}')">3D 도면</a>
                         </div>
                     </div>
                 </div>
