@@ -2045,14 +2045,14 @@ select, input {
 
 
         /* =========================================================
-           [재수정-v7-피치단위글자크기확대]
+           [재수정-v6-피치표시/단위표시/상세mm제거]
            - 카드 상단: "피치 6.35mm" → "피치(p) 6.35"
            - 피치 표시를 약간 왼쪽으로 이동
-           - 우측 여백의 "단위:mm" 글자를 기존보다 2배 확대
-           - "피치(p)" 글자를 기존보다 1.5배 확대하고 상세 치수값의 mm 단위 표시는 제거
+           - 우측 여백에 작은 글씨로 "단위:mm" 표시
+           - 펼침 상세 치수값의 mm 단위 표시는 제거
            ========================================================= */
         body.iso-a-spec-page .result-top {
-            grid-template-columns: minmax(0, 1.24fr) minmax(122px, 0.70fr) 104px 28px !important;
+            grid-template-columns: minmax(0, 1.34fr) minmax(108px, 0.72fr) 62px 28px !important;
             gap: 6px !important;
         }
 
@@ -2062,8 +2062,8 @@ select, input {
         }
 
         body.iso-a-spec-page .result-top .result-spec div {
-            font-size: 1.35rem !important; /* [v7] 피치(p) 글자 1.5배 확대 */
-            font-weight: 800 !important;
+            font-size: 0.90rem !important;
+            font-weight: 750 !important;
         }
 
         body.iso-a-spec-page .result-top .result-spec strong {
@@ -2075,8 +2075,8 @@ select, input {
             justify-self: end !important;
             align-self: center !important;
             color: rgba(255,255,255,0.78) !important;
-            font-size: 1.36rem !important; /* [v7] 단위:mm 글자 2배 확대 */
-            font-weight: 750 !important;
+            font-size: 0.68rem !important;
+            font-weight: 650 !important;
             line-height: 1 !important;
             white-space: nowrap !important;
             letter-spacing: -0.03em !important;
@@ -2084,7 +2084,7 @@ select, input {
 
         @media (max-width: 560px) {
             body.iso-a-spec-page .result-top {
-                grid-template-columns: minmax(0, 1.12fr) minmax(108px, 0.72fr) 88px 26px !important;
+                grid-template-columns: minmax(0, 1.20fr) minmax(96px, 0.78fr) 54px 26px !important;
                 gap: 5px !important;
             }
 
@@ -2094,7 +2094,7 @@ select, input {
             }
 
             body.iso-a-spec-page .result-top .result-spec div {
-                font-size: 1.20rem !important; /* [v7] 모바일 피치(p) 글자 1.5배 확대 */
+                font-size: 0.80rem !important;
             }
 
             body.iso-a-spec-page .result-top .result-spec strong {
@@ -2102,13 +2102,13 @@ select, input {
             }
 
             body.iso-a-spec-page .result-unit-note {
-                font-size: 1.20rem !important; /* [v7] 모바일 단위:mm 글자 2배 확대 */
+                font-size: 0.60rem !important;
             }
         }
 
         @media (max-width: 380px) {
             body.iso-a-spec-page .result-top {
-                grid-template-columns: minmax(0, 1.05fr) minmax(96px, 0.72fr) 78px 24px !important;
+                grid-template-columns: minmax(0, 1.12fr) minmax(88px, 0.76fr) 50px 24px !important;
                 gap: 4px !important;
             }
 
@@ -2117,9 +2117,146 @@ select, input {
             }
 
             body.iso-a-spec-page .result-unit-note {
-                font-size: 1.12rem !important; /* [v7] 작은 화면 단위:mm 글자 2배 확대 */
+                font-size: 0.56rem !important;
             }
         }
+
+    
+        /* =========================================================
+           [재수정-v8-모바일카드글자30퍼축소]
+           - 모바일에서 카드 상단의 형번/피치/단위/화살표가 너무 붙어 보이는 문제 보정
+           - 카드 내부 글자 크기를 전체적으로 약 30% 축소
+           - 상단 4개 영역 간격을 넓혀 복잡함 완화
+           ========================================================= */
+        @media (max-width: 560px) {
+            body.iso-a-spec-page .result-card {
+                border-radius: 16px !important;
+            }
+
+            body.iso-a-spec-page .result-top {
+                grid-template-columns: minmax(0, 1.28fr) minmax(88px, 0.72fr) 66px 22px !important;
+                gap: 9px !important;
+                padding: 12px 10px !important;
+            }
+
+            body.iso-a-spec-page .result-model {
+                font-size: 0.97rem !important; /* 기존 모바일 대비 약 30% 축소 */
+                line-height: 1.08 !important;
+                letter-spacing: -0.04em !important;
+            }
+
+            body.iso-a-spec-page .result-top .result-spec {
+                margin-left: 0 !important;
+                gap: 3px !important;
+                min-width: 0 !important;
+            }
+
+            body.iso-a-spec-page .result-top .result-spec div {
+                font-size: 0.84rem !important; /* 피치(p) 약 30% 축소 */
+                line-height: 1.05 !important;
+                white-space: nowrap !important;
+            }
+
+            body.iso-a-spec-page .result-top .result-spec strong {
+                font-size: 0.83rem !important; /* 피치값 약 30% 축소 */
+                line-height: 1.05 !important;
+                white-space: nowrap !important;
+            }
+
+            body.iso-a-spec-page .result-unit-note {
+                font-size: 0.84rem !important; /* 단위:mm 약 30% 축소 */
+                line-height: 1.05 !important;
+                justify-self: center !important;
+                white-space: nowrap !important;
+                letter-spacing: -0.04em !important;
+            }
+
+            body.iso-a-spec-page .toggle-result-btn {
+                width: 22px !important;
+                height: 22px !important;
+                font-size: 1.02rem !important;
+            }
+
+            body.iso-a-spec-page .result-detail {
+                padding: 10px 12px 12px !important;
+            }
+
+            body.iso-a-spec-page .detail-grid {
+                gap: 7px 10px !important;
+                margin-bottom: 10px !important;
+            }
+
+            body.iso-a-spec-page .detail-row {
+                gap: 6px !important;
+                padding-bottom: 5px !important;
+            }
+
+            body.iso-a-spec-page .detail-row span {
+                font-size: 0.76rem !important; /* 상세 항목명 약 30% 축소 */
+                line-height: 1.12 !important;
+            }
+
+            body.iso-a-spec-page .detail-row strong {
+                font-size: 0.83rem !important; /* 상세 치수값 약 30% 축소 */
+                line-height: 1.12 !important;
+            }
+
+            body.iso-a-spec-page .result-buttons {
+                gap: 18px !important;
+                padding-top: 9px !important;
+            }
+
+            body.iso-a-spec-page .result-buttons a,
+            body.iso-a-spec-page .result-buttons button {
+                flex-basis: 74px !important;
+                width: 74px !important;
+                min-width: 74px !important;
+                max-width: 74px !important;
+                font-size: 0.72rem !important;
+                padding-top: 7px !important;
+                padding-bottom: 7px !important;
+            }
+        }
+
+        @media (max-width: 380px) {
+            body.iso-a-spec-page .result-top {
+                grid-template-columns: minmax(0, 1.26fr) minmax(80px, 0.72fr) 58px 20px !important;
+                gap: 7px !important;
+                padding: 11px 9px !important;
+            }
+
+            body.iso-a-spec-page .result-model {
+                font-size: 0.88rem !important;
+            }
+
+            body.iso-a-spec-page .result-top .result-spec div,
+            body.iso-a-spec-page .result-top .result-spec strong,
+            body.iso-a-spec-page .result-unit-note {
+                font-size: 0.76rem !important;
+            }
+
+            body.iso-a-spec-page .detail-row span {
+                font-size: 0.70rem !important;
+            }
+
+            body.iso-a-spec-page .detail-row strong {
+                font-size: 0.76rem !important;
+            }
+
+            body.iso-a-spec-page .result-buttons {
+                gap: 14px !important;
+            }
+
+            body.iso-a-spec-page .result-buttons a,
+            body.iso-a-spec-page .result-buttons button {
+                flex-basis: 68px !important;
+                width: 68px !important;
+                min-width: 68px !important;
+                max-width: 68px !important;
+                font-size: 0.68rem !important;
+            }
+        }
+
 
     </style>
 </head>
