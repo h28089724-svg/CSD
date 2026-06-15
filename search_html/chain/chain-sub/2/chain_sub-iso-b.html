@@ -2449,18 +2449,10 @@ select, input {
                 const strandCount = getStrandCount(modelValue);
                 const threeDFolder = strandCount === '2' ? '2bs-3d' : '1bs-3d';
 
-                // [수정-ISO-B-3D경로/파일명규칙-20260615]
-                // 실제 파일명 규칙:
-                // 06B 계열만 RF06B-열수-3D.dwg
-                // 08B 이상은 RS08B-열수-3D.dwg, RS10B-열수-3D.dwg ... 형태입니다.
-                const cleanModel = String(modelValue || '').trim()
-                    .replace(/^RF/i, '')
-                    .replace(/^RS/i, '')
-                    .replace(/\s+/g, '');
-                const sizeMatch = cleanModel.match(/^(\d+)B-/i);
-                const sizeNo = sizeMatch ? parseInt(sizeMatch[1], 10) : 0;
-                const prefix = sizeNo === 6 ? 'RF' : 'RS';
-                const threeDFileName = `${prefix}${cleanModel}-3D.dwg`;
+                // [수정-ISO-B-3D경로]
+                // 3D 도면 파일명은 "형번-열수-3D.dwg" 형태입니다.
+                // 예: 06B-1 -> RF06B-1-3D.dwg
+                const threeDFileName = `RF${String(modelValue || '').trim()}-3D.dwg`;
 
                 return encodeURI(`../../../secure-download/dwg/chain/02-bs_roller_chain/3d/${threeDFolder}/${threeDFileName}`);
             }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>센터롤라/탑롤라/사이드롤라체인 검색</title>
+    <title>소형컨베이어체인 검색</title>
     
     <!-- [기존 유지] 루트 기준 파일 배치를 맞추기 위해 manifest 경로를 ./ 로 유지 -->
     <link rel="manifest" href="../../manifest.json">
@@ -78,16 +78,13 @@
 
         .logo {
             justify-self: center;
-
-            /* [이번 수정] 제목과 작은 설명글이 가로로 붙지 않도록 세로 배치로 확실히 고정 */
             display: inline-flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-
-            padding: 10px 22px;
+            padding: 10px 22px 10px 22px;
             border-radius: 18px;
             font-weight: 800;
+            font-size: 1.89rem;
             line-height: 1.1;
             color: #0d6fd1;
             text-align: center;
@@ -98,23 +95,7 @@
         }
 
         .logo-text {
-            /* [이번 수정] 큰 제목 글씨 크기는 기존 요청대로 유지 */
-            display: block;
-            font-size: 20px;
-            font-weight: 800;
-            line-height: 1.15;
-            white-space: nowrap;
-        }
-
-        .mode-desc {
-            /* [이번 수정] 작은 설명글은 제목 아래에 절반 크기로 배치 */
-            display: block;
-            font-size: 12px;
-            font-weight: 500;
-            line-height: 1.25;
-            margin: 5px 0 0;
-            color: rgba(77, 78, 78, 0.78);
-            white-space: nowrap;
+            display: inline-block;
         }
 
         .menu-btn {
@@ -432,20 +413,9 @@
             }
 
             .logo {
-                /* [이번 수정] 모바일에서도 제목/설명 세로 배열 유지 */
-                padding: 8px 14px;
+                font-size: 1.55rem;
+                padding: 8px 16px;
                 border-radius: 15px;
-                max-width: 100%;
-            }
-
-            .logo-text {
-                font-size: 18px;
-            }
-
-            .mode-desc {
-                font-size: 9px;
-                margin-top: 4px;
-                white-space: normal;
             }
 
             .header-mode-link {
@@ -475,8 +445,6 @@
                 transform: translateY(-10px);
             }
 
-            /* [이번 수정] 모바일에서도 새 하단 영역이 화면 폭에 맞게 표시되도록 조정 */
-
             /* [이번 수정] 모바일에서도 공통 하단 영역이 화면 폭에 맞게 표시되도록 조정 */
             .bottom-area {
                 width: calc(100% - 20px);
@@ -503,10 +471,8 @@
     <div class="header">
         <div class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
 
-        <!-- [이번 수정] 제목과 작은 설명글을 분리하여 위/아래로 깔끔하게 표시 -->
         <div id="mainLogo" class="logo">
-            <span class="logo-text">기타롤라체인 검색</span>
-            <p class="mode-desc">센터롤러체인 / 사이드롤러체인 / 탑롤라체인</p>
+            <span class="logo-text">소형컨베이어체인 검색</span>
         </div>
 
         <div class="header-right">
@@ -558,7 +524,6 @@
             <img src="../../images/chain.png" alt="" class="middle-chain-image">
         </div>
     </div>
-    <!-- [이번 수정] 기존 CBN 하단 로고 배너를 제거하고, 홈 버튼 + MYCAD 브랜드 영역으로 교체 -->
     <!-- [이번 수정] 기존 CBN 하단 로고 배너를 제거하고, 홈 버튼 + MYCAD 브랜드 영역으로 교체 -->
     <div class="bottom-area">
         <!-- [이번 수정] 홈으로 버튼은 아래 goHome() 함수에서 체인 메인페이지로 이동 -->
@@ -694,8 +659,8 @@
                 /* [이번 수정] 사용자 구조에 맞게 download > chain > pdf > 형번폴더 > 파일명 */
                 const pdfPath = `../../download/chain/pdf/${item.model}/${fileBase}.pdf`;
 
-                /* [경로변경-20260615] DWG 경로를 새 secure-download 폴더로 변경 */
-                const dwgPath = `../../secure-download/dwg/chain/07-center-roller_chain/${fileBase}.dwg`;
+                /* [이번 수정] 사용자 구조에 맞게 download > chain > dwg > 형번폴더 > 파일명 */
+                const dwgPath = `../../download/chain/dwg/${item.model}/${fileBase}.dwg`;
 
                 html += `<tr>
                     <td>${item.model}</td>

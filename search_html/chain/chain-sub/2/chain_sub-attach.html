@@ -2879,7 +2879,7 @@
            C:/CSD/download/chain/conveyor_chain/atachment_chain/pdf/2LA1/PDF/35-2LA1.pdf
 
            DWG 실제 저장 위치 예:
-           C:/CSD/secure-download/dwg/chain/atatchment_chain/2LA1/DWG/35-2LA1.dwg
+           C:/CSD/secure-download/dwg/atatchment_chain/2LA1/DWG/35-2LA1.dwg
 
            규칙:
            - 중간 폴더명은 네비 형번명(itemName)으로 자동 변경
@@ -2887,7 +2887,7 @@
              예: 35-2LA1.pdf / 35-2LA1.dwg
         */
         const PDF_BASE_PATH = '../../../download/chain/conveyor_chain/atachment_chain/pdf/';
-        const DWG_BASE_PATH = '../../../secure-download/dwg/chain/atatchment_chain/';
+        const DWG_BASE_PATH = '../../../secure-download/dwg/atatchment_chain/';
         const DWG_AUTH_CODE = 'hkd8421';
 
         /* 수정: DWG 인증용 임시 저장값 */
@@ -3094,10 +3094,10 @@
 
             if (type === 'dwg') {
                 if (isLocalFile) {
-                    return `file:///C:/CSD/secure-download/dwg/chain/atatchment_chain/${safeItemName}/DWG/${safeFileName}`;
+                    return `file:///C:/CSD/secure-download/dwg/atatchment_chain/${safeItemName}/DWG/${safeFileName}`;
                 }
 
-                return `../../../secure-download/dwg/chain/atatchment_chain/${safeItemName}/DWG/${safeFileName}`;
+                return `../../../secure-download/dwg/atatchment_chain/${safeItemName}/DWG/${safeFileName}`;
             }
 
             return '';

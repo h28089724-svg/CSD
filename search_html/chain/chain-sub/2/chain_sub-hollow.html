@@ -848,7 +848,7 @@
                 C:\CSD\download\chain\hollow_pin_chain\pdf
 
                 DWG 실제 저장 위치:
-                C:\CSD\secure-download\dwg\chain\04-hollow_pin_chain
+                C:\CSD\secure-download\dwg\hollow_pin_chain
 
                 로컬 file:// 실행 환경에서 안정적으로 연결하기 위해 절대 file:/// 경로를 사용합니다.
             */
@@ -857,11 +857,11 @@
             }
 
             if (type === 'dwg') {
-                return `file:///C:/CSD/secure-download/dwg/chain/04-hollow_pin_chain/${encodeURIComponent(fileBaseName)}.DWG`;
+                return `file:///C:/CSD/secure-download/dwg/hollow_pin_chain/${encodeURIComponent(fileBaseName)}.DWG`;
             }
 
             if (type === 'dxf') {
-                return `file:///C:/CSD/secure-download/dwg/chain/04-hollow_pin_chain/${encodeURIComponent(fileBaseName)}.dxf`;
+                return `file:///C:/CSD/secure-download/dxf/hollow_pin_chain/${encodeURIComponent(fileBaseName)}.dxf`;
             }
 
             return '';

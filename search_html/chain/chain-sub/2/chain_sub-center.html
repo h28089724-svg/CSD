@@ -694,8 +694,8 @@
                 /* [이번 수정] 사용자 구조에 맞게 download > chain > pdf > 형번폴더 > 파일명 */
                 const pdfPath = `../../download/chain/pdf/${item.model}/${fileBase}.pdf`;
 
-                /* [경로변경-20260615] DWG 경로를 새 secure-download 폴더로 변경 */
-                const dwgPath = `../../secure-download/dwg/chain/07-center-roller_chain/${fileBase}.dwg`;
+                /* [이번 수정] 사용자 구조에 맞게 download > chain > dwg > 형번폴더 > 파일명 */
+                const dwgPath = `../../download/chain/dwg/${item.model}/${fileBase}.dwg`;
 
                 html += `<tr>
                     <td>${item.model}</td>
